@@ -9,7 +9,7 @@ import java.util.List;
 @Transactional
 @Service
 @RequiredArgsConstructor
-public class CBTRecordService {
+public class CBTRecorder {
 
     private final List<RecordHandler> handlers;
 
