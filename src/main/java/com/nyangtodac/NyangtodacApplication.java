@@ -1,0 +1,13 @@
+package com.nyangtodac;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class NyangtodacApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(NyangtodacApplication.class, args);
+	}
+
+}
