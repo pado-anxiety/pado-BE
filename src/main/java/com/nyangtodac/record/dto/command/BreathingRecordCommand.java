@@ -1,4 +1,4 @@
-package com.nyangtodac.record.application;
+package com.nyangtodac.record.dto.command;
 
 import lombok.Getter;
 

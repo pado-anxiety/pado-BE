@@ -1,5 +1,7 @@
-package com.nyangtodac.record.application;
+package com.nyangtodac.record.application.handler;
 
+import com.nyangtodac.record.dto.command.BreathingRecordCommand;
+import com.nyangtodac.record.dto.command.CBTRecordCommand;
 import org.springframework.stereotype.Component;
 
 @Component
