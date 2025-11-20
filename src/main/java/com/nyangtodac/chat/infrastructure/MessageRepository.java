@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface MessageRepository extends JpaRepository<MessageEntity, Long> {
 
-    List<MessageEntity> findTop10ByUserIdOrderByCreatedAtDesc(Long userId);
+    List<MessageEntity> findTop10ByUserIdOrderByCreatedAtDescIdDesc(Long userId);
 }
