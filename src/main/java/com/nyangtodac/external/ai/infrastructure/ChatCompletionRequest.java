@@ -1,6 +1,6 @@
 package com.nyangtodac.external.ai.infrastructure;
 
-import com.nyangtodac.external.ai.infrastructure.prompt.Prompt;
+import com.nyangtodac.external.ai.infrastructure.prompt.SystemPrompt;
 import lombok.Getter;
 import lombok.ToString;
 
@@ -16,12 +16,11 @@ public class ChatCompletionRequest {
     private final Double temperature;
     private final Integer max_tokens;
 
-    public ChatCompletionRequest(String model, Prompt prompt, Double temperature, Integer max_tokens) {
+    public ChatCompletionRequest(String model, SystemPrompt systemPrompt, List<Message> messages, Double temperature, Integer max_tokens) {
         this.model = model;
         this.messages = new ArrayList<>();
-        messages.add(new Message("system", prompt.getSystem()));
-        messages.add(new Message("user", prompt.getUser()));
-        messages.add(new Message("assistant", prompt.getAssistant()));
+        this.messages.add(new Message("system", systemPrompt.getSystem()));
+        this.messages.addAll(messages);
         this.temperature = temperature;
         this.max_tokens = max_tokens;
     }

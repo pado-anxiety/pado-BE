@@ -5,13 +5,11 @@ import lombok.Getter;
 import java.util.List;
 @Getter
 public class RecentMessages {
-    private final List<String> messages;
+    private final List<Message> messages;
 
-    public RecentMessages(List<String> messages) {
+    public RecentMessages(List<Message> messages) {
         this.messages = messages;
     }
 
-    public String asString() {
-        return String.join("\n", messages);
-    }
 }
+

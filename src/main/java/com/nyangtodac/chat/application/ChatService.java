@@ -11,9 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -24,9 +24,9 @@ public class ChatService {
     private final MessageRepository messageRepository;
 
     public MessageResponse postMessage(Long userId, MessageRequest request) {
-        RecentMessages recentMessages = getRecentMessages(userId);
+        RecentMessages recentMessages = makeContext(userId, request.getContent());
 
-        OpenAiChatResponse chatResponse = openAiService.getChatResponse(recentMessages, request.getContent());
+        OpenAiChatResponse chatResponse = openAiService.getChatResponse(recentMessages);
 
         MessageEntity userMessage = new MessageEntity(userId, Sender.USER, request.getContent());
         messageRepository.save(userMessage);
@@ -37,19 +37,14 @@ public class ChatService {
         return new MessageResponse(chatResponse.getReplies());
     }
 
-    private RecentMessages getRecentMessages(Long userId) {
-        List<String> context = messageRepository
-                .findTop10ByUserIdOrderByCreatedAtDesc(userId)
+    private RecentMessages makeContext(Long userId, String userMessage) {
+        List<Message> messages = new ArrayList<>(messageRepository
+                .findTop10ByUserIdOrderByCreatedAtDescIdDesc(userId)
                 .stream()
-                .map(msg -> {
-                    if (msg.getSender() == Sender.AI) {
-                        return "[CONTEXT - AI]: " + msg.getContent();
-                    } else {
-                        return "[CONTEXT - USER]: " + msg.getContent();
-                    }
-                })
-                .collect(Collectors.toList());
-        Collections.reverse(context);
-        return new RecentMessages(context);
+                .map(msg -> new Message(msg.getContent(), msg.getSender().getRole()))
+                .toList());
+        Collections.reverse(messages);
+        messages.add(new Message(userMessage, "user"));
+        return new RecentMessages(messages);
     }
 }
