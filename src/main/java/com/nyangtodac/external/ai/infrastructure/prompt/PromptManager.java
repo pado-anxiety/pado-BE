@@ -1,18 +1,17 @@
 package com.nyangtodac.external.ai.infrastructure.prompt;
 
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+@Getter
 @Component
 public class PromptManager {
 
-    private final Prompt chatPrompt;
+    private final SystemPrompt chatSystemPrompt;
 
     public PromptManager() {
         String chatTemplatePath = "prompts/chat_prompt.yaml";
-        chatPrompt = YamlResourceLoader.load(chatTemplatePath, Prompt.class);
+        chatSystemPrompt = YamlResourceLoader.load(chatTemplatePath, SystemPrompt.class);
     }
 
-    public Prompt getChatPrompt(String recentMessages, String userMessage) {
-        return new Prompt(chatPrompt.getSystem(), userMessage, recentMessages);
-    }
 }
