@@ -1,5 +1,6 @@
 package com.nyangtodac.external.ai.infrastructure;
 
+import com.nyangtodac.chat.application.MessageContext;
 import com.nyangtodac.external.ai.infrastructure.prompt.PromptManager;
 import com.nyangtodac.external.ai.infrastructure.prompt.SystemPrompt;
 import org.springframework.stereotype.Component;
@@ -19,8 +20,17 @@ public class ChatCompletionRequestFactory {
         this.promptManager = promptManager;
     }
 
-    public ChatCompletionRequest buildChatRequest(List<ChatCompletionRequest.Message> messages) {
+    public ChatCompletionRequest buildChatRequest(MessageContext context) {
         SystemPrompt systemPrompt = promptManager.getChatSystemPrompt();
-        return new ChatCompletionRequest(model, systemPrompt, messages, temperature, maxToken);
+        return new ChatCompletionRequest(model, systemPrompt, toChatMessages(context), temperature, maxToken);
+    }
+
+    private List<ChatCompletionRequest.Message> toChatMessages(MessageContext recent) {
+        return recent.getMessages().stream()
+                .map(msg -> new ChatCompletionRequest.Message(
+                        msg.getRole().toLowerCase(),
+                        msg.getContent()
+                ))
+                .toList();
     }
 }
