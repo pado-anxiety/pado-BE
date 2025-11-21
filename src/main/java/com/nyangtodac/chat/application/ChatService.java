@@ -24,9 +24,9 @@ public class ChatService {
     private final MessageRepository messageRepository;
 
     public MessageResponse postMessage(Long userId, MessageRequest request) {
-        RecentMessages recentMessages = makeContext(userId, request.getContent());
+        MessageContext messageContext = makeContext(userId, request.getContent());
 
-        OpenAiChatResponse chatResponse = openAiService.getChatResponse(recentMessages);
+        OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext);
 
         MessageEntity userMessage = new MessageEntity(userId, Sender.USER, request.getContent());
         messageRepository.save(userMessage);
@@ -37,14 +37,14 @@ public class ChatService {
         return new MessageResponse(chatResponse.getReplies());
     }
 
-    private RecentMessages makeContext(Long userId, String userMessage) {
-        List<Message> messages = new ArrayList<>(messageRepository
+    private MessageContext makeContext(Long userId, String userMessage) {
+        List<MessageContext.Message> messages = new ArrayList<>(messageRepository
                 .findTop10ByUserIdOrderByCreatedAtDescIdDesc(userId)
                 .stream()
-                .map(msg -> new Message(msg.getContent(), msg.getSender().getRole()))
+                .map(msg -> new MessageContext.Message(msg.getContent(), msg.getSender().getRole()))
                 .toList());
         Collections.reverse(messages);
-        messages.add(new Message(userMessage, "user"));
-        return new RecentMessages(messages);
+        messages.add(new MessageContext.Message(userMessage, "user"));
+        return new MessageContext(messages);
     }
 }
