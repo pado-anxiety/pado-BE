@@ -9,4 +9,6 @@ public interface UserRepository {
     Optional<User> findByEmailAndLoginType(String email, LoginType loginType);
 
     User save(User user);
+
+    Optional<User> findByUserId(Long userId);
 }

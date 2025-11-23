@@ -19,6 +19,8 @@ public class UserEntity {
 
     private String name;
 
+    private String refreshToken;
+
     protected UserEntity() {
     }
 
@@ -30,7 +32,7 @@ public class UserEntity {
     }
 
     public User toModel() {
-        return new User(id, email, loginType, name);
+        return new User(id, email, loginType, name, refreshToken);
     }
 
     public static UserEntity fromModel(User user) {
