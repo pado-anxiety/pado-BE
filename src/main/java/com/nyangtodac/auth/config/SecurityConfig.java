@@ -1,5 +1,6 @@
 package com.nyangtodac.auth.config;
 
+import com.nyangtodac.auth.service.CustomOAuth2UserService;
 import com.nyangtodac.auth.service.CustomStatelessAuthorizationRequestRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomStatelessAuthorizationRequestRepository customStatelessAuthorizationRequestRepository;
+    private final CustomOAuth2UserService customOAuth2UserService;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -27,8 +29,12 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .oauth2Login(oauth2 ->
-                        oauth2.authorizationEndpoint(config ->
-                                config.authorizationRequestRepository(customStatelessAuthorizationRequestRepository)));
+                        oauth2.authorizationEndpoint(
+                                config -> config.authorizationRequestRepository(
+                                        customStatelessAuthorizationRequestRepository
+                                ))
+                                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                );
         return httpSecurity.build();
     }
 }

@@ -16,4 +16,8 @@ public class User {
         this.loginType = loginType;
         this.name = name;
     }
+
+    public User(String email, LoginType loginType) {
+        this(null, email, loginType, null);
+    }
 }
