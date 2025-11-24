@@ -22,4 +22,8 @@ public class User {
     public User(String email, LoginType loginType) {
         this(null, email, loginType, null, null);
     }
+
+    public void updateRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
 }
