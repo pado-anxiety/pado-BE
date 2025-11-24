@@ -1,7 +1,10 @@
 package com.nyangtodac.auth.config;
 
+import com.nyangtodac.auth.infrastructure.jwt.JwtAuthenticationFilter;
+import com.nyangtodac.auth.infrastructure.jwt.JwtExceptionHandlerFilter;
 import com.nyangtodac.auth.service.CustomOAuth2UserService;
 import com.nyangtodac.auth.service.CustomStatelessAuthorizationRequestRepository;
+import com.nyangtodac.auth.service.OAuth2SuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -11,6 +14,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.annotation.web.configurers.HeadersConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -19,6 +23,9 @@ public class SecurityConfig {
 
     private final CustomStatelessAuthorizationRequestRepository customStatelessAuthorizationRequestRepository;
     private final CustomOAuth2UserService customOAuth2UserService;
+    private final OAuth2SuccessHandler oAuth2SuccessHandler;
+    private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -28,13 +35,18 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
-                .oauth2Login(oauth2 ->
-                        oauth2.authorizationEndpoint(
-                                config -> config.authorizationRequestRepository(
-                                        customStatelessAuthorizationRequestRepository
-                                ))
+                .authorizeHttpRequests(authorize -> authorize
+                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/oauth2/**", "/login/oauth2/code/**")
+                        .permitAll()
+                )
+                .oauth2Login(oauth2 -> oauth2
+                                .authorizationEndpoint(config -> config.authorizationRequestRepository(customStatelessAuthorizationRequestRepository))
                                 .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                );
+                                .successHandler(oAuth2SuccessHandler)
+                )
+                .addFilterBefore(jwtExceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthenticationFilter, JwtExceptionHandlerFilter.class)
+        ;
         return httpSecurity.build();
     }
 }

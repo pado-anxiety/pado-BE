@@ -33,7 +33,7 @@ public class JwtTokenProvider {
         return createToken(userId, accessTokenExpiration);
     }
 
-    private String createRefreshToken(Long userId) {
+    public String createRefreshToken(Long userId) {
         return createToken(userId, refreshTokenExpiration);
     }
 
@@ -54,10 +54,9 @@ public class JwtTokenProvider {
         return new String[]{createAccessToken(user.getId()), createRefreshToken(user.getId())};
     }
 
-    public boolean validateAccessToken(String accessToken) {
+    public void validateAccessToken(String accessToken) {
         try {
             Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(accessToken);
-            return true;
         } catch (SecurityException | MalformedJwtException | UnsupportedJwtException | IllegalArgumentException e) {
             throw new AccessTokenInvalidException(e);
         } catch (ExpiredJwtException e) {
