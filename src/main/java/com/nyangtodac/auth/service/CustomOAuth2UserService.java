@@ -18,6 +18,7 @@ import java.util.Collections;
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
     private final UserRepository userRepository;
+    private final OAuth2UserInfoFactory oAuth2UserInfoFactory;
 
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) {
@@ -27,14 +28,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String nameAttributeName = userRequest.getClientRegistration().getProviderDetails()
             .getUserInfoEndpoint().getUserNameAttributeName();
 
-        OAuth2UserInfo userInfo = OAuth2UserInfo.from(registrationId, nameAttributeName, oAuth2User.getAttributes());
+        OAuth2UserInfo userInfo = oAuth2UserInfoFactory.create(registrationId, nameAttributeName, oAuth2User.getAttributes());
 
         saveOrUpdate(userInfo.getEmail(), LoginType.valueOf(registrationId.toUpperCase()));
 
         return new DefaultOAuth2User(
-            Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-            userInfo.getAttributes(),
-            userInfo.getNameAttributeKey()
+                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
+                userInfo.getAttributes(),
+                userInfo.getNameAttributeKey()
         );
     }
 

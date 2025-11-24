@@ -4,10 +4,6 @@ import java.util.Map;
 
 public class GoogleOAuth2UserInfo extends OAuth2UserInfo {
 
-    static {
-        register("google", GoogleOAuth2UserInfo::new);
-    }
-
     protected GoogleOAuth2UserInfo() {
         super();
     }
