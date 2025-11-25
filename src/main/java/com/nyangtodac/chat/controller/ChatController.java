@@ -1,5 +1,6 @@
 package com.nyangtodac.chat.controller;
 
+import com.nyangtodac.auth.infrastructure.LoginUser;
 import com.nyangtodac.chat.application.ChatService;
 import com.nyangtodac.chat.controller.dto.message.MessageRequest;
 import com.nyangtodac.chat.controller.dto.message.MessageResponse;
@@ -18,7 +19,7 @@ public class ChatController {
     private final ChatService chatService;
 
     @PostMapping
-    public ResponseEntity<MessageResponse> send(@RequestBody MessageRequest request) {
-        return ResponseEntity.ok(chatService.postMessage(1L, request));
+    public ResponseEntity<MessageResponse> send(@LoginUser Long id, @RequestBody MessageRequest request) {
+        return ResponseEntity.ok(chatService.postMessage(id, request));
     }
 }
