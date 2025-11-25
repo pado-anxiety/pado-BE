@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -30,10 +29,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
 
-        OAuth2User oAuth2User = (OAuth2User) authentication.getPrincipal();
+        CustomOAuth2User oAuth2User = (CustomOAuth2User) authentication.getPrincipal();
         OAuth2AuthenticationToken token = (OAuth2AuthenticationToken) authentication;
 
-        String email = oAuth2User.getAttribute("email");
+        String email = oAuth2User.getEmail();
         User user = userRepository.findByEmailAndLoginType(email, LoginType.valueOf(token.getAuthorizedClientRegistrationId().toUpperCase()))
             .orElseThrow(() -> new RuntimeException("사용자를 찾을 수 없습니다. 유저 이메일: " + email));
 

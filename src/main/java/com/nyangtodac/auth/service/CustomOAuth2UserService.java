@@ -4,14 +4,10 @@ import com.nyangtodac.user.application.UserRepository;
 import com.nyangtodac.user.domain.LoginType;
 import com.nyangtodac.user.domain.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.util.Collections;
 
 @RequiredArgsConstructor
 @Service
@@ -32,11 +28,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         saveOrUpdate(userInfo.getEmail(), LoginType.valueOf(registrationId.toUpperCase()));
 
-        return new DefaultOAuth2User(
-                Collections.singleton(new SimpleGrantedAuthority("ROLE_USER")),
-                userInfo.getAttributes(),
-                userInfo.getNameAttributeKey()
-        );
+        return new CustomOAuth2User(userInfo);
     }
 
     private void saveOrUpdate(String email, LoginType loginType) {
