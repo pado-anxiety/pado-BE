@@ -38,6 +38,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/oauth2/**", "/login/oauth2/code/**")
                         .permitAll()
+                        .requestMatchers("/api/**").hasRole("USER")
+                        .anyRequest().authenticated()
                 )
                 .oauth2Login(oauth2 -> oauth2
                                 .authorizationEndpoint(config -> config.authorizationRequestRepository(customStatelessAuthorizationRequestRepository))
