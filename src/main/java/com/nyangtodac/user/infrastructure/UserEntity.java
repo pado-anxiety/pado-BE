@@ -14,7 +14,7 @@ public class UserEntity {
     @Column(nullable = false)
     private String email;
 
-    @Enumerated
+    @Enumerated(EnumType.STRING)
     private LoginType loginType;
 
     private String name;
