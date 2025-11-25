@@ -42,7 +42,7 @@ public class CustomStatelessAuthorizationRequestRepository implements Authorizat
         return oAuth2AuthorizationRequest;
     }
 
-    public OAuth2AuthorizationRequest loadOAuth2AuthorizationRequest(HttpServletRequest request) {
+    private OAuth2AuthorizationRequest loadOAuth2AuthorizationRequest(HttpServletRequest request) {
         return CookieUtil.getCookie(request, OAUTH2_COOKIE_NAME).map(cryptoUtil::decrypt).orElse(null);
     }
 
