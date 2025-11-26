@@ -12,17 +12,5 @@ public class MessageContext {
         this.messages = messages;
     }
 
-    @Getter
-    public static class Message {
-
-        private final String content;
-        private final String role;
-
-        public Message(String content, String role) {
-            this.content = content;
-            this.role = role;
-        }
-
-    }
 }
 
