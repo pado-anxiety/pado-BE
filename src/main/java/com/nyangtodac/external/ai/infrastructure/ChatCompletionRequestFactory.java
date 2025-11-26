@@ -1,6 +1,7 @@
 package com.nyangtodac.external.ai.infrastructure;
 
 import com.nyangtodac.chat.application.MessageContext;
+import com.nyangtodac.chat.controller.dto.Sender;
 import com.nyangtodac.external.ai.infrastructure.prompt.PromptManager;
 import com.nyangtodac.external.ai.infrastructure.prompt.SystemPrompt;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,7 @@ public class ChatCompletionRequestFactory {
     private List<ChatCompletionRequest.Message> toChatMessages(MessageContext recent) {
         return recent.getMessages().stream()
                 .map(msg -> new ChatCompletionRequest.Message(
-                        msg.getRole().toLowerCase(),
+                        Sender.valueOf(msg.getRole().toUpperCase()).getRole(),
                         msg.getContent()
                 ))
                 .toList();
