@@ -1,7 +1,7 @@
 package com.nyangtodac.chat.controller;
 
 import com.nyangtodac.auth.infrastructure.LoginUser;
-import com.nyangtodac.chat.application.ChatService;
+import com.nyangtodac.chat.application.AIChatService;
 import com.nyangtodac.chat.controller.dto.message.MessageRequest;
 import com.nyangtodac.chat.controller.dto.message.MessageResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,10 +16,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ChatController {
 
-    private final ChatService chatService;
+    private final AIChatService AIChatService;
 
     @PostMapping
     public ResponseEntity<MessageResponse> send(@LoginUser Long id, @RequestBody MessageRequest request) {
-        return ResponseEntity.ok(chatService.postMessage(id, request));
+        return ResponseEntity.ok(AIChatService.postMessage(id, request));
     }
 }
