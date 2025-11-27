@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Collections;
 import java.util.List;
 
@@ -128,14 +129,17 @@ public class MessageRedisRepository {
 
     private String serialize(Message message) {
         try {
-            return objectMapper.writeValueAsString(message);
+            String json = objectMapper.writeValueAsString(message);
+            return Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private Message deserialize(String json) {
+    private Message deserialize(String base64) {
         try {
+            byte[] decoded = Base64.getDecoder().decode(base64);
+            String json = new String(decoded, StandardCharsets.UTF_8);
             return objectMapper.readValue(json, Message.class);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
