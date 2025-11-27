@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.nyangtodac.chat.application.Message;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -13,13 +14,11 @@ import org.springframework.stereotype.Repository;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class MessageRedisRepository {
 
     private static final String CHAT_MESSAGES_PREFIX = "chat:";
@@ -54,7 +53,7 @@ public class MessageRedisRepository {
     public List<Message> saveMessages(Long userId, List<Message> messages) {
         if (messages.isEmpty()) return Collections.emptyList();
 
-        List<String> serialized = messages.stream().map(this::serialize).toList();
+        List<String> serialized = messages.stream().map(m -> serialize(userId, m)).toList();
 
         List<String> args = new ArrayList<>(serialized);
         args.add(String.valueOf(CHAT_MESSAGES_MAX_SIZE));
@@ -63,13 +62,13 @@ public class MessageRedisRepository {
         List<String> overflowMessages = (List<String>) redisTemplate.execute(pushAndTrimScript, List.of(generateKey(userId)), args.toArray());
 
         if (!overflowMessages.isEmpty()) {
-            return overflowMessages.stream().map(this::deserialize).toList();
+            return overflowMessages.stream().map(o -> deserialize(userId, o)).flatMap(Optional::stream).toList();
         }
         return Collections.emptyList();
     }
 
     public void saveFlushFailedMessages(Long userId, List<Message> messages) {
-        List<String> serialized = messages.stream().map(this::serialize).toList();
+        List<String> serialized = messages.stream().map(m -> serialize(userId, m)).toList();
         redisTemplate.opsForList().rightPushAll(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX, serialized);
     }
 
@@ -87,7 +86,8 @@ public class MessageRedisRepository {
         List<String> strings = redisTemplate.opsForList().range(key, start, end);
         List<Message> messages = new ArrayList<>();
         for (String json : strings) {
-            messages.add(deserialize(json));
+            Optional<Message> deserialize = deserialize(userId, json);
+            deserialize.ifPresent(messages::add);
         }
 
         return messages;
@@ -114,35 +114,42 @@ public class MessageRedisRepository {
     public List<Message> flushAllMessagesByUserId(Long userId) {
         @SuppressWarnings("unchecked")
         List<String> serialized = (List<String>) redisTemplate.execute(flushAllScript, List.of(generateKey(userId)));
-        return serialized.stream().map(this::deserialize).toList();
+        return serialized.stream().map(s -> deserialize(userId, s)).flatMap(Optional::stream).toList();
     }
 
     public List<Message> flushFailedMessagesByUserId(Long userId) {
         @SuppressWarnings("unchecked")
         List<String> serialized = (List<String>) redisTemplate.execute(flushAllScript, List.of(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX));
-        return serialized.stream().map(this::deserialize).toList();
+        return serialized.stream().map(s -> deserialize(userId, s)).flatMap(Optional::stream).toList();
     }
 
     private String generateKey(Long userId) {
         return CHAT_MESSAGES_PREFIX + userId + CHAT_MESSAGES_SUFFIX;
     }
 
-    private String serialize(Message message) {
+    private String serialize(Long userId, Message message) {
         try {
             String json = objectMapper.writeValueAsString(message);
             return Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
         } catch (JsonProcessingException e) {
+            log.error("Message 직렬화 실패, userId={} message={}", userId, message, e);
             throw new RuntimeException(e);
         }
     }
 
-    private Message deserialize(String base64) {
+    private Optional<Message> deserialize(Long userId, String base64) {
         try {
             byte[] decoded = Base64.getDecoder().decode(base64);
             String json = new String(decoded, StandardCharsets.UTF_8);
-            return objectMapper.readValue(json, Message.class);
+            return Optional.of(objectMapper.readValue(json, Message.class));
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
+            saveFlushFailedMessagesRaw(userId, List.of(base64));
+            log.warn("Message 역직렬화 실패, userId={}", userId);
+            return Optional.empty();
         }
+    }
+
+    private void saveFlushFailedMessagesRaw(Long userId, List<String> rawMessages) {
+        redisTemplate.opsForList().rightPushAll(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX, rawMessages);
     }
 }
