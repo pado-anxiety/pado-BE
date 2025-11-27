@@ -27,7 +27,7 @@ public class MessageRedisRepository {
     private static final String FLUSH_FAILED_MESSAGES_PREFIX = "flush_fail:";
     private static final String FLUSH_FAILED_MESSAGES_SUFFIX = ":messages";
 
-    private static final int CHAT_MESSAGES_MAX_SIZE = 4;
+    private static final int CHAT_MESSAGES_MAX_SIZE = 30;
 
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
