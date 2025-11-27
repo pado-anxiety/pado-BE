@@ -2,6 +2,7 @@ package com.nyangtodac.auth.infrastructure.jwt;
 
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,7 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
     protected void doFilterInternal(
             @Nonnull HttpServletRequest request,
             @Nonnull HttpServletResponse response,
-            @Nonnull FilterChain filterChain) throws IOException {
+            @Nonnull FilterChain filterChain) throws IOException, ServletException {
         try {
             filterChain.doFilter(request, response);
         } catch (AccessTokenExpiredException e) {
@@ -29,10 +30,6 @@ public class JwtExceptionHandlerFilter extends OncePerRequestFilter {
              */
             returnError(HttpStatus.FORBIDDEN, response, "Invalid token");
             log.error("Invalid AccessToken detected for request [{} {}] from IP [{}]",
-                    request.getMethod(), request.getRequestURI(), request.getRemoteAddr(), e);
-        } catch (Exception e) {
-            returnError(HttpStatus.INTERNAL_SERVER_ERROR, response, "Authentication failed");
-            log.error("Unexpected authentication error for request [{} {}] from IP [{}]",
                     request.getMethod(), request.getRequestURI(), request.getRemoteAddr(), e);
         }
     }
