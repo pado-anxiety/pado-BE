@@ -11,6 +11,7 @@ import org.springframework.web.client.*;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.time.Duration;
+import java.util.List;
 
 @Component
 public class OpenAiClient {
@@ -49,7 +50,14 @@ public class OpenAiClient {
         } catch (HttpServerErrorException e) {
             throw new OpenAiException("AI server error", e);
         } catch (HttpClientErrorException.TooManyRequests e) {
-            throw new OpenAiException("AI rate limit exceeded", e);
+            StringBuilder messageBuilder = new StringBuilder("AI rate limit exceeded");
+
+            List<String> retryAfterHeader = e.getResponseHeaders().get("Retry-After");
+            if (!retryAfterHeader.isEmpty()) {
+                messageBuilder.append(". Retry after: ").append(retryAfterHeader.get(0)).append(" seconds");
+            }
+
+            throw new OpenAiException(messageBuilder.toString(), e);
         } catch (HttpClientErrorException e) {
             throw new OpenAiException("Unexpected RestClient error", e);
         } catch (HttpStatusCodeException e) {
