@@ -6,11 +6,10 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.HttpServerErrorException;
-import org.springframework.web.client.ResourceAccessException;
-import org.springframework.web.client.RestClient;
+import org.springframework.web.client.*;
 
+import java.net.ConnectException;
+import java.net.SocketTimeoutException;
 import java.time.Duration;
 
 @Component
@@ -39,8 +38,22 @@ public class OpenAiClient {
                     .body(request)
                     .retrieve()
                     .body(ChatCompletionResponse.class);
-        } catch (HttpServerErrorException | ResourceAccessException | HttpClientErrorException e) {
+        } catch (ResourceAccessException e) {
+            if (e.getCause() instanceof SocketTimeoutException) {
+                throw new OpenAiException("AI timeout", e);
+            }
+            if (e.getCause() instanceof ConnectException) {
+                throw new OpenAiException("AI server unavailable", e);
+            }
             throw new OpenAiException(e);
+        } catch (HttpServerErrorException e) {
+            throw new OpenAiException("AI server error", e);
+        } catch (HttpClientErrorException.TooManyRequests e) {
+            throw new OpenAiException("AI rate limit exceeded", e);
+        } catch (HttpClientErrorException e) {
+            throw new OpenAiException("Unexpected RestClient error", e);
+        } catch (HttpStatusCodeException e) {
+            throw new OpenAiException("Unexpected AI HTTP error" + " HttpStatusCode: " + e.getStatusCode(), e);
         }
     }
 }
