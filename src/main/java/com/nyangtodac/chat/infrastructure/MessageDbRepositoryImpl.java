@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @Repository
 @RequiredArgsConstructor
@@ -22,10 +23,12 @@ public class MessageDbRepositoryImpl implements MessageDbRepository {
 
     @Override
     @Async("dbTaskExecutor")
-    public void asyncFlush(Long userId, List<Message> messages) {
-        if (!messages.isEmpty()) {
-            List<MessageEntity> entities = messages.stream().map(m -> new MessageEntity(userId, Sender.valueOf(m.getRole()), m.getContent())).toList();
-            messageJpaRepository.saveAll(entities);
-        }
+    public CompletableFuture<Void> asyncBatch(Long userId, List<Message> messages) {
+        return CompletableFuture.runAsync(() -> {
+            if (!messages.isEmpty()) {
+                List<MessageEntity> entities = messages.stream().map(m -> new MessageEntity(userId, Sender.valueOf(m.getRole()), m.getContent())).toList();
+                messageJpaRepository.saveAll(entities);
+            }
+        });
     }
 }

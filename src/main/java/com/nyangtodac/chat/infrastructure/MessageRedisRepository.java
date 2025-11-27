@@ -1,4 +1,4 @@
-package com.nyangtodac.external.redis;
+package com.nyangtodac.chat.infrastructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,7 +24,10 @@ public class MessageRedisRepository {
     private static final String CHAT_MESSAGES_PREFIX = "chat:";
     private static final String CHAT_MESSAGES_SUFFIX = ":messages";
 
-    private static final int CHAT_MESSAGES_MAX_SIZE = 30;
+    private static final String FLUSH_FAILED_MESSAGES_PREFIX = "flush_fail:";
+    private static final String FLUSH_FAILED_MESSAGES_SUFFIX = ":messages";
+
+    private static final int CHAT_MESSAGES_MAX_SIZE = 4;
 
     private final StringRedisTemplate redisTemplate;
     private final ObjectMapper objectMapper;
@@ -50,13 +53,7 @@ public class MessageRedisRepository {
     public List<Message> saveMessages(Long userId, List<Message> messages) {
         if (messages.isEmpty()) return Collections.emptyList();
 
-        List<String> serialized = messages.stream().map(msg -> {
-            try {
-                return objectMapper.writeValueAsString(msg);
-            } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
-            }
-        }).toList();
+        List<String> serialized = messages.stream().map(this::serialize).toList();
 
         List<String> args = new ArrayList<>(serialized);
         args.add(String.valueOf(CHAT_MESSAGES_MAX_SIZE));
@@ -68,6 +65,11 @@ public class MessageRedisRepository {
             return overflowMessages.stream().map(this::deserialize).toList();
         }
         return Collections.emptyList();
+    }
+
+    public void saveFlushFailedMessages(Long userId, List<Message> messages) {
+        List<String> serialized = messages.stream().map(this::serialize).toList();
+        redisTemplate.opsForList().rightPushAll(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX, serialized);
     }
 
     public List<Message> findRecentMessages(Long userId, int n) {
@@ -99,15 +101,37 @@ public class MessageRedisRepository {
                 .toList();
     }
 
+    public List<Long> getFlushFailedUserIds() {
+        return redisTemplate
+                .keys(CHAT_MESSAGES_PREFIX + "*" + CHAT_MESSAGES_SUFFIX)
+                .stream()
+                .map(s -> s.replace(CHAT_MESSAGES_PREFIX, "").replace(CHAT_MESSAGES_SUFFIX, ""))
+                .map(Long::valueOf)
+                .toList();
+    }
+
     public List<Message> flushAllMessagesByUserId(Long userId) {
         @SuppressWarnings("unchecked")
         List<String> serialized = (List<String>) redisTemplate.execute(flushAllScript, List.of(generateKey(userId)));
         return serialized.stream().map(this::deserialize).toList();
     }
 
+    public List<Message> flushFailedMessagesByUserId(Long userId) {
+        @SuppressWarnings("unchecked")
+        List<String> serialized = (List<String>) redisTemplate.execute(flushAllScript, List.of(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX));
+        return serialized.stream().map(this::deserialize).toList();
+    }
 
     private String generateKey(Long userId) {
         return CHAT_MESSAGES_PREFIX + userId + CHAT_MESSAGES_SUFFIX;
+    }
+
+    private String serialize(Message message) {
+        try {
+            return objectMapper.writeValueAsString(message);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private Message deserialize(String json) {
@@ -117,5 +141,4 @@ public class MessageRedisRepository {
             throw new RuntimeException(e);
         }
     }
-
 }
