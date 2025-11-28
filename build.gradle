@@ -47,6 +47,8 @@ dependencies {
 	implementation 'org.apache.commons:commons-lang3:3.18.0'
 
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	implementation("io.hypersistence:hypersistence-tsid:2.1.4")
 }
 
 tasks.named('test') {
