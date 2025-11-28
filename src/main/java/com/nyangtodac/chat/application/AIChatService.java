@@ -23,12 +23,13 @@ public class AIChatService {
     private final MessageService messageService;
 
     public MessageResponse postMessage(Long userId, MessageRequest request) {
+        Message userMessage = new Message(request.getContent(), USER.name());
         MessageContext messageContext = makeContext(userId, request.getContent());
 
         OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext);
 
         List<Message> messages = new ArrayList<>();
-        messages.add(new Message(request.getContent(), USER.name()));
+        messages.add(userMessage);
         chatResponse.getReplies().forEach(m -> messages.add(new Message(m, AI.name())));
         messageService.saveMessages(userId, messages);
 
