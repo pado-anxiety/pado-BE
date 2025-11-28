@@ -10,6 +10,6 @@ import java.util.List;
 
 public interface MessageJpaRepository extends JpaRepository<MessageEntity, Long> {
 
-    @Query("select new com.nyangtodac.chat.application.Message(m.content, m.sender, m.createdAt) from MessageEntity m where m.userId = :userId order by m.createdAt desc, m.id desc")
+    @Query("select new com.nyangtodac.chat.application.Message(m.tsid, m.content, m.sender) from MessageEntity m where m.userId = :userId order by m.tsid desc")
     List<Message> findTopNByUserIdOrderByCreatedAtDescIdDesc(@Param("userId") Long userId, Pageable pageable);
 }
