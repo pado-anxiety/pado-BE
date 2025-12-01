@@ -37,6 +37,7 @@ public class MessageService {
 
     public ChatHistory getRecentMessages(Long userId) {
         List<Message> messages = new ArrayList<>(messageRedisRepository.findRecentMessages(userId, CHAT_HISTORY_SIZE));
+        Collections.reverse(messages);
         if (messages.size() < CHAT_HISTORY_SIZE) {
             int left = CHAT_HISTORY_SIZE - messages.size();
             List<Message> dbMessages = messageDbRepository.findTopNByUserIdOrderByTsidDesc(userId, left);
