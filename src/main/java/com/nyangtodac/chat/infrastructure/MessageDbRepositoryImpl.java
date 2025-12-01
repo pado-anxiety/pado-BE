@@ -17,8 +17,8 @@ public class MessageDbRepositoryImpl implements MessageDbRepository {
     private final MessageJpaRepository messageJpaRepository;
 
     @Override
-    public List<Message> findTopNByUserIdOrderByCreatedAtDescIdDesc(Long userId, int n) {
-        return messageJpaRepository.findTopNByUserIdOrderByCreatedAtDescIdDesc(userId, PageRequest.of(0, n));
+    public List<Message> findTopNByUserIdOrderByTsidDesc(Long userId, int n) {
+        return messageJpaRepository.findTopNByUserIdOrderByTsidDesc(userId, PageRequest.of(0, n));
     }
 
     @Override

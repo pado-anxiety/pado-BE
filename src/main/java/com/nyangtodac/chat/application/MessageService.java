@@ -37,7 +37,7 @@ public class MessageService {
         int left = CONTEXT_SIZE - messages.size();
 
         if (left > 0) {
-            List<Message> dbMessages = messageDbRepository.findTopNByUserIdOrderByCreatedAtDescIdDesc(userId, left);
+            List<Message> dbMessages = messageDbRepository.findTopNByUserIdOrderByTsidDesc(userId, left);
             Collections.reverse(dbMessages);
             messages.addAll(0, dbMessages);
         }

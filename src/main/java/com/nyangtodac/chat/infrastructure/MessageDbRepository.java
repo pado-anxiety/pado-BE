@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.concurrent.CompletableFuture;
 
 public interface MessageDbRepository {
-    List<Message> findTopNByUserIdOrderByCreatedAtDescIdDesc(Long userId, int n);
+    List<Message> findTopNByUserIdOrderByTsidDesc(Long userId, int n);
 
     CompletableFuture<Void> asyncBatch(Long userId, List<Message> messages);
 }
