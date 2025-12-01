@@ -12,7 +12,7 @@ public class ChatHistory {
     private final List<Message> messages;
 
     public ChatHistory(List<com.nyangtodac.chat.application.Message> messages) {
-        this.messages = messages.stream().map(m -> new Message(Sender.valueOf(m.getRole()), m.getContent(), TsidUtil.toLocalDateTime(m.getTsid()))).toList();
+        this.messages = messages.stream().map(m -> new Message(Sender.valueOf(m.getSender()), m.getContent(), TsidUtil.toLocalDateTime(m.getTsid()))).toList();
     }
 
     @Getter

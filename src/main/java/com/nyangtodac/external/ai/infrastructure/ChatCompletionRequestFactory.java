@@ -29,7 +29,7 @@ public class ChatCompletionRequestFactory {
     private List<ChatCompletionRequest.Message> toChatMessages(MessageContext recent) {
         return recent.getMessages().stream()
                 .map(msg -> new ChatCompletionRequest.Message(
-                        Sender.valueOf(msg.getRole().toUpperCase()).getRole(),
+                        Sender.valueOf(msg.getSender().toUpperCase()).getRole(),
                         msg.getContent()
                 ))
                 .toList();

@@ -23,14 +23,14 @@ public class AIChatService {
     private final MessageService messageService;
 
     public MessageResponse postMessage(Long userId, MessageRequest request) {
-        Message userMessage = new Message(request.getContent(), USER.name());
+        Message userMessage = new Message(request.getContent(), USER);
         MessageContext messageContext = makeContext(userId, request.getContent());
 
         OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext);
 
         List<Message> messages = new ArrayList<>();
         messages.add(userMessage);
-        chatResponse.getReplies().forEach(m -> messages.add(new Message(m, AI.name())));
+        chatResponse.getReplies().forEach(m -> messages.add(new Message(m, AI)));
         messageService.saveMessages(userId, messages);
 
         return new MessageResponse(chatResponse.getReplies());
@@ -44,6 +44,7 @@ public class AIChatService {
                         .toList()
         );
         messages.add(new Message(userMessage, "user"));
+        messages.add(new Message(userMessage, USER));
         return new MessageContext(messages);
     }
 }

@@ -9,18 +9,18 @@ public class Message {
 
     private Long tsid;
     private String content;
-    private String role;
+    private String sender; //AI, USER
 
-    public Message(String content, String role) {
+    public Message(String content, Sender sender) {
         this.tsid = TsidUtil.generate();
         this.content = content;
-        this.role = role.toUpperCase();
+        this.sender = sender.name();
     }
 
     public Message(Long tsid, String content, Sender sender) {
         this.tsid = tsid;
         this.content = content;
-        this.role = sender.getRole();
+        this.sender = sender.name();
     }
 
     public Message() {
