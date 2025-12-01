@@ -46,7 +46,7 @@ public class MessageService {
     }
 
     public List<Message> makeContext(Long userId) {
-        List<Message> messages = messageRedisRepository.findRecentMessages(userId, CONTEXT_SIZE);
+        List<Message> messages = new ArrayList<>(messageRedisRepository.findRecentMessages(userId, CONTEXT_SIZE));
         int left = CONTEXT_SIZE - messages.size();
 
         if (left > 0) {
