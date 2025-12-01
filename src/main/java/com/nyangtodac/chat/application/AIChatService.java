@@ -37,13 +37,7 @@ public class AIChatService {
     }
 
     private MessageContext makeContext(Long userId, String userMessage) {
-        List<Message> messages = new ArrayList<>(
-                messageService.makeContext(userId)
-                        .stream()
-                        .map(msg -> new Message(msg.getContent(), msg.getRole()))
-                        .toList()
-        );
-        messages.add(new Message(userMessage, "user"));
+        List<Message> messages = new ArrayList<>(messageService.makeContext(userId));
         messages.add(new Message(userMessage, USER));
         return new MessageContext(messages);
     }
