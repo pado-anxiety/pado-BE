@@ -1,11 +1,13 @@
 package com.nyangtodac.chat.application;
 
+import com.nyangtodac.chat.controller.dto.ChatHistory;
 import com.nyangtodac.chat.infrastructure.MessageDbRepository;
 import com.nyangtodac.chat.infrastructure.MessageRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,6 +17,7 @@ import java.util.List;
 public class MessageService {
 
     private static final int CONTEXT_SIZE = 10;
+    private static final int CHAT_HISTORY_SIZE = 30;
 
     private final MessageRedisRepository messageRedisRepository;
     private final MessageDbRepository messageDbRepository;
@@ -30,6 +33,16 @@ public class MessageService {
                     }
             );
         }
+    }
+
+    public ChatHistory getRecentMessages(Long userId) {
+        List<Message> messages = new ArrayList<>(messageRedisRepository.findRecentMessages(userId, CHAT_HISTORY_SIZE));
+        if (messages.size() < CHAT_HISTORY_SIZE) {
+            int left = CHAT_HISTORY_SIZE - messages.size();
+            List<Message> dbMessages = messageDbRepository.findTopNByUserIdOrderByTsidDesc(userId, left);
+            messages.addAll(dbMessages);
+        }
+        return new ChatHistory(messages);
     }
 
     public List<Message> makeContext(Long userId) {
