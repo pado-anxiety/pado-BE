@@ -1,8 +1,8 @@
 package com.nyangtodac.external.ai.application;
 
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
-import com.nyangtodac.external.ai.OpenAiException;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
+import com.nyangtodac.external.ai.retry.OpenAiNonRetryableException;
 
 public class ChatCompletionResponseConverter {
 
@@ -15,7 +15,7 @@ public class ChatCompletionResponseConverter {
         if (response == null
                 || response.getChoices() == null
                 || response.getChoices().isEmpty()) {
-            throw new OpenAiException("OpenAI 응답이 비어있습니다.");
+            throw new OpenAiNonRetryableException("OpenAI 응답이 비어있습니다.");
         }
         return response.getChoices().get(0).getMessage().getContent();
     }

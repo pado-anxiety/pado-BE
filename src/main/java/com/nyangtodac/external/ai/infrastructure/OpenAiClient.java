@@ -1,6 +1,8 @@
 package com.nyangtodac.external.ai.infrastructure;
 
-import com.nyangtodac.external.ai.OpenAiException;
+import com.nyangtodac.external.ai.retry.OpenAiNonRetryableException;
+import com.nyangtodac.external.ai.retry.OpenAiRetryableException;
+import io.github.resilience4j.retry.Retry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -18,8 +20,12 @@ public class OpenAiClient {
 
     private static final String CHAT_COMPLETION_URL = "/v1/chat/completions";
     private final RestClient restClient;
+    private final Retry retry;
 
-    public OpenAiClient(@Value("${openai.client.apikey}") String apiKey) {
+    public OpenAiClient(
+            @Value("${openai.client.apikey}") String apiKey,
+            Retry retry
+    ) {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofSeconds(3));
         factory.setReadTimeout(Duration.ofSeconds(5));
@@ -30,9 +36,14 @@ public class OpenAiClient {
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .build();
+        this.retry = retry;
     }
 
     public ChatCompletionResponse sendRequest(ChatCompletionRequest request) {
+        return Retry.decorateSupplier(retry, () -> doRequest(request)).get();
+    }
+
+    private ChatCompletionResponse doRequest(ChatCompletionRequest request) {
         try {
             return restClient.post()
                     .uri(CHAT_COMPLETION_URL)
@@ -41,14 +52,14 @@ public class OpenAiClient {
                     .body(ChatCompletionResponse.class);
         } catch (ResourceAccessException e) {
             if (e.getCause() instanceof SocketTimeoutException) {
-                throw new OpenAiException("AI timeout", e);
+                throw new OpenAiRetryableException("AI timeout", e);
             }
             if (e.getCause() instanceof ConnectException) {
-                throw new OpenAiException("AI server unavailable", e);
+                throw new OpenAiRetryableException("AI server unavailable", e);
             }
-            throw new OpenAiException(e);
+            throw new OpenAiRetryableException(e);
         } catch (HttpServerErrorException e) {
-            throw new OpenAiException("AI server error", e);
+            throw new OpenAiRetryableException("AI server error", e);
         } catch (HttpClientErrorException.TooManyRequests e) {
             StringBuilder messageBuilder = new StringBuilder("AI rate limit exceeded");
 
@@ -57,11 +68,11 @@ public class OpenAiClient {
                 messageBuilder.append(". Retry after: ").append(retryAfterHeader.get(0)).append(" seconds");
             }
 
-            throw new OpenAiException(messageBuilder.toString(), e);
+            throw new OpenAiNonRetryableException(messageBuilder.toString(), e);
         } catch (HttpClientErrorException e) {
-            throw new OpenAiException("Unexpected RestClient error", e);
+            throw new OpenAiNonRetryableException("Unexpected RestClient error", e);
         } catch (HttpStatusCodeException e) {
-            throw new OpenAiException("Unexpected AI HTTP error" + " HttpStatusCode: " + e.getStatusCode(), e);
+            throw new OpenAiNonRetryableException("Unexpected AI HTTP error" + " HttpStatusCode: " + e.getStatusCode(), e);
         }
     }
 }

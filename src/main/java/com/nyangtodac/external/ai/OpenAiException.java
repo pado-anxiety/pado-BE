@@ -1,6 +1,6 @@
 package com.nyangtodac.external.ai;
 
-public class OpenAiException extends RuntimeException {
+public abstract class OpenAiException extends RuntimeException {
 
     public OpenAiException(String message) {
         super(message);
