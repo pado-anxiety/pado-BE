@@ -11,10 +11,10 @@ import java.util.List;
 @ToString
 public class ChatCompletionRequest {
 
-    private final String model;
-    private final List<Message> messages;
-    private final Double temperature;
-    private final Integer max_tokens;
+    private String model;
+    private List<Message> messages;
+    private Double temperature;
+    private Integer max_tokens;
 
     public ChatCompletionRequest(String model, SystemPrompt systemPrompt, List<Message> messages, Double temperature, Integer max_tokens) {
         this.model = model;
@@ -23,6 +23,9 @@ public class ChatCompletionRequest {
         this.messages.addAll(messages);
         this.temperature = temperature;
         this.max_tokens = max_tokens;
+    }
+
+    public ChatCompletionRequest() {
     }
 
     @Getter
