@@ -49,6 +49,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	implementation("io.hypersistence:hypersistence-tsid:2.1.4")
+
+	implementation 'io.github.resilience4j:resilience4j-retry:2.3.0'
+	implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.3.0'
 }
 
 tasks.named('test') {
