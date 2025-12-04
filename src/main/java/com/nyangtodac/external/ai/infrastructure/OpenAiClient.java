@@ -2,6 +2,8 @@ package com.nyangtodac.external.ai.infrastructure;
 
 import com.nyangtodac.external.ai.retry.OpenAiNonRetryableException;
 import com.nyangtodac.external.ai.retry.OpenAiRetryableException;
+import com.nyangtodac.external.ai.retry.OpenAiClientException;
+import com.nyangtodac.external.ai.retry.OpenAiServerException;
 import io.github.resilience4j.retry.Retry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.*;
@@ -36,14 +38,14 @@ public class OpenAiClient {
                     .body(ChatCompletionResponse.class);
         } catch (ResourceAccessException e) {
             if (e.getCause() instanceof SocketTimeoutException) {
-                throw new OpenAiRetryableException("AI timeout", e);
+                throw new OpenAiServerException("AI timeout", e);
             }
             if (e.getCause() instanceof ConnectException) {
-                throw new OpenAiRetryableException("AI server unavailable", e);
+                throw new OpenAiServerException("AI server unavailable", e);
             }
-            throw new OpenAiRetryableException(e);
+            throw new OpenAiServerException(e);
         } catch (HttpServerErrorException e) {
-            throw new OpenAiRetryableException("AI server error", e);
+            throw new OpenAiServerException("AI server error", e);
         } catch (HttpClientErrorException.TooManyRequests e) {
             StringBuilder messageBuilder = new StringBuilder("AI rate limit exceeded");
 
@@ -52,11 +54,14 @@ public class OpenAiClient {
                 messageBuilder.append(". Retry after: ").append(retryAfterHeader.get(0)).append(" seconds");
             }
 
-            throw new OpenAiNonRetryableException(messageBuilder.toString(), e);
+            throw new OpenAiClientException(messageBuilder.toString(), e);
         } catch (HttpClientErrorException e) {
-            throw new OpenAiNonRetryableException("Unexpected RestClient error", e);
+            throw new OpenAiClientException("Unexpected RestClient error", e);
         } catch (HttpStatusCodeException e) {
-            throw new OpenAiNonRetryableException("Unexpected AI HTTP error" + " HttpStatusCode: " + e.getStatusCode(), e);
+            if (e.getStatusCode().is5xxServerError()) {
+                throw new OpenAiServerException("Unexpected 5xx error" + " HttpStatusCode: " + e.getStatusCode(), e)
+            }
+            throw new OpenAiClientException("Unexpected 4xx error" + " HttpStatusCode: " + e.getStatusCode(), e);
         }
     }
 }

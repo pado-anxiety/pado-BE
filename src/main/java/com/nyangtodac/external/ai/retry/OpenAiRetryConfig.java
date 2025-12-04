@@ -15,7 +15,7 @@ public class OpenAiRetryConfig {
         RetryConfig config = RetryConfig.custom()
                 .maxAttempts(3)
                 .waitDuration(Duration.ofMillis(200))
-                .retryExceptions(OpenAiRetryableException.class)
+                .retryExceptions(OpenAiServerException.class)
                 .build();
         return Retry.of("openAiRetry", config);
     }

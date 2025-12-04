@@ -4,7 +4,7 @@ import com.nyangtodac.external.ai.infrastructure.ChatCompletionRequest;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.infrastructure.OpenAiClient;
 import com.nyangtodac.external.ai.retry.OpenAiRetryConfig;
-import com.nyangtodac.external.ai.retry.OpenAiRetryableException;
+import com.nyangtodac.external.ai.retry.OpenAiServerException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +63,7 @@ public class OpenAiRetryTest {
         ChatCompletionRequest request = new ChatCompletionRequest();
 
         assertThatThrownBy(() -> openAiClient.sendRequest(request))
-                .isInstanceOf(OpenAiRetryableException.class);
+                .isInstanceOf(OpenAiServerException.class);
 
         mockServer.verify();
     }
