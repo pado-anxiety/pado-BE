@@ -1,9 +1,9 @@
 package com.nyangtodac.external.ai.infrastructure;
 
-import com.nyangtodac.external.ai.retry.OpenAiNonRetryableException;
-import com.nyangtodac.external.ai.retry.OpenAiRetryableException;
 import com.nyangtodac.external.ai.retry.OpenAiClientException;
 import com.nyangtodac.external.ai.retry.OpenAiServerException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.Retry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.*;
@@ -11,6 +11,7 @@ import org.springframework.web.client.*;
 import java.net.ConnectException;
 import java.net.SocketTimeoutException;
 import java.util.List;
+import java.util.function.Supplier;
 
 @Component
 public class OpenAiClient {
@@ -19,14 +20,19 @@ public class OpenAiClient {
 
     private final RestClient restClient;
     private final Retry retry;
+    private final CircuitBreaker circuitBreaker;
 
-    public OpenAiClient(Retry retry, RestClient.Builder builder) {
+    public OpenAiClient(RestClient.Builder builder, Retry retry, CircuitBreakerRegistry circuitBreakerRegistry) {
         this.restClient = builder.build();
         this.retry = retry;
+        this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker");
     }
 
     public ChatCompletionResponse sendRequest(ChatCompletionRequest request) {
-        return Retry.decorateSupplier(retry, () -> doRequest(request)).get();
+        Supplier<ChatCompletionResponse> supplier = () -> doRequest(request);
+        supplier = Retry.decorateSupplier(retry, supplier);
+        supplier = CircuitBreaker.decorateSupplier(circuitBreaker, supplier);
+        return supplier.get();
     }
 
     private ChatCompletionResponse doRequest(ChatCompletionRequest request) {
@@ -59,7 +65,7 @@ public class OpenAiClient {
             throw new OpenAiClientException("Unexpected RestClient error", e);
         } catch (HttpStatusCodeException e) {
             if (e.getStatusCode().is5xxServerError()) {
-                throw new OpenAiServerException("Unexpected 5xx error" + " HttpStatusCode: " + e.getStatusCode(), e)
+                throw new OpenAiServerException("Unexpected 5xx error" + " HttpStatusCode: " + e.getStatusCode(), e);
             }
             throw new OpenAiClientException("Unexpected 4xx error" + " HttpStatusCode: " + e.getStatusCode(), e);
         }
