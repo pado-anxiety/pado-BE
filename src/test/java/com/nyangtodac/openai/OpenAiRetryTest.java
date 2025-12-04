@@ -5,10 +5,14 @@ import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.infrastructure.OpenAiClient;
 import com.nyangtodac.external.ai.retry.OpenAiRetryConfig;
 import com.nyangtodac.external.ai.retry.OpenAiServerException;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -30,6 +34,14 @@ public class OpenAiRetryTest {
 
     @Autowired
     MockRestServiceServer mockServer;
+
+    @TestConfiguration
+    static class DisableCircuitBreakerConfig {
+        @Bean
+        public CircuitBreaker openAiCircuitBreaker() {
+            return CircuitBreaker.of("testCircuitBreaker", CircuitBreakerConfig.custom().build());
+        }
+    }
 
     @Test
     @DisplayName("openai 요청 2번 실패 후 1번 성공 응답")
