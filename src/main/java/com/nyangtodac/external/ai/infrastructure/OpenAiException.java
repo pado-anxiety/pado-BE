@@ -1,4 +1,4 @@
-package com.nyangtodac.external.ai;
+package com.nyangtodac.external.ai.infrastructure;
 
 public abstract class OpenAiException extends RuntimeException {
 

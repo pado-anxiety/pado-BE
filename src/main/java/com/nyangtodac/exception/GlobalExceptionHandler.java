@@ -1,6 +1,6 @@
 package com.nyangtodac.exception;
 
-import com.nyangtodac.external.ai.OpenAiException;
+import com.nyangtodac.external.ai.infrastructure.OpenAiException;
 import com.nyangtodac.external.ai.retry.OpenAiNonRetryableException;
 import com.nyangtodac.external.ai.retry.OpenAiRetryableException;
 import lombok.extern.slf4j.Slf4j;

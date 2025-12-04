@@ -1,4 +1,4 @@
-package com.nyangtodac.external.ai;
+package com.nyangtodac.external.ai.infrastructure;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

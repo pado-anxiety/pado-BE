@@ -1,6 +1,6 @@
 package com.nyangtodac.external.ai.retry;
 
-import com.nyangtodac.external.ai.OpenAiException;
+import com.nyangtodac.external.ai.infrastructure.OpenAiException;
 
 public class OpenAiNonRetryableException extends OpenAiException {
     public OpenAiNonRetryableException(String message) {
