@@ -28,12 +28,16 @@ jobs:
       - name: Generate application-secret.yaml
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.APPLICATION_SECRET_YML }}" > src/main/resources/application-secret.yaml
+          cat << 'EOF' > src/main/resources/application-secret.yaml
+          ${{ secrets.APPLICATION_SECRET_YML }}
+          EOF
 
       - name: Generate chat-prompt.yaml
         run: |
           mkdir -p src/main/resources/prompts
-          echo "${{ secrets.CHAT_PROMPT }}" > src/main/resources/prompts/chat_prompt.yaml
+          cat << 'EOF' > src/main/resources/prompts/chat_prompt.yaml
+          ${{ secrets.CHAT_PROMPT }}
+          EOF
           
       - name: Build with Gradle
         run: |
