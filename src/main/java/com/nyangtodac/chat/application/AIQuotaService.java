@@ -26,7 +26,16 @@ public class AIQuotaService {
                 .builder()
                 .build(String.valueOf(userId), UserBucketConfig::getConfig);
 
-        EstimationProbe probe = bucketProxy.estimateAbilityToConsume(1);
-        return new QuotaStatus(probe.getNanosToWaitForRefill(), probe.getRemainingTokens());
+        long remaining = bucketProxy.getAvailableTokens();
+
+        long nanosToNextToken;
+        if (remaining >= UserBucketConfig.MAX_TOKEN) {
+            nanosToNextToken = 0;
+        } else {
+            EstimationProbe nextRefillProbe = bucketProxy.estimateAbilityToConsume(remaining + 1);
+            nanosToNextToken = nextRefillProbe.getNanosToWaitForRefill();
+        }
+
+        return new QuotaStatus(nanosToNextToken, remaining);
     }
 }
