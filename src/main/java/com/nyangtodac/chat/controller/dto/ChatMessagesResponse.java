@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
-public class ChatHistory {
+public class ChatMessagesResponse {
 
     private final List<Message> messages;
 
-    public ChatHistory(List<com.nyangtodac.chat.application.Message> messages) {
+    public ChatMessagesResponse(List<com.nyangtodac.chat.application.Message> messages) {
         this.messages = messages.stream().map(m -> new Message(Sender.valueOf(m.getSender()), m.getContent(), TsidUtil.toLocalDateTime(m.getTsid()))).toList();
     }
 

@@ -1,7 +1,7 @@
 package com.nyangtodac.chat.application;
 
+import com.nyangtodac.chat.controller.dto.ChatMessagesResponse;
 import com.nyangtodac.chat.controller.dto.message.MessageRequest;
-import com.nyangtodac.chat.controller.dto.message.MessageResponse;
 import com.nyangtodac.chat.quota.ChatQuotaExceededException;
 import com.nyangtodac.chat.quota.QuotaStatus;
 import lombok.RequiredArgsConstructor;
@@ -14,7 +14,7 @@ public class ChatService {
     private final AIQuotaService aiQuotaService;
     private final AIChatService aiChatService;
 
-    public MessageResponse postMessage(Long userId, MessageRequest messageRequest) {
+    public ChatMessagesResponse postMessage(Long userId, MessageRequest messageRequest) {
         if (!aiQuotaService.tryConsume(userId)) {
             QuotaStatus quotaStatus = aiQuotaService.getQuotaStatus(userId);
             throw new ChatQuotaExceededException(quotaStatus);

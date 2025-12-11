@@ -1,7 +1,7 @@
 package com.nyangtodac.chat.application;
 
+import com.nyangtodac.chat.controller.dto.ChatMessagesResponse;
 import com.nyangtodac.chat.controller.dto.message.MessageRequest;
-import com.nyangtodac.chat.controller.dto.message.MessageResponse;
 import com.nyangtodac.external.ai.application.OpenAiService;
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +22,7 @@ public class AIChatService {
     private final OpenAiService openAiService;
     private final MessageService messageService;
 
-    public MessageResponse postMessage(Long userId, MessageRequest request) {
+    public ChatMessagesResponse postMessage(Long userId, MessageRequest request) {
         Message userMessage = new Message(request.getContent(), USER);
         MessageContext messageContext = makeContext(userId, request.getContent());
 
@@ -33,7 +33,8 @@ public class AIChatService {
         chatResponse.getReplies().forEach(m -> messages.add(new Message(m, AI)));
         messageService.saveMessages(userId, messages);
 
-        return new MessageResponse(chatResponse.getReplies());
+        messages.remove(0);
+        return new ChatMessagesResponse(messages);
     }
 
     private MessageContext makeContext(Long userId, String userMessage) {

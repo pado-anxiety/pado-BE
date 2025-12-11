@@ -1,6 +1,6 @@
 package com.nyangtodac.chat.application;
 
-import com.nyangtodac.chat.controller.dto.ChatHistory;
+import com.nyangtodac.chat.controller.dto.ChatMessagesResponse;
 import com.nyangtodac.chat.infrastructure.MessageDbRepository;
 import com.nyangtodac.chat.infrastructure.MessageRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +35,7 @@ public class MessageService {
         }
     }
 
-    public ChatHistory getRecentMessages(Long userId) {
+    public ChatMessagesResponse getRecentMessages(Long userId) {
         List<Message> messages = new ArrayList<>(messageRedisRepository.findRecentMessages(userId, CHAT_HISTORY_SIZE));
         Collections.reverse(messages);
         if (messages.size() < CHAT_HISTORY_SIZE) {
@@ -43,7 +43,7 @@ public class MessageService {
             List<Message> dbMessages = messageDbRepository.findTopNByUserIdOrderByTsidDesc(userId, left);
             messages.addAll(dbMessages);
         }
-        return new ChatHistory(messages);
+        return new ChatMessagesResponse(messages);
     }
 
     public List<Message> makeContext(Long userId) {
