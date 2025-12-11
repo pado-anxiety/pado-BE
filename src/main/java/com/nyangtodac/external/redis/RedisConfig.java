@@ -1,4 +1,4 @@
-package com.nyangtodac.config;
+package com.nyangtodac.external.redis;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
