@@ -1,21 +1,29 @@
 package com.nyangtodac.chat.quota;
 
+import com.nyangtodac.properties.ChatQuotaProperties;
 import io.github.bucket4j.BucketConfiguration;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.stereotype.Component;
 
 import java.time.Duration;
 
+@Component
+@RequiredArgsConstructor
+@EnableConfigurationProperties(ChatQuotaProperties.class)
 public class UserBucketConfig {
 
-    public static final int MAX_TOKEN = 5;
-    public static final Duration REFILL_DURATION = Duration.ofHours(2);
-    private static final int REFILL_TOKEN = 1;
+    private final ChatQuotaProperties chatQuotaProperties;
 
-    public static BucketConfiguration getConfig() {
+    public BucketConfiguration getConfig() {
         return BucketConfiguration
                 .builder()
                 .addLimit(limit -> limit
-                        .capacity(MAX_TOKEN)
-                        .refillIntervally(REFILL_TOKEN, REFILL_DURATION)
+                        .capacity(chatQuotaProperties.getMaxTokens())
+                        .refillIntervally(
+                                chatQuotaProperties.getRefillTokens(),
+                                Duration.ofHours(chatQuotaProperties.getRefillIntervalHours())
+                        )
                 ).build();
     }
 
