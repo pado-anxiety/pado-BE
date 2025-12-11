@@ -52,6 +52,10 @@ dependencies {
 
 	implementation 'io.github.resilience4j:resilience4j-retry:2.3.0'
 	implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.3.0'
+
+	implementation("com.bucket4j:bucket4j_jdk17-core:8.15.0")
+	implementation 'com.bucket4j:bucket4j_jdk17-redis-common:8.15.0'
+	implementation 'com.bucket4j:bucket4j_jdk17-lettuce:8.15.0'
 }
 
 tasks.named('test') {
