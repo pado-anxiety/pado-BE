@@ -27,6 +27,9 @@ public class SecurityConfig {
     private final JwtExceptionHandlerFilter jwtExceptionHandlerFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity
@@ -38,17 +41,20 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/oauth2/**", "/login/oauth2/code/**")
                         .permitAll()
-                        .requestMatchers("/api/**").hasRole("USER")
+                        .requestMatchers("/**").hasRole("USER")
                         .anyRequest().authenticated()
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(customAuthenticationEntryPoint)
+                        .accessDeniedHandler(customAccessDeniedHandler)
+                )
                 .oauth2Login(oauth2 -> oauth2
-                                .authorizationEndpoint(config -> config.authorizationRequestRepository(customStatelessAuthorizationRequestRepository))
-                                .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                                .successHandler(oAuth2SuccessHandler)
+                        .authorizationEndpoint(config -> config.authorizationRequestRepository(customStatelessAuthorizationRequestRepository))
+                        .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
+                        .successHandler(oAuth2SuccessHandler)
                 )
                 .addFilterBefore(jwtExceptionHandlerFilter, UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(jwtAuthenticationFilter, JwtExceptionHandlerFilter.class)
-        ;
+                .addFilterBefore(jwtAuthenticationFilter, JwtExceptionHandlerFilter.class);
         return httpSecurity.build();
     }
 }
