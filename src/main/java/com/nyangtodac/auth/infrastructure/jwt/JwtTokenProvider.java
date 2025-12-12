@@ -3,6 +3,7 @@ package com.nyangtodac.auth.infrastructure.jwt;
 import com.nyangtodac.user.domain.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SecurityException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
