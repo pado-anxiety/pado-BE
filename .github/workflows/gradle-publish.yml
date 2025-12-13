@@ -62,7 +62,11 @@ jobs:
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            cd /home/nyangtodac
-
-            docker compose pull
-            docker compose up -d
+            docker pull sangwook123/nyangtodac:latest
+            docker stop spring-app || true
+            docker rm spring-app || true
+            docker run -d \
+            --name spring-app \
+            --env-file /home/nyangtodac/.env \
+            -p 8080:8080 \
+            sangwook123/nyangtodac:latest
