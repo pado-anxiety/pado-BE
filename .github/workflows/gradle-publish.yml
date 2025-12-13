@@ -63,10 +63,6 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/nyangtodac
-            
-            cat << 'EOF' > .env
-            ${{ secrets.ENV_PROD }}
-            EOF
-            
+
             docker compose pull
             docker compose up -d
