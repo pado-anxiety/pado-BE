@@ -44,17 +44,18 @@ jobs:
           chmod +x ./gradlew
           ./gradlew bootJar
 
-      - name: Copy JAR to Server
-        uses: appleboy/scp-action@v0.1.4
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "build/libs/*.jar"
-          target: "/home/nyangtodac"
-          strip_components: 2
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker build -t sangwook123/nyangtodac:latest .
+          docker push sangwook123/nyangtodac:latest
           
-      - name: Start server
+      - name: Deploy to server
         uses: appleboy/ssh-action@v0.1.6
         with:
           host: ${{ secrets.HOST }}
@@ -62,5 +63,10 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/nyangtodac
-            chmod +x start_server.sh
-            ./start_server.sh
+            
+            cat << 'EOF' > .env
+            ${{ secrets.ENV_PROD }}
+            EOF
+            
+            docker compose pull
+            docker compose up -d
