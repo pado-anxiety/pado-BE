@@ -65,5 +65,5 @@ jobs:
             cd /home/nyangtodac
             docker stop spring-app || true
             docker rm spring-app || true
-            docker compose pull app
-            docker compose up -d --no-deps app
+            docker compose pull spring-app
+            docker compose up -d --no-deps spring-app
