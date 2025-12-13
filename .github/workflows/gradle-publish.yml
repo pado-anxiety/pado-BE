@@ -63,5 +63,7 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/nyangtodac
-            docker compose pull spring-app
-            docker compose up -d --no-deps spring-app
+            docker stop spring-app || true
+            docker rm spring-app || true
+            docker compose pull app
+            docker compose up -d --no-deps app
