@@ -5,7 +5,8 @@ import lombok.Getter;
 @Getter
 public enum Sender {
     USER("user"),
-    AI("assistant");
+    AI("assistant"),
+    SYSTEM("system");
 
     private final String role;
 
