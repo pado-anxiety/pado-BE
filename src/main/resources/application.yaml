@@ -3,6 +3,8 @@ spring:
     name: nyangtodac
   profiles:
     include: secret
+  config:
+    import: classpath:cbt/cbt-keywords.yml
 
 chat:
   openai:
