@@ -58,8 +58,4 @@ public class MessageService {
 
         return messages;
     }
-
-    public boolean canRecommendCBT(Long userId) {
-        return messageRedisRepository.hasRecommendationHistory(userId);
-    }
 }

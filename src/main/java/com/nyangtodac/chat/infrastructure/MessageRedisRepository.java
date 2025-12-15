@@ -2,7 +2,6 @@ package com.nyangtodac.chat.infrastructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nyangtodac.cbt.application.CBTRecommendService;
 import com.nyangtodac.chat.application.Message;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +15,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 
 @Repository
 @RequiredArgsConstructor
@@ -28,9 +26,6 @@ public class MessageRedisRepository {
 
     private static final String FLUSH_FAILED_MESSAGES_PREFIX = "flush_fail:";
     private static final String FLUSH_FAILED_MESSAGES_SUFFIX = ":messages";
-
-    private static final String CBT_RECOMMEND_PREFIX = "cbt:";
-    private static final String CBT_RECOMMEND_SUFFIX = ":last-recommend";
 
     private static final int CHAT_MESSAGES_MAX_SIZE = 30;
 
@@ -126,19 +121,6 @@ public class MessageRedisRepository {
         @SuppressWarnings("unchecked")
         List<String> serialized = (List<String>) redisTemplate.execute(flushAllScript, List.of(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX));
         return serialized.stream().map(s -> deserialize(userId, s)).flatMap(Optional::stream).toList();
-    }
-
-    public void recordRecommendation(Long userId) {
-        redisTemplate.opsForValue().set(
-                CBT_RECOMMEND_PREFIX + userId + CBT_RECOMMEND_SUFFIX,
-                "1",
-                CBTRecommendService.CBT_RECOMMEND_INTERVAL_OF_MINUTES,
-                TimeUnit.MINUTES
-        );
-    }
-
-    public boolean hasRecommendationHistory(Long userId) {
-        return redisTemplate.hasKey(CBT_RECOMMEND_PREFIX + userId + CBT_RECOMMEND_SUFFIX);
     }
 
     private String generateKey(Long userId) {
