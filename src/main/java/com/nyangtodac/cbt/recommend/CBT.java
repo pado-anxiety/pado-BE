@@ -5,8 +5,8 @@ import lombok.Getter;
 @Getter
 public enum CBT {
     BREATHING(5, 3, 5, 4),
-    CALMING_PHRASE(4, 5, 5, 3),
-    GROUNDING(1, 5, 2, 5),
+    CALMING_PHRASE(1, 5, 2, 5),
+    GROUNDING(4, 5, 5, 3),
     COGNITIVE_REFRAME(0, 5, 0, 5);
 
     private final int body;
