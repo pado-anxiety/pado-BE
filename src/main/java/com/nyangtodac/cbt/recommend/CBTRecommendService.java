@@ -14,6 +14,7 @@ public class CBTRecommendService {
 
     private final CBTRecommender recommender;
     private final CBTHistoryRedisRepository historyRepository;
+    private final CBTRecommendMessageFactory recommendMessageFactory;
 
     public CBTRecommendResponse recommend(Long userId, CBTRecommendRequest request) {
         Set<CBT> cooldownCBTs = historyRepository.getCooldownCBTs(userId);
@@ -28,7 +29,7 @@ public class CBTRecommendService {
 
         historyRepository.setCooldown(userId, recommendedCBT);
 
-        return new CBTRecommendResponse(recommendedCBT);
+        return new CBTRecommendResponse(recommendedCBT, recommendMessageFactory.makeMessage(cooldownCBTs, request));
     }
 
 }
