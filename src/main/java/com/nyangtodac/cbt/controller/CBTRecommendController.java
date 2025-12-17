@@ -2,8 +2,8 @@ package com.nyangtodac.cbt.controller;
 
 import com.nyangtodac.auth.infrastructure.LoginUser;
 import com.nyangtodac.cbt.controller.dto.CBTRecommendRequest;
-import com.nyangtodac.cbt.controller.dto.CBTRecommendResponse;
-import com.nyangtodac.cbt.recommend.CBTRecommendService;
+import com.nyangtodac.chat.application.CBTService;
+import com.nyangtodac.chat.controller.dto.ChatMessagesResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,11 +14,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class CBTRecommendController {
 
-    private final CBTRecommendService cbtRecommendService;
+    private final CBTService cbtService;
 
     @PostMapping("/cbt/recommend")
-    public ResponseEntity<CBTRecommendResponse> recommendCBT(@LoginUser Long id, @RequestBody CBTRecommendRequest cbtRecommendRequest) {
-        return ResponseEntity.ok(cbtRecommendService.recommend(id, cbtRecommendRequest));
+    public ResponseEntity<ChatMessagesResponse> recommendCBT(@LoginUser Long id, @RequestBody CBTRecommendRequest cbtRecommendRequest) {
+        return ResponseEntity.ok(cbtService.recommendCBT(id, cbtRecommendRequest));
     }
 
 }

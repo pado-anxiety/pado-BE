@@ -1,30 +1,18 @@
 package com.nyangtodac.chat.controller.dto;
 
-import com.nyangtodac.chat.tsid.TsidUtil;
+import com.nyangtodac.chat.application.Chatting;
+import com.nyangtodac.chat.controller.dto.mapper.ChattingResponseMapper;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 public class ChatMessagesResponse {
 
-    private final List<Message> messages;
+    private final List<ChattingResponse> content;
 
-    public ChatMessagesResponse(List<com.nyangtodac.chat.application.Message> messages) {
-        this.messages = messages.stream().map(m -> new Message(Sender.valueOf(m.getSender()), m.getContent(), TsidUtil.toLocalDateTime(m.getTsid()))).toList();
+    public ChatMessagesResponse(List<Chatting> content) {
+        this.content = content.stream().map(ChattingResponseMapper::from).toList();
     }
 
-    @Getter
-    private static class Message {
-        private final Sender sender;
-        private final String message;
-        private final LocalDateTime time;
-
-        public Message(Sender sender, String message, LocalDateTime time) {
-            this.sender = sender;
-            this.message = message;
-            this.time = time;
-        }
-    }
 }
