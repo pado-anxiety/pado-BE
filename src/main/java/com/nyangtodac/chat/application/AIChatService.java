@@ -26,7 +26,7 @@ public class AIChatService {
 
     public MessageResponse postMessage(Long userId, MessageRequest request) {
         Message userMessage = new Message(request.getMessage(), USER);
-        MessageContext messageContext = makeContext(userId, request.getMessage());
+        MessageContext messageContext = makeContext(userId, userMessage);
 
         OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext);
         Message reply = new Message(chatResponse.getReply(), AI);
@@ -39,9 +39,9 @@ public class AIChatService {
         return new MessageResponse(reply.getType(), Sender.valueOf(reply.getSender()), reply.getContent(), TsidUtil.toLocalDateTime(reply.getTsid()));
     }
 
-    private MessageContext makeContext(Long userId, String userMessage) {
-        List<Message> messages = new ArrayList<>(messageService.makeContext(userId));
-        messages.add(new Message(userMessage, USER));
-        return new MessageContext(messages);
+    private MessageContext makeContext(Long userId, Message userMessage) {
+        List<Message> chattings = new ArrayList<>(chattingService.makeContext(userId));
+        chattings.add(userMessage);
+        return new MessageContext(chattings);
     }
 }

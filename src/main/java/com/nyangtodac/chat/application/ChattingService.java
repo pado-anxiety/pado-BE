@@ -47,11 +47,11 @@ public class MessageService {
     }
 
     public List<Message> makeContext(Long userId) {
-        List<Message> messages = new ArrayList<>(messageRedisRepository.findRecentMessages(userId, CONTEXT_SIZE));
+        List<Message> messages = new ArrayList<>(chattingRedisRepository.findRecentMessages(userId, CONTEXT_SIZE));
         int left = CONTEXT_SIZE - messages.size();
 
         if (left > 0) {
-            List<Message> dbMessages = messageDbRepository.findTopNByUserIdOrderByTsidDesc(userId, left);
+            List<Message> dbMessages = chattingDBRepository.findRecentMessages(userId, left);
             Collections.reverse(dbMessages);
             messages.addAll(0, dbMessages);
         }

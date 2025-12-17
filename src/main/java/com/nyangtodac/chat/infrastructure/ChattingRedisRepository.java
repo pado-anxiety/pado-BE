@@ -30,7 +30,8 @@ public class MessageRedisRepository {
     private static final int CHAT_MESSAGES_MAX_SIZE = 30;
 
     private final StringRedisTemplate redisTemplate;
-    private final ObjectMapper objectMapper;
+    private final ChattingSerializer chattingSerializer;
+    private final MessageDeserializer messageDeserializer;
 
     @SuppressWarnings("rawtypes")
     private final DefaultRedisScript<List> pushAndTrimScript = new DefaultRedisScript<>();
@@ -86,7 +87,7 @@ public class MessageRedisRepository {
         List<String> strings = redisTemplate.opsForList().range(key, start, end);
         List<Message> messages = new ArrayList<>();
         for (String json : strings) {
-            Optional<Message> deserialize = deserialize(userId, json);
+            Optional<Message> deserialize = messageDeserializer.deserialize(json);
             deserialize.ifPresent(messages::add);
         }
 
