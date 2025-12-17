@@ -3,14 +3,14 @@ package com.nyangtodac.cbt.recommend;
 import com.nyangtodac.cbt.controller.dto.CBTRecommendRequest;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
 import java.util.Set;
 
 @Component
 public class CBTRecommendMessageFactory {
 
-    public String makeMessage(Set<CBT> cooldownCBTs, CBTRecommendRequest request) {
-        return makeCooldownMessage(cooldownCBTs) + "\n" +
-                request.getSituation().getRandomMessage();
+    public List<String> makeMessage(Set<CBT> cooldownCBTs, CBTRecommendRequest request) {
+        return List.of(makeCooldownMessage(cooldownCBTs), request.getSituation().getRandomMessage());
     }
 
     private String makeCooldownMessage(Set<CBT> cooldownCBTs) {
