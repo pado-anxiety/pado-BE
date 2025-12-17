@@ -1,28 +1,31 @@
 package com.nyangtodac.chat.application;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nyangtodac.chat.controller.dto.Sender;
 import com.nyangtodac.chat.tsid.TsidUtil;
 import lombok.Getter;
 
 @Getter
-public class Message {
+public class Message extends Chatting {
 
-    private Long tsid;
-    private String content;
-    private String sender; //AI, USER
+    private final String content;
+    private final String sender;
 
     public Message(String content, Sender sender) {
-        this.tsid = TsidUtil.generate();
+        super(Type.CHAT, TsidUtil.generate());
         this.content = content;
         this.sender = sender.name();
     }
 
-    public Message(Long tsid, String content, Sender sender) {
-        this.tsid = tsid;
+    @JsonCreator
+    public Message(
+            @JsonProperty("tsid") Long tsid,
+            @JsonProperty("content") String content,
+            @JsonProperty("sender") Sender sender) {
+        super(Type.CHAT, tsid);
         this.content = content;
         this.sender = sender.name();
     }
 
-    public Message() {
-    }
 }
