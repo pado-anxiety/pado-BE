@@ -128,21 +128,18 @@ public class MessageRedisRepository {
         return CHAT_MESSAGES_PREFIX + userId + CHAT_MESSAGES_SUFFIX;
     }
 
-    private String serialize(Long userId, Message message) {
+    private String serialize(Long userId, Chatting chatting) {
         try {
-            String json = objectMapper.writeValueAsString(message);
-            return Base64.getEncoder().encodeToString(json.getBytes(StandardCharsets.UTF_8));
+            return chattingSerializer.serialize(chatting);
         } catch (JsonProcessingException e) {
-            log.error("Message 직렬화 실패, userId={} message={}", userId, message, e);
+            log.error("Chatting 직렬화 실패, userId={} message={}", userId, chatting, e);
             throw new RuntimeException(e);
         }
     }
 
-    private Optional<Message> deserialize(Long userId, String base64) {
+    private Optional<Chatting> deserialize(Long userId, String base64) {
         try {
-            byte[] decoded = Base64.getDecoder().decode(base64);
-            String json = new String(decoded, StandardCharsets.UTF_8);
-            return Optional.of(objectMapper.readValue(json, Message.class));
+            return chattingSerializer.deserialize(base64);
         } catch (JsonProcessingException e) {
             saveFlushFailedMessagesRaw(userId, List.of(base64));
             log.warn("Message 역직렬화 실패, userId={}", userId);
