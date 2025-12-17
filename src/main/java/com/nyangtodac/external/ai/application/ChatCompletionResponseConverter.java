@@ -8,7 +8,7 @@ public class ChatCompletionResponseConverter {
 
     public static OpenAiChatResponse convert(ChatCompletionResponse response) {
         String content = getContentFrom(response);
-        return new OpenAiChatResponse(content.lines().map(String::trim).filter(s -> !s.isEmpty()).toList());
+        return new OpenAiChatResponse(content);
     }
 
     private static String getContentFrom(ChatCompletionResponse response) {
