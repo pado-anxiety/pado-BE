@@ -18,12 +18,12 @@ public class ChatMessagesResponse {
     @Getter
     private static class Message {
         private final Sender sender;
-        private final String content;
+        private final String message;
         private final LocalDateTime time;
 
-        public Message(Sender sender, String content, LocalDateTime time) {
+        public Message(Sender sender, String message, LocalDateTime time) {
             this.sender = sender;
-            this.content = content;
+            this.message = message;
             this.time = time;
         }
     }
