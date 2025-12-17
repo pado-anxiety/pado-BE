@@ -10,7 +10,6 @@ public class CBTRecommendMessageFactory {
 
     public String makeMessage(Set<CBT> cooldownCBTs, CBTRecommendRequest request) {
         return makeCooldownMessage(cooldownCBTs) + "\n" +
-                request.getSymptom().getRandomMessage(request.getIntensity()) + "\n" +
                 request.getSituation().getRandomMessage();
     }
 
