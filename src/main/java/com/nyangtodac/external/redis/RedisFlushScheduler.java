@@ -1,8 +1,8 @@
 package com.nyangtodac.external.redis;
 
-import com.nyangtodac.chat.application.Message;
-import com.nyangtodac.chat.infrastructure.MessageDbRepository;
-import com.nyangtodac.chat.infrastructure.MessageRedisRepository;
+import com.nyangtodac.chat.application.Chatting;
+import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
+import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -15,20 +15,20 @@ import java.util.List;
 @Slf4j
 public class RedisFlushScheduler {
 
-    private final MessageRedisRepository messageRedisRepository;
-    private final MessageDbRepository messageDbRepository;
+    private final ChattingRedisRepository chattingRedisRepository;
+    private final ChattingDBRepository chattingDBRepository;
 
     @Scheduled(cron = "0 0 * * * *")
     public void flushRemainingMessages() {
-        List<Long> activeUserIds = messageRedisRepository.getActiveUserIds();
+        List<Long> activeUserIds = chattingRedisRepository.getActiveUserIds();
 
         for (Long userId : activeUserIds) {
-            List<Message> messages = messageRedisRepository.flushAllMessagesByUserId(userId);
-            if (!messages.isEmpty()) {
-                messageDbRepository.asyncBatch(userId, messages).exceptionally(
+            List<Chatting> chattings = chattingRedisRepository.flushAllMessagesByUserId(userId);
+            if (!chattings.isEmpty()) {
+                chattingDBRepository.asyncBatch(userId, chattings).exceptionally(
                         e -> {
                             log.error("Failed to flush [remaining messages] for userId: {}", userId, e);
-                            messageRedisRepository.saveFlushFailedMessages(userId, messages);
+                            chattingRedisRepository.saveFlushFailedMessages(userId, chattings);
                             return null;
                         }
                 );
@@ -38,15 +38,15 @@ public class RedisFlushScheduler {
 
     @Scheduled(cron = "0 0 * * * *")
     public void retryFailedFlushMessages() {
-        List<Long> flushFailedUserIds = messageRedisRepository.getFlushFailedUserIds();
+        List<Long> flushFailedUserIds = chattingRedisRepository.getFlushFailedUserIds();
 
         for (Long userId : flushFailedUserIds) {
-            List<Message> messages = messageRedisRepository.flushFailedMessagesByUserId(userId);
-            if (!messages.isEmpty()) {
-                messageDbRepository.asyncBatch(userId, messages).exceptionally(
+            List<Chatting> chattings = chattingRedisRepository.flushFailedMessagesByUserId(userId);
+            if (!chattings.isEmpty()) {
+                chattingDBRepository.asyncBatch(userId, chattings).exceptionally(
                         e -> {
                             log.error("Failed to flush [flush failed messages] for userId: {}", userId, e);
-                            messageRedisRepository.saveFlushFailedMessages(userId, messages);
+                            chattingRedisRepository.saveFlushFailedMessages(userId, chattings);
                             return null;
                         }
                 );

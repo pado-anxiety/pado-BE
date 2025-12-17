@@ -1,8 +1,8 @@
 package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.controller.dto.ChatMessagesResponse;
-import com.nyangtodac.chat.infrastructure.MessageDbRepository;
-import com.nyangtodac.chat.infrastructure.MessageRedisRepository;
+import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
+import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -14,36 +14,36 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class MessageService {
+public class ChattingService {
 
     private static final int CONTEXT_SIZE = 10;
     private static final int CHAT_HISTORY_SIZE = 30;
 
-    private final MessageRedisRepository messageRedisRepository;
-    private final MessageDbRepository messageDbRepository;
+    private final ChattingRedisRepository chattingRedisRepository;
+    private final ChattingDBRepository chattingDBRepository;
 
-    public void saveMessages(Long userId, List<Message> messages) {
-        List<Message> overflowMessages = messageRedisRepository.saveMessages(userId, messages);
-        if (!overflowMessages.isEmpty()) {
-            messageDbRepository.asyncBatch(userId, overflowMessages).exceptionally(
+    public void saveChattings(Long userId, List<Chatting> chattings) {
+        List<Chatting> overflowChattings = chattingRedisRepository.saveMessages(userId, chattings);
+        if (!overflowChattings.isEmpty()) {
+            chattingDBRepository.asyncBatch(userId, overflowChattings).exceptionally(
                     e -> {
                         log.error("Failed to flush [overflow messages] for userId: {}", userId, e);
-                        messageRedisRepository.saveFlushFailedMessages(userId, messages);
+                        chattingRedisRepository.saveFlushFailedMessages(userId, chattings);
                         return null;
                     }
             );
         }
     }
 
-    public ChatMessagesResponse getRecentMessages(Long userId) {
-        List<Message> messages = new ArrayList<>(messageRedisRepository.findRecentMessages(userId, CHAT_HISTORY_SIZE));
-        Collections.reverse(messages);
-        if (messages.size() < CHAT_HISTORY_SIZE) {
-            int left = CHAT_HISTORY_SIZE - messages.size();
-            List<Message> dbMessages = messageDbRepository.findTopNByUserIdOrderByTsidDesc(userId, left);
-            messages.addAll(dbMessages);
+    public ChatMessagesResponse getRecentChattings(Long userId) {
+        List<Chatting> chattings = new ArrayList<>(chattingRedisRepository.findRecentChattings(userId, CHAT_HISTORY_SIZE));
+        Collections.reverse(chattings);
+        if (chattings.size() < CHAT_HISTORY_SIZE) {
+            int left = CHAT_HISTORY_SIZE - chattings.size();
+            List<Chatting> dbMessages = chattingDBRepository.findRecentChattings(userId, left);
+            chattings.addAll(dbMessages);
         }
-        return new ChatMessagesResponse(messages);
+        return new ChatMessagesResponse(chattings);
     }
 
     public List<Message> makeContext(Long userId) {

@@ -25,8 +25,8 @@ public class ChatController {
     }
 
     @GetMapping
-    public ResponseEntity<ChatMessagesResponse> getRecentMessages(@LoginUser Long id) {
-        return ResponseEntity.ok(chattingService.getRecentMessages(id));
+    public ResponseEntity<ChatMessagesResponse> getRecentChattings(@LoginUser Long id) {
+        return ResponseEntity.ok(chattingService.getRecentChattings(id));
     }
 
     @GetMapping("/quota")
