@@ -1,7 +1,7 @@
 package com.nyangtodac.chat.infrastructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nyangtodac.chat.application.Chatting;
 import com.nyangtodac.chat.application.Message;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +14,15 @@ import org.springframework.stereotype.Repository;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class MessageRedisRepository {
+public class ChattingRedisRepository {
 
     private static final String CHAT_MESSAGES_PREFIX = "chat:";
     private static final String CHAT_MESSAGES_SUFFIX = ":messages";
@@ -51,10 +54,10 @@ public class MessageRedisRepository {
         }
     }
 
-    public List<Message> saveMessages(Long userId, List<Message> messages) {
-        if (messages.isEmpty()) return Collections.emptyList();
+    public List<Chatting> saveMessages(Long userId, List<Chatting> chattings) {
+        if (chattings.isEmpty()) return Collections.emptyList();
 
-        List<String> serialized = messages.stream().map(m -> serialize(userId, m)).toList();
+        List<String> serialized = chattings.stream().map(m -> serialize(userId, m)).toList();
 
         List<String> args = new ArrayList<>(serialized);
         args.add(String.valueOf(CHAT_MESSAGES_MAX_SIZE));
@@ -68,9 +71,30 @@ public class MessageRedisRepository {
         return Collections.emptyList();
     }
 
-    public void saveFlushFailedMessages(Long userId, List<Message> messages) {
-        List<String> serialized = messages.stream().map(m -> serialize(userId, m)).toList();
+    public void saveFlushFailedMessages(Long userId, List<Chatting> chattings) {
+        List<String> serialized = chattings.stream().map(m -> serialize(userId, m)).toList();
         redisTemplate.opsForList().rightPushAll(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX, serialized);
+    }
+
+    public List<Chatting> findRecentChattings(Long userId, int n) {
+        String key = generateKey(userId);
+
+        long size = redisTemplate.opsForList().size(key);
+        if (size == 0) {
+            return Collections.emptyList();
+        }
+
+        long start = Math.max(size - n, 0);
+        long end = size - 1;
+
+        List<String> strings = redisTemplate.opsForList().range(key, start, end);
+        List<Chatting> chattings = new ArrayList<>();
+        for (String json : strings) {
+            Optional<Chatting> deserialize = deserialize(userId, json);
+            deserialize.ifPresent(chattings::add);
+        }
+
+        return chattings;
     }
 
     public List<Message> findRecentMessages(Long userId, int n) {
@@ -112,13 +136,13 @@ public class MessageRedisRepository {
                 .toList();
     }
 
-    public List<Message> flushAllMessagesByUserId(Long userId) {
+    public List<Chatting> flushAllMessagesByUserId(Long userId) {
         @SuppressWarnings("unchecked")
         List<String> serialized = (List<String>) redisTemplate.execute(flushAllScript, List.of(generateKey(userId)));
         return serialized.stream().map(s -> deserialize(userId, s)).flatMap(Optional::stream).toList();
     }
 
-    public List<Message> flushFailedMessagesByUserId(Long userId) {
+    public List<Chatting> flushFailedMessagesByUserId(Long userId) {
         @SuppressWarnings("unchecked")
         List<String> serialized = (List<String>) redisTemplate.execute(flushAllScript, List.of(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX));
         return serialized.stream().map(s -> deserialize(userId, s)).flatMap(Optional::stream).toList();
