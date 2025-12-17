@@ -15,10 +15,10 @@ public class ChatService {
     private final AIChatService aiChatService;
 
     public ChatMessagesResponse postMessage(Long userId, MessageRequest messageRequest) {
-        if (!aiQuotaService.tryConsume(userId)) {
-            QuotaStatus quotaStatus = aiQuotaService.getQuotaStatus(userId);
-            throw new ChatQuotaExceededException(quotaStatus);
-        }
+//        if (!aiQuotaService.tryConsume(userId)) {
+//            QuotaStatus quotaStatus = aiQuotaService.getQuotaStatus(userId);
+//            throw new ChatQuotaExceededException(quotaStatus);
+//        } FIXME
 
         return aiChatService.postMessage(userId, messageRequest);
     }
