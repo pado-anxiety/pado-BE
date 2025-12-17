@@ -23,8 +23,8 @@ public class AIChatService {
     private final MessageService messageService;
 
     public ChatMessagesResponse postMessage(Long userId, MessageRequest request) {
-        Message userMessage = new Message(request.getContent(), USER);
-        MessageContext messageContext = makeContext(userId, request.getContent());
+        Message userMessage = new Message(request.getMessage(), USER);
+        MessageContext messageContext = makeContext(userId, request.getMessage());
 
         OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext);
 
