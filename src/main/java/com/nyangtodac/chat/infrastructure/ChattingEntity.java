@@ -14,8 +14,7 @@ public class ChattingEntity {
     @Column(nullable = false)
     private Long userId;
 
-    @Lob
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String jsonPayload;
 
     protected ChattingEntity() {
