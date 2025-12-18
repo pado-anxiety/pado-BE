@@ -1,7 +1,6 @@
 package com.nyangtodac.cbt.recommend;
 
 import com.nyangtodac.cbt.controller.dto.CBTRecommendRequest;
-import com.nyangtodac.cbt.controller.dto.CBTRecommendResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -16,7 +15,7 @@ public class CBTRecommendService {
     private final CBTHistoryRedisRepository historyRepository;
     private final CBTRecommendMessageFactory recommendMessageFactory;
 
-    public CBTRecommendResponse recommend(Long userId, CBTRecommendRequest request) {
+    public CBTRecommendResult recommend(Long userId, CBTRecommendRequest request) {
         Set<CBT> cooldownCBTs = historyRepository.getCooldownCBTs(userId);
         boolean allInCooldown = cooldownCBTs.size() == CBT.values().length;
 
@@ -29,7 +28,7 @@ public class CBTRecommendService {
 
         historyRepository.setCooldown(userId, recommendedCBT);
 
-        return new CBTRecommendResponse(recommendedCBT, recommendMessageFactory.makeMessage(cooldownCBTs, request));
+        return new CBTRecommendResult(recommendedCBT, recommendMessageFactory.makeMessage(cooldownCBTs, request));
     }
 
 }
