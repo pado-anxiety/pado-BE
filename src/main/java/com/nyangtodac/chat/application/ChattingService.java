@@ -6,6 +6,7 @@ import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,6 +36,7 @@ public class ChattingService {
         }
     }
 
+    @Transactional(readOnly = true)
     public ChatMessagesResponse getRecentChattings(Long userId) {
         List<Chatting> chattings = new ArrayList<>(chattingRedisRepository.findRecentChattings(userId, CHAT_HISTORY_SIZE));
         Collections.reverse(chattings);
@@ -46,6 +48,7 @@ public class ChattingService {
         return new ChatMessagesResponse(chattings);
     }
 
+    @Transactional(readOnly = true)
     public List<Message> makeContext(Long userId) {
         List<Message> messages = new ArrayList<>(chattingRedisRepository.findRecentMessages(userId, CONTEXT_SIZE));
         int left = CONTEXT_SIZE - messages.size();
