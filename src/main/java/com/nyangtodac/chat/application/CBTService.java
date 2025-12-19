@@ -8,7 +8,6 @@ import com.nyangtodac.chat.controller.dto.Sender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,10 +19,12 @@ public class CBTService {
 
     public CBTRecommendResponse recommendCBT(Long userId, CBTRecommendRequest request) {
         CBTRecommendResult result = cbtRecommendService.recommend(userId, request);
-        List<Chatting> cbtChat = new ArrayList<>();
-        cbtChat.add(new CBTRecommendation(new CBTRecommendation.Options(request.getSymptom(), request.getIntensity(), request.getSituation())));
-        cbtChat.add(new Message(result.getMessage(), Sender.SYSTEM));
+        List<Chatting> cbtChat = createCBTRecommendChattings(request, result);
         chattingService.saveChattings(userId, cbtChat);
         return new CBTRecommendResponse(cbtChat, result.getCbt());
+    }
+
+    private List<Chatting> createCBTRecommendChattings(CBTRecommendRequest request, CBTRecommendResult result) {
+        return List.of(new CBTRecommendation(new CBTRecommendation.Options(request.getSymptom(), request.getIntensity(), request.getSituation())), new Message(result.getMessage(), Sender.SYSTEM));
     }
 }
