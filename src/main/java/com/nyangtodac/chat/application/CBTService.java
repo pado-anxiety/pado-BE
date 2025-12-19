@@ -23,9 +23,7 @@ public class CBTService {
         CBTRecommendResult result = cbtRecommendService.recommend(userId, request);
         List<Chatting> cbtChat = new ArrayList<>();
         cbtChat.add(new CBTRecommendation(new CBTRecommendation.Options(request.getSymptom(), request.getIntensity(), request.getSituation())));
-        for (String message : result.getMessages()) {
-            cbtChat.add(new Message(message, Sender.SYSTEM));
-        }
+        cbtChat.add(new Message(result.getMessage(), Sender.SYSTEM));
         chattingService.saveChattings(userId, cbtChat);
         return new CBTRecommendResponse(result.getCbt(), new ChatMessagesResponse(cbtChat));
     }
