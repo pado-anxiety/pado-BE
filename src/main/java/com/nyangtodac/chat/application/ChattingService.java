@@ -57,7 +57,7 @@ public class ChattingService {
     }
 
     @Transactional(readOnly = true)
-    public List<Message> makeContext(Long userId) {
+    public MessageContext makeContext(Long userId, Message userMessage) {
         List<Message> messages = new ArrayList<>(chattingRedisRepository.findRecentMessages(userId, CONTEXT_SIZE));
         int left = CONTEXT_SIZE - messages.size();
 
@@ -66,7 +66,8 @@ public class ChattingService {
             Collections.reverse(dbMessages);
             messages.addAll(0, dbMessages);
         }
+        messages.add(userMessage);
 
-        return messages;
+        return new MessageContext(messages);
     }
 }
