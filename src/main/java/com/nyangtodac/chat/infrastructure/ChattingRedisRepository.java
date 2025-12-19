@@ -76,7 +76,7 @@ public class ChattingRedisRepository {
         redisTemplate.opsForList().rightPushAll(FLUSH_FAILED_MESSAGES_PREFIX + userId + FLUSH_FAILED_MESSAGES_SUFFIX, serialized);
     }
 
-    public List<Chatting> findRecentChattings(Long userId, int n) {
+    public List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n) {
         String key = generateKey(userId);
 
         long size = redisTemplate.opsForList().size(key);
@@ -90,7 +90,7 @@ public class ChattingRedisRepository {
         List<String> strings = redisTemplate.opsForList().range(key, start, end);
         List<Chatting> chattings = new ArrayList<>();
         for (String json : strings) {
-            Optional<Chatting> deserialize = deserialize(userId, json);
+            Optional<Chatting> deserialize = deserialize(userId, json).filter(chatting -> chatting.getTsid() < cursor);
             deserialize.ifPresent(chattings::add);
         }
 

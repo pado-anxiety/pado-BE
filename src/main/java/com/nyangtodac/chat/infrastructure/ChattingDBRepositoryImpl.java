@@ -23,8 +23,8 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
     private final MessageDeserializer messageDeserializer;
 
     @Override
-    public List<Chatting> findRecentChattings(Long userId, int n) {
-        List<ChattingEntity> entities = chattingJpaRepository.findTopNByUserIdOrderByTsidDesc(userId, PageRequest.of(0, n));
+    public List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n) {
+        List<ChattingEntity> entities = chattingJpaRepository.findTopNByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, n));
         return entities.stream()
                 .map(ChattingEntity::getJsonPayload)
                 .map(base64 -> {
