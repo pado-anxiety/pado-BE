@@ -57,6 +57,11 @@ dependencies {
 	implementation 'com.bucket4j:bucket4j_jdk17-lettuce:8.15.0'
 
 	implementation 'org.postgresql:postgresql:42.7.8'
+
+	//monitoring
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
 }
 
 tasks.named('test') {
