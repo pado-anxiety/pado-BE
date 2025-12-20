@@ -1,8 +1,6 @@
-package com.nyangtodac.external.redis;
+package com.nyangtodac.chat.infrastructure;
 
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
-import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,7 +11,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class RedisFlushScheduler {
+public class ChattingFlushScheduler {
 
     private final ChattingRedisRepository chattingRedisRepository;
     private final ChattingDBRepository chattingDBRepository;
