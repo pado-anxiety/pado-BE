@@ -39,18 +39,15 @@ jobs:
           ${{ secrets.CHAT_PROMPT }}
           EOF
 
-      - name: Set Gradle permissions
-        run: |
-          mkdir -p .gradle build
-          chmod -R 777 .gradle build
-
       - name: Run tests with Docker Compose
         run: |
           docker compose -f docker-compose.test.yml up --abort-on-container-exit --exit-code-from test-runner
 
       - name: Cleanup test containers
         if: always()
-        run: docker compose -f docker-compose.test.yml down -v
+        run: |
+          docker compose -f docker-compose.test.yml down -v
+          sudo chown -R $(id -u):$(id -g) .
 
       - name: Build with Gradle
         run: |
