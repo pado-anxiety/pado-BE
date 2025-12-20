@@ -1,11 +1,11 @@
 package com.nyangtodac.openai;
 
-import com.nyangtodac.external.ai.circuitbreaker.OpenAiCircuitBreakerConfig;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionRequest;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.infrastructure.OpenAiClient;
-import com.nyangtodac.external.ai.retry.OpenAiRetryConfig;
-import com.nyangtodac.external.ai.retry.OpenAiServerException;
+import com.nyangtodac.external.ai.resilience4j.circuitbreaker.OpenAiCircuitBreakerConfig;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiRetryConfig;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.junit.jupiter.api.BeforeEach;
