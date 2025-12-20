@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/oauth2/**", "/login/oauth2/code/**")
+                        .requestMatchers("/", "/css/**", "/images/**", "/js/**", "/h2-console/**", "/oauth2/**", "/login/oauth2/code/**", "/actuator/**")
                         .permitAll()
                         .requestMatchers("/**").hasRole("USER")
                         .anyRequest().authenticated()
