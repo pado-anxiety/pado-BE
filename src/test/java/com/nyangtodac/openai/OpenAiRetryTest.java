@@ -5,8 +5,9 @@ import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.infrastructure.OpenAiClient;
 import com.nyangtodac.external.ai.retry.OpenAiRetryConfig;
 import com.nyangtodac.external.ai.retry.OpenAiServerException;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+
+import java.time.Duration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -35,11 +38,26 @@ public class OpenAiRetryTest {
     @Autowired
     MockRestServiceServer mockServer;
 
+    @Autowired
+    CircuitBreakerRegistry circuitBreakerRegistry;
+
+    @BeforeEach
+    void setUp() {
+        circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker").reset();
+    }
+
     @TestConfiguration
-    static class DisableCircuitBreakerConfig {
+    static class TestCircuitBreakerConfig {
         @Bean
-        public CircuitBreaker openAiCircuitBreaker() {
-            return CircuitBreaker.of("testCircuitBreaker", CircuitBreakerConfig.custom().build());
+        public CircuitBreakerRegistry circuitBreakerRegistry() {
+            CircuitBreakerConfig config = CircuitBreakerConfig.custom()
+                    .slidingWindowSize(100)
+                    .failureRateThreshold(100)
+                    .waitDurationInOpenState(Duration.ofSeconds(60))
+                    .permittedNumberOfCallsInHalfOpenState(10)
+                    .build();
+
+            return CircuitBreakerRegistry.of(config);
         }
     }
 
