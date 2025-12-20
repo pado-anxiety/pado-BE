@@ -1,0 +1,23 @@
+package com.nyangtodac.auth.controller;
+
+import com.nyangtodac.auth.controller.dto.TokenReissueRequest;
+import com.nyangtodac.auth.infrastructure.LoginUser;
+import com.nyangtodac.auth.controller.dto.TokenResponse;
+import com.nyangtodac.auth.service.JwtReissueService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class JwtReissueController {
+
+    private final JwtReissueService jwtReissueService;
+
+    @PostMapping("/tokens/reissue")
+    public ResponseEntity<TokenResponse> reissueTokens(@LoginUser Long userId, @RequestBody TokenReissueRequest request) {
+        return ResponseEntity.ok(jwtReissueService.reissue(userId, request.getRefreshToken()));
+    }
+}

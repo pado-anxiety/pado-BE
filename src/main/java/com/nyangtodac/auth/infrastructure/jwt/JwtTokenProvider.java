@@ -1,5 +1,6 @@
 package com.nyangtodac.auth.infrastructure.jwt;
 
+import com.nyangtodac.auth.controller.dto.TokenResponse;
 import com.nyangtodac.user.domain.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -50,9 +51,9 @@ public class JwtTokenProvider {
             .compact();
     }
 
-    public String[] reissueTokens(String refreshToken, User user) {
+    public TokenResponse reissueTokens(User user, String refreshToken) {
         validateRefreshToken(refreshToken, user);
-        return new String[]{createAccessToken(user.getId()), createRefreshToken(user.getId())};
+        return new TokenResponse(createAccessToken(user.getId()), createRefreshToken(user.getId()));
     }
 
     public void validateAccessToken(String accessToken) {
