@@ -1,6 +1,6 @@
 package com.nyangtodac.chat.quota;
 
-import com.nyangtodac.properties.ChatQuotaProperties;
+import com.nyangtodac.config.properties.ChatQuotaProperties;
 import io.github.bucket4j.BucketConfiguration;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

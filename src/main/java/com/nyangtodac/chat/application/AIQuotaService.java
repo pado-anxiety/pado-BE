@@ -2,7 +2,7 @@ package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.quota.QuotaStatus;
 import com.nyangtodac.chat.quota.UserBucketConfig;
-import com.nyangtodac.properties.ChatQuotaProperties;
+import com.nyangtodac.config.properties.ChatQuotaProperties;
 import io.github.bucket4j.EstimationProbe;
 import io.github.bucket4j.distributed.BucketProxy;
 import io.github.bucket4j.distributed.proxy.ProxyManager;

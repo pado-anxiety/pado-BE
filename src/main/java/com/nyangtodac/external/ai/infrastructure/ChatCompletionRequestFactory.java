@@ -2,7 +2,7 @@ package com.nyangtodac.external.ai.infrastructure;
 
 import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.chat.controller.dto.Sender;
-import com.nyangtodac.properties.ChatOpenAiProperties;
+import com.nyangtodac.config.properties.ChatOpenAiProperties;
 import com.nyangtodac.external.ai.infrastructure.prompt.PromptManager;
 import com.nyangtodac.external.ai.infrastructure.prompt.SystemPrompt;
 import lombok.RequiredArgsConstructor;

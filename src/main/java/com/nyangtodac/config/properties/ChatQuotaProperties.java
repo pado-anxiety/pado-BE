@@ -1,4 +1,4 @@
-package com.nyangtodac.properties;
+package com.nyangtodac.config.properties;
 
 import lombok.Getter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
