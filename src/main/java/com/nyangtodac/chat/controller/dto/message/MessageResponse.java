@@ -1,6 +1,6 @@
 package com.nyangtodac.chat.controller.dto.message;
 
-import com.nyangtodac.chat.application.Type;
+import com.nyangtodac.chat.domain.Type;
 import com.nyangtodac.chat.controller.dto.ChattingResponse;
 import com.nyangtodac.chat.controller.dto.Sender;
 import lombok.Getter;

@@ -1,9 +1,9 @@
 package com.nyangtodac.chat.controller.dto.mapper;
 
-import com.nyangtodac.chat.application.CBTRecommendation;
-import com.nyangtodac.chat.application.Chatting;
-import com.nyangtodac.chat.application.Message;
-import com.nyangtodac.chat.application.Type;
+import com.nyangtodac.chat.domain.CBTRecommendation;
+import com.nyangtodac.chat.domain.Chatting;
+import com.nyangtodac.chat.domain.Message;
+import com.nyangtodac.chat.domain.Type;
 import com.nyangtodac.chat.controller.dto.CBTRecommendationResponse;
 import com.nyangtodac.chat.controller.dto.ChattingResponse;
 import com.nyangtodac.chat.controller.dto.Sender;

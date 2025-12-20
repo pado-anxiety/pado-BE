@@ -1,4 +1,4 @@
-package com.nyangtodac.chat.application;
+package com.nyangtodac.chat.domain;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;

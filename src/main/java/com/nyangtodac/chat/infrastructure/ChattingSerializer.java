@@ -3,10 +3,10 @@ package com.nyangtodac.chat.infrastructure;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.nyangtodac.chat.application.CBTRecommendation;
-import com.nyangtodac.chat.application.Chatting;
-import com.nyangtodac.chat.application.Message;
-import com.nyangtodac.chat.application.Type;
+import com.nyangtodac.chat.domain.CBTRecommendation;
+import com.nyangtodac.chat.domain.Chatting;
+import com.nyangtodac.chat.domain.Message;
+import com.nyangtodac.chat.domain.Type;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

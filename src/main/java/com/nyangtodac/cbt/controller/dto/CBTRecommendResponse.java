@@ -1,7 +1,7 @@
 package com.nyangtodac.cbt.controller.dto;
 
 import com.nyangtodac.cbt.recommend.CBT;
-import com.nyangtodac.chat.application.Chatting;
+import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.controller.dto.ChattingResponse;
 import com.nyangtodac.chat.controller.dto.mapper.ChattingResponseMapper;
 import lombok.Getter;

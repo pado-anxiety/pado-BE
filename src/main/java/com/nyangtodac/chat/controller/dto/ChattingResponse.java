@@ -1,6 +1,6 @@
 package com.nyangtodac.chat.controller.dto;
 
-import com.nyangtodac.chat.application.Type;
+import com.nyangtodac.chat.domain.Type;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

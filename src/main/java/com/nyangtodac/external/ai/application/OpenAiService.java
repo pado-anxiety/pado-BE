@@ -1,6 +1,6 @@
 package com.nyangtodac.external.ai.application;
 
-import com.nyangtodac.chat.application.MessageContext;
+import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionRequestFactory;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;

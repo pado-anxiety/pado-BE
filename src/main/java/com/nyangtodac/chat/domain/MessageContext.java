@@ -1,4 +1,4 @@
-package com.nyangtodac.chat.application;
+package com.nyangtodac.chat.domain;
 
 import lombok.Getter;
 

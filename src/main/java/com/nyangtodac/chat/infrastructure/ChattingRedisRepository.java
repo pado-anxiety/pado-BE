@@ -1,8 +1,8 @@
 package com.nyangtodac.chat.infrastructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.nyangtodac.chat.application.Chatting;
-import com.nyangtodac.chat.application.Message;
+import com.nyangtodac.chat.domain.Chatting;
+import com.nyangtodac.chat.domain.Message;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

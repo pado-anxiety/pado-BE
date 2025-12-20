@@ -1,5 +1,7 @@
 package com.nyangtodac.chat.application;
 
+import com.nyangtodac.chat.domain.Message;
+import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.external.ai.application.OpenAiService;
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
 import lombok.RequiredArgsConstructor;

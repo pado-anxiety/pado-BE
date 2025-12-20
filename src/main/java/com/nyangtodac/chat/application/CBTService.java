@@ -5,6 +5,9 @@ import com.nyangtodac.cbt.controller.dto.CBTRecommendResponse;
 import com.nyangtodac.cbt.recommend.CBTRecommendResult;
 import com.nyangtodac.cbt.recommend.CBTRecommendService;
 import com.nyangtodac.chat.controller.dto.Sender;
+import com.nyangtodac.chat.domain.CBTRecommendation;
+import com.nyangtodac.chat.domain.Chatting;
+import com.nyangtodac.chat.domain.Message;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

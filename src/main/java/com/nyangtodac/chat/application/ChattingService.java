@@ -1,6 +1,9 @@
 package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.controller.dto.RecentChattingsResponse;
+import com.nyangtodac.chat.domain.Chatting;
+import com.nyangtodac.chat.domain.Message;
+import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
 import lombok.RequiredArgsConstructor;

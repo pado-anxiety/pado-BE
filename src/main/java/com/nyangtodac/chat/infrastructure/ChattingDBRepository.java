@@ -1,7 +1,7 @@
 package com.nyangtodac.chat.infrastructure;
 
-import com.nyangtodac.chat.application.Chatting;
-import com.nyangtodac.chat.application.Message;
+import com.nyangtodac.chat.domain.Chatting;
+import com.nyangtodac.chat.domain.Message;
 
 import java.util.List;
 import java.util.concurrent.CompletableFuture;

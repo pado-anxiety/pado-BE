@@ -1,6 +1,6 @@
 package com.nyangtodac.external.redis;
 
-import com.nyangtodac.chat.application.Chatting;
+import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
 import lombok.RequiredArgsConstructor;
