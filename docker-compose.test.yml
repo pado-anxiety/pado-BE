@@ -53,4 +53,5 @@ services:
       SPRING_REDIS_PORT: 6379
       TZ: Asia/Seoul
       PGDATABASE: test_db
+      GRADLE_USER_HOME: /app/.gradle
     command: sh -c "chmod +x ./gradlew && ./gradlew test --no-daemon"

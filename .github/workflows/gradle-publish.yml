@@ -41,8 +41,8 @@ jobs:
 
       - name: Set Gradle permissions
         run: |
-          mkdir -p .gradle
-          chmod -R 777 .gradle
+          mkdir -p .gradle build
+          chmod -R 777 .gradle build
 
       - name: Run tests with Docker Compose
         run: |
