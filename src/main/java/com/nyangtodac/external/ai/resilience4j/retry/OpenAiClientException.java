@@ -1,4 +1,4 @@
-package com.nyangtodac.external.ai.retry;
+package com.nyangtodac.external.ai.resilience4j.retry;
 
 import com.nyangtodac.external.ai.infrastructure.OpenAiException;
 

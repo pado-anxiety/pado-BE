@@ -1,6 +1,6 @@
-package com.nyangtodac.external.ai.circuitbreaker;
+package com.nyangtodac.external.ai.resilience4j.circuitbreaker;
 
-import com.nyangtodac.external.ai.retry.OpenAiServerException;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.springframework.context.annotation.Bean;
@@ -23,7 +23,7 @@ public class OpenAiCircuitBreakerConfig {
     }
 
     @Bean
-    public CircuitBreakerRegistry circuitBreakerRegistry() {
-        return CircuitBreakerRegistry.of(circuitBreakerConfig());
+    public CircuitBreakerRegistry circuitBreakerRegistry(CircuitBreakerConfig config) {
+        return CircuitBreakerRegistry.of(config);
     }
 }
