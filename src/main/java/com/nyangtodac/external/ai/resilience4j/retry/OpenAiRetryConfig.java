@@ -1,7 +1,7 @@
-package com.nyangtodac.external.ai.retry;
+package com.nyangtodac.external.ai.resilience4j.retry;
 
-import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryConfig;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -11,13 +11,17 @@ import java.time.Duration;
 public class OpenAiRetryConfig {
 
     @Bean
-    public Retry openAiRetry() {
-        RetryConfig config = RetryConfig.custom()
+    public RetryConfig openAiRetry() {
+        return RetryConfig.custom()
                 .maxAttempts(3)
                 .waitDuration(Duration.ofMillis(200))
                 .retryExceptions(OpenAiServerException.class)
                 .build();
-        return Retry.of("openAiRetry", config);
+    }
+
+    @Bean
+    public RetryRegistry retryRegistry(RetryConfig retryConfig) {
+        return RetryRegistry.custom().withRetryConfig(retryConfig).build();
     }
 
 }

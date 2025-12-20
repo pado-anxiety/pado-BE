@@ -1,10 +1,11 @@
 package com.nyangtodac.external.ai.infrastructure;
 
-import com.nyangtodac.external.ai.retry.OpenAiClientException;
-import com.nyangtodac.external.ai.retry.OpenAiServerException;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiClientException;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.*;
 
@@ -22,9 +23,9 @@ public class OpenAiClient {
     private final Retry retry;
     private final CircuitBreaker circuitBreaker;
 
-    public OpenAiClient(RestClient.Builder builder, Retry retry, CircuitBreakerRegistry circuitBreakerRegistry) {
+    public OpenAiClient(RestClient.Builder builder, RetryRegistry retryRegistry, CircuitBreakerRegistry circuitBreakerRegistry) {
         this.restClient = builder.build();
-        this.retry = retry;
+        this.retry = retryRegistry.retry("openAiRetry");
         this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker");
     }
 

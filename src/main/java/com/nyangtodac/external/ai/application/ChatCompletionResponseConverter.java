@@ -2,7 +2,7 @@ package com.nyangtodac.external.ai.application;
 
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
-import com.nyangtodac.external.ai.retry.OpenAiClientException;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiClientException;
 
 public class ChatCompletionResponseConverter {
 
