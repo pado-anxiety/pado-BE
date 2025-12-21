@@ -6,6 +6,7 @@ import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.Retry;
 import io.github.resilience4j.retry.RetryRegistry;
+import io.micrometer.core.annotation.Counted;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.*;
 
@@ -29,6 +30,7 @@ public class OpenAiClient {
         this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker");
     }
 
+    @Counted("ai.chat")
     public ChatCompletionResponse sendRequest(ChatCompletionRequest request) {
         Supplier<ChatCompletionResponse> supplier = () -> doRequest(request);
         supplier = Retry.decorateSupplier(retry, supplier);
