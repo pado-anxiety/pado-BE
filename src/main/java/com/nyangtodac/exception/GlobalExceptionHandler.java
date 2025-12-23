@@ -20,9 +20,9 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OpenAiException.class)
     public ResponseEntity<ErrorResponse> handleOpenAiException(OpenAiException e) {
         if (e instanceof OpenAiClientException) {
-            log.error("OpenAiNonRetryableException occurred", e);
+            log.error("OpenAiClientException occurred", e);
         } else if (e instanceof OpenAiServerException) {
-            log.error("OpenAiRetryableException occurred", e);
+            log.error("OpenAiServerException occurred", e);
         }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("AI 기능이 일시적으로 원활하지 않습니다. 잠시 후 다시 시도해 주세요."));
     }
