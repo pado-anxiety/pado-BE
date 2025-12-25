@@ -2,13 +2,11 @@ package com.nyangtodac.external.ai.infrastructure;
 
 import com.nyangtodac.external.ai.infrastructure.prompt.SystemPrompt;
 import lombok.Getter;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-@ToString
 public class ChatCompletionRequest {
 
     private String model;
@@ -29,7 +27,6 @@ public class ChatCompletionRequest {
     }
 
     @Getter
-    @ToString
     public static class Message {
         private final String role;
         private final String content;
