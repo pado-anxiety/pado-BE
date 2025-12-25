@@ -3,7 +3,6 @@ package com.nyangtodac.openai;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionRequest;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.infrastructure.OpenAiClient;
-import com.nyangtodac.external.ai.infrastructure.OpenAiClientConfig;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiRetryConfig;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
@@ -28,7 +27,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(value = OpenAiClient.class)
-@Import({OpenAiRetryConfig.class, OpenAiClientConfig.class})
+@Import({OpenAiRetryConfig.class, TestAiClientConfig.class})
 public class OpenAiRetryTest {
 
     private static final String URL = "/v1/chat/completions";
