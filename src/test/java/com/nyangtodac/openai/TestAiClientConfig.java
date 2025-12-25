@@ -9,7 +9,7 @@ import org.springframework.web.client.RestClient;
 public class TestAiClientConfig {
 
     @Bean
-    @Qualifier("testAiClient")
+    @Qualifier("openAiRestClient")
     public RestClient.Builder openaiRestClient() {
         return RestClient.builder().baseUrl("http://localhost");
     }
