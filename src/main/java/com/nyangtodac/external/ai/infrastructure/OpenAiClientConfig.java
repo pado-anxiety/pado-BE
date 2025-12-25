@@ -13,7 +13,7 @@ import java.time.Duration;
 @Configuration
 public class OpenAiClientConfig {
 
-    @Bean
+    @Bean(name = "openAiRestClient")
     public RestClient.Builder restClient(@Value("${openai.client.apikey}") String apiKey) {
         HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
         factory.setConnectTimeout(Duration.ofSeconds(3));
