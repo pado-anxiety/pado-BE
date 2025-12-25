@@ -1,5 +1,6 @@
 package com.nyangtodac.exception;
 
+import com.nyangtodac.auth.infrastructure.oauth.OAuthException;
 import com.nyangtodac.chat.quota.ChatQuotaExceededException;
 import com.nyangtodac.chat.quota.QuotaStatus;
 import com.nyangtodac.external.ai.infrastructure.OpenAiException;
@@ -32,6 +33,12 @@ public class GlobalExceptionHandler {
         QuotaStatus quotaStatus = e.getQuotaStatus();
         String formatted = formatQuotaMessage(quotaStatus.getTimeToRefill());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(formatted));
+    }
+
+    @ExceptionHandler(OAuthException.class)
+    public ResponseEntity<ErrorResponse> handleOAuthException(OAuthException e) {
+        log.error("OAuthException occurred. Error Response from OAuth2 Server: {}", e.getBodyErrorMessage(), e);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("소셜 로그인에 실패했습니다. 다시 시도해주세요."));
     }
 
     private String formatQuotaMessage(Duration timeToRefill) {
