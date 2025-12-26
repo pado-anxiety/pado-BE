@@ -17,8 +17,8 @@ import java.time.Duration;
 @Slf4j
 public class OAuth2ClientConfig {
 
-    @Bean(name = "oauth2RestClient")
-    public RestClient.Builder oauth2Client() {
+    @Bean
+    public RestClient.Builder oauth2RestClientBuilder() {
         SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
         requestFactory.setConnectTimeout(Duration.ofSeconds(1));
         requestFactory.setReadTimeout(Duration.ofSeconds(3));

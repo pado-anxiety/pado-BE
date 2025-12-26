@@ -25,7 +25,7 @@ public class OpenAiClient {
     private final Retry retry;
     private final CircuitBreaker circuitBreaker;
 
-    public OpenAiClient(@Qualifier("openAiRestClient") RestClient.Builder builder, RetryRegistry retryRegistry, CircuitBreakerRegistry circuitBreakerRegistry) {
+    public OpenAiClient(@Qualifier("openAiRestClientBuilder") RestClient.Builder builder, RetryRegistry retryRegistry, CircuitBreakerRegistry circuitBreakerRegistry) {
         this.restClient = builder.build();
         this.retry = retryRegistry.retry("openAiRetry");
         this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker");

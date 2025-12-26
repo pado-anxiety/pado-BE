@@ -14,7 +14,7 @@ public class GoogleTokenRequestFactory {
     @Value("${oauth2.client.registration.google.client-secret}")
     private String clientSecret;
 
-    @Value("${oauth2.client.registration.google.redirect-uri}")
+    @Value("${oauth2.client.registration.google.ios.redirect-uri}")
     private String redirectUri;
 
     public MultiValueMap<String, String> create(String authorizationCode, String codeVerifier) {

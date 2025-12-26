@@ -19,7 +19,7 @@ public class GoogleClient implements OAuth2Client {
 
     private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
 
-    public GoogleClient(@Qualifier("oauth2RestClient") RestClient.Builder builder, GoogleTokenRequestFactory tokenRequestFactory) {
+    public GoogleClient(@Qualifier("oauth2RestClientBuilder") RestClient.Builder builder, GoogleTokenRequestFactory tokenRequestFactory) {
         this.restClient = builder.build();
         this.tokenRequestFactory = tokenRequestFactory;
     }
