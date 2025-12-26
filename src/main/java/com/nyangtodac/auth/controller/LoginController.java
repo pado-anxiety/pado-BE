@@ -20,6 +20,6 @@ public class LoginController {
 
     @PostMapping("/google")
     public ResponseEntity<TokenResponse> googleLogin(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(oAuth2Service.login(loginRequest.getAuthorizationCode(), loginRequest.getCodeVerifier(), loginRequest.getRedirectUri(), LoginType.GOOGLE));
+        return ResponseEntity.ok(oAuth2Service.login(loginRequest.getAuthorizationCode(), loginRequest.getCodeVerifier(), loginRequest.getRedirectUri(), loginRequest.getPlatform(), LoginType.GOOGLE));
     }
 }

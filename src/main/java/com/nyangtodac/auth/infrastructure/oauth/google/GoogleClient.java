@@ -1,6 +1,7 @@
 package com.nyangtodac.auth.infrastructure.oauth.google;
 
 import com.nyangtodac.auth.infrastructure.oauth.OAuth2Client;
+import com.nyangtodac.auth.infrastructure.oauth.Platform;
 import com.nyangtodac.auth.infrastructure.oauth.UserInfo;
 import com.nyangtodac.user.domain.LoginType;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -25,10 +26,10 @@ public class GoogleClient implements OAuth2Client {
     }
 
     @Override
-    public String getAccessToken(String authorizationCode, String codeVerifier, String redirectUri) {
+    public String getAccessToken(String authorizationCode, String codeVerifier, String redirectUri, Platform platform) {
         GoogleTokenResponse body = restClient.post()
                 .uri(TOKEN_URL)
-                .body(tokenRequestFactory.create(authorizationCode, codeVerifier, redirectUri))
+                .body(tokenRequestFactory.create(authorizationCode, codeVerifier, redirectUri, platform))
                 .retrieve()
                 .body(GoogleTokenResponse.class);
         return body.getAccessToken();

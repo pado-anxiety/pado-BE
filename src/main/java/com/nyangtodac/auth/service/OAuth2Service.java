@@ -3,6 +3,7 @@ package com.nyangtodac.auth.service;
 import com.nyangtodac.auth.controller.dto.TokenResponse;
 import com.nyangtodac.auth.infrastructure.jwt.JwtTokenProvider;
 import com.nyangtodac.auth.infrastructure.oauth.OAuth2Client;
+import com.nyangtodac.auth.infrastructure.oauth.Platform;
 import com.nyangtodac.auth.infrastructure.oauth.UserInfo;
 import com.nyangtodac.user.application.UserRepository;
 import com.nyangtodac.user.domain.LoginType;
@@ -30,9 +31,9 @@ public class OAuth2Service {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public TokenResponse login(String authorizationCode, String codeVerifier, String redirectUri, LoginType loginType) {
+    public TokenResponse login(String authorizationCode, String codeVerifier, String redirectUri, Platform platform, LoginType loginType) {
         OAuth2Client oAuth2Client = oauth2ClientStrategySelector.get(loginType);
-        String accessToken = oAuth2Client.getAccessToken(authorizationCode, codeVerifier, redirectUri);
+        String accessToken = oAuth2Client.getAccessToken(authorizationCode, codeVerifier, redirectUri, platform);
         UserInfo userInfo = oAuth2Client.getUserInfo(accessToken);
 
         Optional<User> optional = userRepository.findByEmailAndLoginType(userInfo.getEmail(), loginType);
