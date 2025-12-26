@@ -25,10 +25,10 @@ public class GoogleClient implements OAuth2Client {
     }
 
     @Override
-    public String getAccessToken(String authorizationCode, String codeVerifier) {
+    public String getAccessToken(String authorizationCode, String codeVerifier, String redirectUri) {
         GoogleTokenResponse body = restClient.post()
                 .uri(TOKEN_URL)
-                .body(tokenRequestFactory.create(authorizationCode, codeVerifier))
+                .body(tokenRequestFactory.create(authorizationCode, codeVerifier, redirectUri))
                 .retrieve()
                 .body(GoogleTokenResponse.class);
         return body.getAccessToken();

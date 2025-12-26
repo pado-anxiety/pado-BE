@@ -7,4 +7,5 @@ public class LoginRequest {
 
     private String codeVerifier;
     private String authorizationCode;
+    private String redirectUri;
 }

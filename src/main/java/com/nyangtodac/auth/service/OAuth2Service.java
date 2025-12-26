@@ -30,9 +30,9 @@ public class OAuth2Service {
         this.jwtTokenProvider = jwtTokenProvider;
     }
 
-    public TokenResponse login(String authorizationCode, String codeVerifier, LoginType loginType) {
+    public TokenResponse login(String authorizationCode, String codeVerifier, String redirectUri, LoginType loginType) {
         OAuth2Client oAuth2Client = oauth2ClientStrategySelector.get(loginType);
-        String accessToken = oAuth2Client.getAccessToken(authorizationCode, codeVerifier);
+        String accessToken = oAuth2Client.getAccessToken(authorizationCode, codeVerifier, redirectUri);
         UserInfo userInfo = oAuth2Client.getUserInfo(accessToken);
 
         Optional<User> optional = userRepository.findByEmailAndLoginType(userInfo.getEmail(), loginType);
