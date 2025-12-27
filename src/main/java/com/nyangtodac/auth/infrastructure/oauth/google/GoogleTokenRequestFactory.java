@@ -12,6 +12,9 @@ public class GoogleTokenRequestFactory {
     @Value("${oauth2.client.registration.google.ios.client-id}")
     private String iosClientId;
 
+    @Value("${oauth2.client.registration.google.android.client-id}")
+    private String androidClientId;
+
     public MultiValueMap<String, String> create(String authorizationCode, String codeVerifier, String redirectUri, Platform platform) {
         MultiValueMap<String, String> form = new LinkedMultiValueMap<>();
         form.add("grant_type", "authorization_code");
@@ -19,7 +22,7 @@ public class GoogleTokenRequestFactory {
             form.add("client_id", iosClientId);
             form.add("code_verifier", codeVerifier);
         } else if (platform == Platform.ANDROID) {
-
+            form.add("client_id", androidClientId);
         }
         form.add("redirect_uri", redirectUri);
         form.add("code", authorizationCode);
