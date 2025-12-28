@@ -1,14 +1,20 @@
 package com.nyangtodac.external.ai.application;
 
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
+import com.nyangtodac.external.ai.application.response.OpenAiSummaryResponse;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiClientException;
 
 public class ChatCompletionResponseConverter {
 
-    public static OpenAiChatResponse convert(ChatCompletionResponse response) {
+    public static OpenAiChatResponse convertToChat(ChatCompletionResponse response) {
         String content = getContentFrom(response);
         return new OpenAiChatResponse(content);
+    }
+
+    public static OpenAiSummaryResponse convertToSummary(ChatCompletionResponse response) {
+        String content = getContentFrom(response);
+        return new OpenAiSummaryResponse(content);
     }
 
     private static String getContentFrom(ChatCompletionResponse response) {

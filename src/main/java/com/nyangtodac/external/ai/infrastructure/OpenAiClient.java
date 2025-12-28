@@ -39,6 +39,11 @@ public class OpenAiClient {
         return supplier.get();
     }
 
+    @Counted("ai.summary")
+    public ChatCompletionResponse sendSummaryRequest(ChatCompletionRequest request) {
+        return doRequest(request);
+    }
+
     private ChatCompletionResponse doRequest(ChatCompletionRequest request) {
         try {
             return restClient.post()

@@ -13,3 +13,9 @@ chat:
     max-tokens: 5
     refill-interval-hours: 2
     refill-tokens: 1
+
+summary:
+  openai:
+    model: gpt-4o-mini
+    temperature: 0.2
+    max-tokens: 400
