@@ -2,7 +2,6 @@ package com.nyangtodac.chat.infrastructure;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.Message;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,6 @@ public class ChattingRedisRepository {
 
     private final StringRedisTemplate redisTemplate;
     private final ChattingSerializer chattingSerializer;
-    private final MessageDeserializer messageDeserializer;
 
     @SuppressWarnings("rawtypes")
     private final DefaultRedisScript<List> pushAndTrimScript = new DefaultRedisScript<>();
@@ -97,7 +95,7 @@ public class ChattingRedisRepository {
         return chattings;
     }
 
-    public List<Message> findRecentMessages(Long userId, int n) {
+    public List<Chatting> findRecentChattings(Long userId, int n) {
         String key = generateKey(userId);
 
         long size = redisTemplate.opsForList().size(key);
@@ -109,13 +107,13 @@ public class ChattingRedisRepository {
         long end = size - 1;
 
         List<String> strings = redisTemplate.opsForList().range(key, start, end);
-        List<Message> messages = new ArrayList<>();
+        List<Chatting> chattings = new ArrayList<>();
         for (String json : strings) {
-            Optional<Message> deserialize = messageDeserializer.deserialize(json);
-            deserialize.ifPresent(messages::add);
+            Optional<Chatting> deserialize = deserialize(userId, json);
+            deserialize.ifPresent(chattings::add);
         }
 
-        return messages;
+        return chattings;
     }
 
     public List<Long> getActiveUserIds() {
