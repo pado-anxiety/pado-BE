@@ -57,7 +57,7 @@ public class OpenAiCircuitBreakerTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        ChatCompletionResponse response = openAiClient.sendRequest(request);
+        ChatCompletionResponse response = openAiClient.sendChatRequest(request);
 
         assertThat(response).isNotNull();
         assertThat(circuitBreaker.getMetrics().getNumberOfFailedCalls()).isEqualTo(0);
@@ -78,7 +78,7 @@ public class OpenAiCircuitBreakerTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        assertThatThrownBy(() -> openAiClient.sendRequest(request))
+        assertThatThrownBy(() -> openAiClient.sendChatRequest(request))
                 .isInstanceOf(OpenAiServerException.class);
         assertThat(circuitBreaker.getMetrics().getNumberOfFailedCalls()).isEqualTo(1);
         assertThat(circuitBreaker.getMetrics().getNumberOfSuccessfulCalls()).isEqualTo(0);

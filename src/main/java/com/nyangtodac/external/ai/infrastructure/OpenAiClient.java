@@ -32,7 +32,7 @@ public class OpenAiClient {
     }
 
     @Counted("ai.chat")
-    public ChatCompletionResponse sendRequest(ChatCompletionRequest request) {
+    public ChatCompletionResponse sendChatRequest(ChatCompletionRequest request) {
         Supplier<ChatCompletionResponse> supplier = () -> doRequest(request);
         supplier = Retry.decorateSupplier(retry, supplier);
         supplier = CircuitBreaker.decorateSupplier(circuitBreaker, supplier);

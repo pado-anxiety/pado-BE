@@ -16,7 +16,7 @@ public class OpenAiService {
     private final ChatCompletionRequestFactory chatCompletionFactory;
 
     public OpenAiChatResponse getChatResponse(MessageContext messageContext) {
-        ChatCompletionResponse response = openAiClient.sendRequest(chatCompletionFactory.buildChatRequest(messageContext));
+        ChatCompletionResponse response = openAiClient.sendChatRequest(chatCompletionFactory.buildChatRequest(messageContext));
         return ChatCompletionResponseConverter.convert(response);
     }
 

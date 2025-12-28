@@ -73,7 +73,7 @@ public class OpenAiRetryTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        ChatCompletionResponse response = openAiClient.sendRequest(request);
+        ChatCompletionResponse response = openAiClient.sendChatRequest(request);
 
         assertThat(response).isNotNull();
 
@@ -92,7 +92,7 @@ public class OpenAiRetryTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        assertThatThrownBy(() -> openAiClient.sendRequest(request))
+        assertThatThrownBy(() -> openAiClient.sendChatRequest(request))
                 .isInstanceOf(OpenAiServerException.class);
 
         mockServer.verify();
