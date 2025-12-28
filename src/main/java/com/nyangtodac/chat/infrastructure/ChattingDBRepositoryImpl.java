@@ -19,12 +19,12 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
 
     @Override
     public List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n) {
-        return chattingJpaRepository.findTopNByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
+        return chattingJpaRepository.findByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
     }
 
     @Override
     public List<Chatting> findRecentMessages(Long userId, int n) {
-        return chattingJpaRepository.findTopNByUserIdOrderByTsidDesc(userId, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
+        return chattingJpaRepository.findByUserIdOrderByTsidDesc(userId, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
     }
 
     @Override
@@ -39,7 +39,7 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
     }
 
     @Override
-    public List<Chatting> findChattingsAfterTsid(Long userId, Long latestTsid, int limit) {
-        return chattingJpaRepository.findTopNByUserIdAndTsidGreaterThanOrderByTsidAsc(userId, latestTsid, PageRequest.of(0, limit)).stream().map(ChattingEntity::toModel).toList();
+    public List<Chatting> findChattingsAfterTsidOrderByTsidAsc(Long userId, Long latestTsid, int limit) {
+        return chattingJpaRepository.findByUserIdAndTsidGreaterThanOrderByTsidAsc(userId, latestTsid, PageRequest.of(0, limit)).stream().map(ChattingEntity::toModel).toList();
     }
 }

@@ -12,5 +12,5 @@ public interface ChattingDBRepository {
 
     CompletableFuture<Void> asyncBatch(Long userId, List<Chatting> chattings);
 
-    List<Chatting> findChattingsAfterTsid(Long userId, Long latestTsid, int limit);
+    List<Chatting> findChattingsAfterTsidOrderByTsidAsc(Long userId, Long latestTsid, int limit);
 }

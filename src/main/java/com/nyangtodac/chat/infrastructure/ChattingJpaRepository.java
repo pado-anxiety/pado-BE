@@ -7,7 +7,9 @@ import java.util.List;
 
 public interface ChattingJpaRepository extends JpaRepository<ChattingEntity, Long> {
 
-    List<ChattingEntity> findTopNByUserIdOrderByTsidDesc(Long userId, Pageable pageable);
+    List<ChattingEntity> findByUserIdOrderByTsidDesc(Long userId, Pageable pageable);
 
-    List<ChattingEntity> findTopNByUserIdAndTsidLessThanOrderByTsidDesc(Long userId, Long cursor, Pageable pageable);
+    List<ChattingEntity> findByUserIdAndTsidLessThanOrderByTsidDesc(Long userId, Long cursor, Pageable pageable);
+
+    List<ChattingEntity> findByUserIdAndTsidGreaterThanOrderByTsidAsc(Long userId, Long tsid, Pageable pageable)
 }
