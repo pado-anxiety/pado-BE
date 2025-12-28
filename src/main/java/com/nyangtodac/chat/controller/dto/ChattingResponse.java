@@ -1,17 +1,19 @@
 package com.nyangtodac.chat.controller.dto;
 
-import com.nyangtodac.chat.domain.Type;
+import com.nyangtodac.chat.tsid.TsidUtil;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
 
 @Getter
-public abstract class ChattingResponse {
-    private final Type type;
+public class ChattingResponse {
+    private final Sender sender;
+    private final String message;
     private final LocalDateTime time;
 
-    public ChattingResponse(Type type, LocalDateTime time) {
-        this.type = type;
-        this.time = time;
+    public ChattingResponse(Sender sender, String message, Long tsid) {
+        this.sender = sender;
+        this.message = message;
+        this.time = TsidUtil.toLocalDateTime(tsid);
     }
 }
