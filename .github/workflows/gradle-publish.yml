@@ -39,6 +39,20 @@ jobs:
           ${{ secrets.CHAT_PROMPT }}
           EOF
 
+      - name: Generate summary-prompt.yaml
+        run: |
+          mkdir -p src/main/resources/prompts
+          cat << 'EOF' > src/main/resources/prompts/summary_prompt.yaml
+          ${{ secrets.SUMMARY_PROMPT }}
+          EOF
+
+      - name: Generate summary-prefix.yaml
+        run: |
+          mkdir -p src/main/resources/prompts
+          cat << 'EOF' > src/main/resources/prompts/summary_prefix.yaml
+          ${{ secrets.SUMMARY_PREFIX }}
+          EOF
+
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
