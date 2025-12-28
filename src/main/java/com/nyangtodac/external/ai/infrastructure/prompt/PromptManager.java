@@ -8,10 +8,13 @@ import org.springframework.stereotype.Component;
 public class PromptManager {
 
     private final SystemPrompt chatSystemPrompt;
+    private final SystemPrompt summarySystemPrompt;
+    private final SystemPrompt summaryPrefix;
 
     public PromptManager() {
-        String chatTemplatePath = "prompts/chat_prompt.yaml";
-        chatSystemPrompt = YamlResourceLoader.load(chatTemplatePath, SystemPrompt.class);
+        chatSystemPrompt = YamlResourceLoader.load("prompts/chat_prompt.yaml", SystemPrompt.class);
+        summarySystemPrompt = YamlResourceLoader.load("prompts/summary_prompt.yaml", SystemPrompt.class);
+        summaryPrefix = YamlResourceLoader.load("prompts/summary_prefix.yaml", SystemPrompt.class);
     }
 
 }
