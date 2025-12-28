@@ -2,7 +2,6 @@ package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.controller.dto.RecentChattingsResponse;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.Message;
 import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
@@ -60,17 +59,17 @@ public class ChattingService {
     }
 
     @Transactional(readOnly = true)
-    public MessageContext makeContext(Long userId, Message userMessage) {
-        List<Message> messages = new ArrayList<>(chattingRedisRepository.findRecentMessages(userId, CONTEXT_SIZE));
-        int left = CONTEXT_SIZE - messages.size();
+    public MessageContext makeContext(Long userId, Chatting userChatting) {
+        List<Chatting> chattings = new ArrayList<>(chattingRedisRepository.findRecentChattings(userId, CONTEXT_SIZE));
+        int left = CONTEXT_SIZE - chattings.size();
 
         if (left > 0) {
-            List<Message> dbMessages = chattingDBRepository.findRecentMessages(userId, left);
-            Collections.reverse(dbMessages);
-            messages.addAll(0, dbMessages);
+            List<Chatting> dbChattings = chattingDBRepository.findRecentMessages(userId, left);
+            Collections.reverse(dbChattings);
+            chattings.addAll(0, dbChattings);
         }
-        messages.add(userMessage);
+        chattings.add(userChatting);
 
-        return new MessageContext(messages);
+        return new MessageContext(chattings);
     }
 }

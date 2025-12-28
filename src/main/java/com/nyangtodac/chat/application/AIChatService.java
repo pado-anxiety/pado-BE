@@ -1,6 +1,6 @@
 package com.nyangtodac.chat.application;
 
-import com.nyangtodac.chat.domain.Message;
+import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.external.ai.application.OpenAiService;
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
@@ -17,8 +17,8 @@ public class AIChatService {
 
     private final OpenAiService openAiService;
 
-    public Message postMessage(MessageContext messageContext) {
+    public Chatting postMessage(MessageContext messageContext) {
         OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext);
-        return new Message(chatResponse.getReply(), AI);
+        return new Chatting(chatResponse.getReply(), AI);
     }
 }

@@ -31,10 +31,10 @@ public class ChatCompletionRequestFactory {
     }
 
     private List<ChatCompletionRequest.Message> toChatMessages(MessageContext recent) {
-        return recent.getMessages().stream()
+        return recent.getChattings().stream()
                 .map(msg -> new ChatCompletionRequest.Message(
                         Sender.valueOf(msg.getSender().toUpperCase()).getRole(),
-                        msg.getContent()
+                        msg.getMessage()
                 ))
                 .toList();
     }

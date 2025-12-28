@@ -6,10 +6,10 @@ import java.util.List;
 @Getter
 public class MessageContext {
 
-    private final List<Message> messages;
+    private final List<Chatting> chattings;
 
-    public MessageContext(List<Message> messages) {
-        this.messages = messages;
+    public MessageContext(List<Chatting> chattings) {
+        this.chattings = chattings;
     }
 
 }

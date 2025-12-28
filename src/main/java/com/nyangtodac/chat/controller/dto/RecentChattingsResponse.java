@@ -1,7 +1,6 @@
 package com.nyangtodac.chat.controller.dto;
 
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.controller.dto.mapper.ChattingResponseMapper;
 import lombok.Getter;
 
 import java.util.List;
@@ -12,7 +11,7 @@ public class RecentChattingsResponse {
     private final Long cursor;
 
     public RecentChattingsResponse(List<Chatting> content, Long cursor) {
-        this.content = content.stream().map(ChattingResponseMapper::from).toList();
+        this.content = content.stream().map(c -> new ChattingResponse(Sender.valueOf(c.getSender()), c.getMessage(), c.getTsid())).toList();
         this.cursor = cursor;
     }
 }

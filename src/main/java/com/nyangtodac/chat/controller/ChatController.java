@@ -5,7 +5,7 @@ import com.nyangtodac.chat.application.AIChatFacade;
 import com.nyangtodac.chat.application.ChattingService;
 import com.nyangtodac.chat.controller.dto.RecentChattingsResponse;
 import com.nyangtodac.chat.controller.dto.message.MessageRequest;
-import com.nyangtodac.chat.controller.dto.message.MessageResponse;
+import com.nyangtodac.chat.controller.dto.ChattingResponse;
 import com.nyangtodac.chat.quota.QuotaStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class ChatController {
     private final ChattingService chattingService;
 
     @PostMapping
-    public ResponseEntity<MessageResponse> send(@LoginUser Long id, @RequestBody MessageRequest request) {
+    public ResponseEntity<ChattingResponse> send(@LoginUser Long id, @RequestBody MessageRequest request) {
         return ResponseEntity.ok(AIChatFacade.postMessage(id, request));
     }
 
