@@ -64,7 +64,7 @@ public class ChattingService {
         int left = CONTEXT_SIZE - chattings.size();
 
         if (left > 0) {
-            List<Chatting> dbChattings = chattingDBRepository.findRecentMessages(userId, left);
+            List<Chatting> dbChattings = new ArrayList<>(chattingDBRepository.findRecentMessages(userId, left));
             Collections.reverse(dbChattings);
             chattings.addAll(0, dbChattings);
         }
