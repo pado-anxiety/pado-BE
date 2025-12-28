@@ -164,7 +164,7 @@ public class ChattingRedisRepository {
             return chattingSerializer.deserialize(base64);
         } catch (JsonProcessingException e) {
             saveFlushFailedMessagesRaw(userId, List.of(base64));
-            log.warn("Message 역직렬화 실패, userId={}", userId);
+            log.warn("Chatting 역직렬화 실패, userId={}", userId);
             return Optional.empty();
         }
     }
