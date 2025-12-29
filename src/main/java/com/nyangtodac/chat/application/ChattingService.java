@@ -56,6 +56,12 @@ public class ChattingService {
             nextCursor = chattings.get(chattings.size() - 1).getTsid();
         }
         return new RecentChattingsResponse(chattings, nextCursor);
+        return new RecentChattings(chattings, nextCursor);
+    }
+
+    @Transactional(readOnly = true)
+    public List<Chatting> getRecentChattingsAfterCursorOrderByTsidAscFromDB(Long userId, Long cursor, int limit) {
+        return chattingDBRepository.findChattingsAfterTsidOrderByTsidAsc(userId, cursor, limit);
     }
 
     @Transactional(readOnly = true)

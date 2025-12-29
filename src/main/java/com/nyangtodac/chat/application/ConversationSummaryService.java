@@ -47,7 +47,7 @@ public class ConversationSummaryService {
                 latestTsid = summary.get(0).getToTsid();
             }
 
-            List<Chatting> chattings = chattingDBRepository.findChattingsAfterTsidOrderByTsidAsc(userId, latestTsid, SUMMARIZE_THRESHOLD);
+            List<Chatting> chattings = chattingService.getRecentChattingsAfterCursorOrderByTsidAscFromDB(userId, latestTsid, SUMMARIZE_THRESHOLD);
             if (chattings.isEmpty() || chattings.size() < SUMMARIZE_THRESHOLD) {
                 return;
             }
