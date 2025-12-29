@@ -19,3 +19,10 @@ summary:
     model: gpt-4o-mini
     temperature: 0.2
     max-tokens: 400
+
+act:
+  recommend:
+    openai:
+      model: gpt-4o-mini
+      temperature: 0.3
+      max-tokens: 500
