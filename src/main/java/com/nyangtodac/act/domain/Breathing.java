@@ -1,9 +1,9 @@
-package com.nyangtodac.cbt.domain;
+package com.nyangtodac.act.domain;
 
 import lombok.Getter;
 
 @Getter
-public class Breathing implements CBT {
+public class Breathing {
 
     private final int durationSeconds;
 

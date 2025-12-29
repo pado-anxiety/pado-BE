@@ -1,9 +1,9 @@
-package com.nyangtodac.cbt.domain;
+package com.nyangtodac.act.domain;
 
 import lombok.Getter;
 
 @Getter
-public class FiveFourThreeTwoOne implements CBT {
+public class FiveFourThreeTwoOne {
 
     private final String five;
     private final String four;

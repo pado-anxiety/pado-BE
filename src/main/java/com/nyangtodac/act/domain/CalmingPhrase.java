@@ -1,9 +1,9 @@
-package com.nyangtodac.cbt.domain;
+package com.nyangtodac.act.domain;
 
 import lombok.Getter;
 
 @Getter
-public class CalmingPhrase implements CBT {
+public class CalmingPhrase {
 
     private final int viewCount;
 
