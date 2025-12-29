@@ -58,7 +58,11 @@ public class ConversationSummaryService {
         } finally {
             unlock(userId);
         }
+    }
 
+    public ChatSummary summarize(List<Chatting> chattings) {
+        OpenAiSummaryResponse openAiSummary = openAiService.getChatSummary(chattings);
+        return new ChatSummary(null, null, openAiSummary.getSummaryText());
     }
 
     private boolean tryLock(Long userId) {
