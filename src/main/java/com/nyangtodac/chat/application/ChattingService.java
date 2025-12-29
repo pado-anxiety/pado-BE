@@ -55,7 +55,6 @@ public class ChattingService {
         if (!chattings.isEmpty()) {
             nextCursor = chattings.get(chattings.size() - 1).getTsid();
         }
-        return new RecentChattingsResponse(chattings, nextCursor);
         return new RecentChattings(chattings, nextCursor);
     }
 

@@ -5,6 +5,7 @@ import com.nyangtodac.chat.domain.ChatSummary;
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.chat.controller.dto.Sender;
+import com.nyangtodac.config.properties.ACTRecommendOpenAiProperties;
 import com.nyangtodac.config.properties.ChatOpenAiProperties;
 import com.nyangtodac.config.properties.ChatSummaryOpenAiProperties;
 import com.nyangtodac.external.ai.infrastructure.prompt.PromptManager;
@@ -18,12 +19,13 @@ import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
-@EnableConfigurationProperties({ChatOpenAiProperties.class, ChatSummaryOpenAiProperties.class})
+@EnableConfigurationProperties({ChatOpenAiProperties.class, ChatSummaryOpenAiProperties.class, ACTRecommendOpenAiProperties.class})
 public class ChatCompletionRequestFactory {
 
     private final PromptManager promptManager;
     private final ChatOpenAiProperties chatOpenAiProperties;
     private final ChatSummaryOpenAiProperties chatSummaryOpenAiProperties;
+    private final ACTRecommendOpenAiProperties actRecommendOpenAiProperties;
 
     public ChatCompletionRequest buildChatRequest(MessageContext context, ChatSummaries summaries) {
         SystemPrompt systemPrompt = promptManager.getChatSystemPrompt();
@@ -58,6 +60,17 @@ public class ChatCompletionRequestFactory {
         );
     }
 
+    public ChatCompletionRequest buildACTRecommendRequest(ChatSummary chatSummary) {
+        SystemPrompt systemPrompt = promptManager.getActRecommendPrompt();
+        return ChatCompletionRequest.toActRecommendRequest(
+                actRecommendOpenAiProperties.getModel(),
+                systemPrompt,
+                toMessages(chatSummary),
+                actRecommendOpenAiProperties.getTemperature(),
+                actRecommendOpenAiProperties.getMaxTokens()
+        );
+    }
+
     private List<ChatCompletionRequest.Message> toChatMessages(List<Chatting> chattings) {
         return chattings.stream()
                 .map(msg -> new ChatCompletionRequest.Message(
@@ -65,5 +78,9 @@ public class ChatCompletionRequestFactory {
                         msg.getMessage()
                 ))
                 .toList();
+    }
+
+    private List<ChatCompletionRequest.Message> toMessages(ChatSummary chatSummary) {
+        return List.of(new ChatCompletionRequest.Message("user", chatSummary.getSummaryText()));
     }
 }

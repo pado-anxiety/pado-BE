@@ -44,6 +44,11 @@ public class OpenAiClient {
         return doRequest(request);
     }
 
+    @Counted("ai.act.recommend")
+    public ChatCompletionResponse sendACTRecommendRequest(ChatCompletionRequest request) {
+        return doRequest(request);
+    }
+
     private ChatCompletionResponse doRequest(ChatCompletionRequest request) {
         try {
             return restClient.post()

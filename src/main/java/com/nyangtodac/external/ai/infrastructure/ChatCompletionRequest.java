@@ -37,6 +37,17 @@ public class ChatCompletionRequest {
         return request;
     }
 
+    public static ChatCompletionRequest toActRecommendRequest(String model, SystemPrompt systemPrompt, List<Message> summary, Double temperature, Integer max_tokens) {
+        ChatCompletionRequest request = new ChatCompletionRequest();
+        request.model = model;
+        request.messages = new ArrayList<>();
+        request.messages.add(new Message("system", systemPrompt.getSystem()));
+        request.messages.addAll(summary);
+        request.temperature = temperature;
+        request.max_tokens = max_tokens;
+        return request;
+    }
+
     @Getter
     public static class Message {
         private final String role;
