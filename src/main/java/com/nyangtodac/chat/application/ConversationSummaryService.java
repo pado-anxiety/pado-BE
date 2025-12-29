@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,6 +28,7 @@ public class ConversationSummaryService {
     private static final int SUMMARIZE_THRESHOLD = 30;
     private final ConcurrentHashMap<Long, Object> lock = new ConcurrentHashMap<>();
 
+    @Transactional(readOnly = true)
     public ChatSummaries getConversationSummaries(Long userId) {
         List<ChatSummary> summaries = chatSummaryRepository.findLatestSummariesByUserId(userId, 3);
         return new ChatSummaries(summaries);
