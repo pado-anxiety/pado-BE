@@ -29,8 +29,8 @@ public class ConversationSummaryService {
     private final ConcurrentHashMap<Long, Object> lock = new ConcurrentHashMap<>();
 
     @Transactional(readOnly = true)
-    public ChatSummaries getConversationSummaries(Long userId) {
-        List<ChatSummary> summaries = chatSummaryRepository.findLatestSummariesByUserId(userId, 3);
+    public ChatSummaries getConversationSummaries(Long userId, int limit) {
+        List<ChatSummary> summaries = chatSummaryRepository.findLatestSummariesByUserId(userId, limit);
         return new ChatSummaries(summaries);
     }
 

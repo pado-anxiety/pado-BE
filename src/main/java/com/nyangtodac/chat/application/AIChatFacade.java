@@ -28,7 +28,7 @@ public class AIChatFacade {
 //        } FIXME
         Chatting userChatting = new Chatting(messageRequest.getMessage(), Sender.USER);
         MessageContext messageContext = chattingService.makeContext(userId, userChatting);
-        ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId);
+        ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
         Chatting reply = aiChatService.postMessage(messageContext, summaries);
         chattingService.saveChattings(userId, List.of(userChatting, reply));
         conversationSummaryService.summarize(userId);
