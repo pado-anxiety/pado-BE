@@ -3,7 +3,6 @@ package com.nyangtodac.chat.application;
 import com.nyangtodac.chat.domain.ChatSummaries;
 import com.nyangtodac.chat.domain.ChatSummary;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import com.nyangtodac.chat.infrastructure.summary.ChatSummaryRepository;
 import com.nyangtodac.external.ai.application.OpenAiService;
 import com.nyangtodac.external.ai.application.response.OpenAiSummaryResponse;
@@ -21,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ConversationSummaryService {
 
-    private final ChattingDBRepository chattingDBRepository;
+    private final ChattingService chattingService;
     private final ChatSummaryRepository chatSummaryRepository;
     private final OpenAiService openAiService;
 
@@ -35,7 +34,7 @@ public class ConversationSummaryService {
     }
 
     @Async("summaryExecutor")
-    public void summarize(Long userId) {
+    public void asyncSummarize(Long userId) {
         if (!tryLock(userId)) {
             log.debug("Summarize skipped: user {} already locked", userId);
             return;

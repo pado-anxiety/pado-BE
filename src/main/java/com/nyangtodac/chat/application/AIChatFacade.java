@@ -31,7 +31,7 @@ public class AIChatFacade {
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
         Chatting reply = aiChatService.postMessage(messageContext, summaries);
         chattingService.saveChattings(userId, List.of(userChatting, reply));
-        conversationSummaryService.summarize(userId);
+        conversationSummaryService.asyncSummarize(userId);
         return new ChattingResponse(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
 
