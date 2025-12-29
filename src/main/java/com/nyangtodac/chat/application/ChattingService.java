@@ -1,6 +1,6 @@
 package com.nyangtodac.chat.application;
 
-import com.nyangtodac.chat.controller.dto.RecentChattingsResponse;
+import com.nyangtodac.chat.domain.RecentChattings;
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.MessageContext;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
@@ -40,7 +40,7 @@ public class ChattingService {
     }
 
     @Transactional(readOnly = true)
-    public RecentChattingsResponse getRecentChattings(Long userId, Long cursor) {
+    public RecentChattings getRecentChattingsBeforeCursor(Long userId, Long cursor) {
         if (cursor == null) {
             cursor = Long.MAX_VALUE;
         }

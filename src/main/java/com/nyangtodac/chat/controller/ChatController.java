@@ -4,6 +4,7 @@ import com.nyangtodac.auth.infrastructure.LoginUser;
 import com.nyangtodac.chat.application.AIChatFacade;
 import com.nyangtodac.chat.application.ChattingService;
 import com.nyangtodac.chat.controller.dto.RecentChattingsResponse;
+import com.nyangtodac.chat.domain.RecentChattings;
 import com.nyangtodac.chat.controller.dto.message.MessageRequest;
 import com.nyangtodac.chat.controller.dto.ChattingResponse;
 import com.nyangtodac.chat.quota.QuotaStatus;
@@ -28,7 +29,8 @@ public class ChatController {
     public ResponseEntity<RecentChattingsResponse> getRecentChattingsWithCursor(
             @LoginUser Long id,
             @RequestParam(name = "cursor", required = false) Long cursor) {
-        return ResponseEntity.ok(chattingService.getRecentChattings(id, cursor));
+        RecentChattings recentChattings = chattingService.getRecentChattingsBeforeCursor(id, cursor);
+        return ResponseEntity.ok(new RecentChattingsResponse(recentChattings.getChattings(), recentChattings.getCursor()));
     }
 
     @GetMapping("/quota")

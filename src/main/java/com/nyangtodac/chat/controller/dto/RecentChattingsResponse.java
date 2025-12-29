@@ -10,8 +10,9 @@ public class RecentChattingsResponse {
     private final List<ChattingResponse> content;
     private final Long cursor;
 
-    public RecentChattingsResponse(List<Chatting> content, Long cursor) {
-        this.content = content.stream().map(c -> new ChattingResponse(Sender.valueOf(c.getSender()), c.getMessage(), c.getTsid())).toList();
+    public RecentChattingsResponse(List<Chatting> chattings, Long cursor) {
+        this.content = chattings.stream().map(c -> new ChattingResponse(Sender.valueOf(c.getSender()), c.getMessage(), c.getTsid())).toList();
         this.cursor = cursor;
     }
+
 }
