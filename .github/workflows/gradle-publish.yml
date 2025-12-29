@@ -53,6 +53,13 @@ jobs:
           ${{ secrets.SUMMARY_PREFIX }}
           EOF
 
+      - name: Generate act-recommend-prompt.yaml
+        run: |
+          mkdir -p src/main/resources/prompts
+          cat << 'EOF' > src/main/resources/prompts/act_recommend_prompt.yaml
+          ${{ secrets.ACT_RECOMMEND_PROMPT }}
+          EOF
+
       - name: Build with Gradle
         run: |
           chmod +x ./gradlew
