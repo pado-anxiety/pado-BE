@@ -1,8 +1,7 @@
 package com.nyangtodac.chat.application;
 
-import com.nyangtodac.chat.domain.RecentChattings;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.ChattingContext;
+import com.nyangtodac.chat.domain.RecentChattings;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,7 +18,6 @@ import java.util.List;
 @Slf4j
 public class ChattingService {
 
-    private static final int CONTEXT_SIZE = 10;
     private static final int CHATTING_PAGINATION_SIZE = 30;
 
     private final ChattingRedisRepository chattingRedisRepository;
@@ -61,20 +58,5 @@ public class ChattingService {
     @Transactional(readOnly = true)
     public List<Chatting> getRecentChattingsAfterCursorOrderByTsidAscFromDB(Long userId, Long cursor, int limit) {
         return chattingDBRepository.findChattingsAfterTsidOrderByTsidAsc(userId, cursor, limit);
-    }
-
-    @Transactional(readOnly = true)
-    public ChattingContext makeContext(Long userId, Chatting userChatting) {
-        List<Chatting> chattings = new ArrayList<>(chattingRedisRepository.findRecentChattings(userId, CONTEXT_SIZE));
-        int left = CONTEXT_SIZE - chattings.size();
-
-        if (left > 0) {
-            List<Chatting> dbChattings = new ArrayList<>(chattingDBRepository.findRecentMessages(userId, left));
-            Collections.reverse(dbChattings);
-            chattings.addAll(0, dbChattings);
-        }
-        chattings.add(userChatting);
-
-        return new ChattingContext(chattings);
     }
 }

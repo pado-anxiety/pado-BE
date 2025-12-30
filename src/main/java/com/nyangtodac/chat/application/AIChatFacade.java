@@ -20,6 +20,7 @@ public class AIChatFacade {
     private final AIChatService aiChatService;
     private final ChattingService chattingService;
     private final ConversationSummaryService conversationSummaryService;
+    private final ChattingContextService contextService;
 
     public ChattingResponse postMessage(Long userId, MessageRequest messageRequest) {
 //        if (!aiQuotaService.tryConsume(userId)) {
@@ -27,7 +28,7 @@ public class AIChatFacade {
 //            throw new ChatQuotaExceededException(quotaStatus);
 //        } FIXME
         Chatting userChatting = new Chatting(messageRequest.getMessage(), Sender.USER);
-        ChattingContext chattingContext = chattingService.makeContext(userId, userChatting);
+        ChattingContext chattingContext = contextService.makeContext(userId, userChatting);
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
         Chatting reply = aiChatService.postMessage(chattingContext, summaries);
         chattingService.saveChattings(userId, List.of(userChatting, reply));
