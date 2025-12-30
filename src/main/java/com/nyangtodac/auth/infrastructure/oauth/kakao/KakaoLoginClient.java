@@ -21,6 +21,7 @@ public class KakaoLoginClient {
     }
 
     public UserInfo getUserInfo(String accessToken) {
+        accessToken = accessToken.trim();
         KakaoUserInfoResponse body = restClient.get()
                 .uri(USERINFO_URL)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + accessToken)
