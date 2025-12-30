@@ -1,16 +1,14 @@
 package com.nyangtodac.auth.infrastructure.oauth.google;
 
-import com.nyangtodac.auth.infrastructure.oauth.OAuth2Client;
 import com.nyangtodac.auth.infrastructure.oauth.Platform;
 import com.nyangtodac.auth.infrastructure.oauth.UserInfo;
-import com.nyangtodac.user.domain.LoginType;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
-public class GoogleClient implements OAuth2Client {
+public class GoogleLoginClient {
 
     private final RestClient restClient;
     private final GoogleTokenRequestFactory tokenRequestFactory;
@@ -20,12 +18,11 @@ public class GoogleClient implements OAuth2Client {
 
     private static final String AUTHORIZATION_HEADER_PREFIX = "Bearer ";
 
-    public GoogleClient(@Qualifier("oauth2RestClientBuilder") RestClient.Builder builder, GoogleTokenRequestFactory tokenRequestFactory) {
+    public GoogleLoginClient(@Qualifier("oauth2RestClientBuilder") RestClient.Builder builder, GoogleTokenRequestFactory tokenRequestFactory) {
         this.restClient = builder.build();
         this.tokenRequestFactory = tokenRequestFactory;
     }
 
-    @Override
     public String getAccessToken(String authorizationCode, String codeVerifier, String redirectUri, Platform platform) {
         GoogleTokenResponse body = restClient.post()
                 .uri(TOKEN_URL)
@@ -35,7 +32,7 @@ public class GoogleClient implements OAuth2Client {
         return body.getAccessToken();
     }
 
-    @Override
+
     public UserInfo getUserInfo(String accessToken) {
         GoogleUserInfoResponse body = restClient.get()
                 .uri(USERINFO_URL)
@@ -45,8 +42,4 @@ public class GoogleClient implements OAuth2Client {
         return new UserInfo(body.getEmail(), body.getName());
     }
 
-    @Override
-    public LoginType getType() {
-        return LoginType.GOOGLE;
-    }
 }

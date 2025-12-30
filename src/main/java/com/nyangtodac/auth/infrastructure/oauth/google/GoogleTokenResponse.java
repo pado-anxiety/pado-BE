@@ -10,7 +10,7 @@ public class GoogleTokenResponse {
     private String accessToken;
 
     @JsonProperty("expires_in")
-    private int expiresIn;
+    private Integer expiresIn;
 
     @JsonProperty("refresh_token")
     private String refreshToken;

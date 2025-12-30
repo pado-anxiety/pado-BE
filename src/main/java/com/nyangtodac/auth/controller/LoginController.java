@@ -1,9 +1,9 @@
 package com.nyangtodac.auth.controller;
 
-import com.nyangtodac.auth.controller.dto.LoginRequest;
+import com.nyangtodac.auth.controller.dto.GoogleLoginRequest;
+import com.nyangtodac.auth.controller.dto.KakaoLoginRequest;
 import com.nyangtodac.auth.controller.dto.TokenResponse;
 import com.nyangtodac.auth.service.OAuth2Service;
-import com.nyangtodac.user.domain.LoginType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,7 +19,12 @@ public class LoginController {
     private final OAuth2Service oAuth2Service;
 
     @PostMapping("/google")
-    public ResponseEntity<TokenResponse> googleLogin(@RequestBody LoginRequest loginRequest) {
-        return ResponseEntity.ok(oAuth2Service.login(loginRequest.getAuthorizationCode(), loginRequest.getCodeVerifier(), loginRequest.getRedirectUri(), loginRequest.getPlatform(), LoginType.GOOGLE));
+    public ResponseEntity<TokenResponse> googleLogin(@RequestBody GoogleLoginRequest loginRequest) {
+        return ResponseEntity.ok(oAuth2Service.googleLogin(loginRequest.getAuthorizationCode(), loginRequest.getCodeVerifier(), loginRequest.getRedirectUri(), loginRequest.getPlatform()));
+    }
+
+    @PostMapping("/kakao")
+    public ResponseEntity<TokenResponse> kakaoLogin(@RequestBody KakaoLoginRequest loginRequest) {
+        return ResponseEntity.ok(oAuth2Service.kakaoLogin(loginRequest.getAccessToken()));
     }
 }

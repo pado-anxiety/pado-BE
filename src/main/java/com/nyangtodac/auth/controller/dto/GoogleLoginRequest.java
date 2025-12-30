@@ -4,7 +4,7 @@ import com.nyangtodac.auth.infrastructure.oauth.Platform;
 import lombok.Getter;
 
 @Getter
-public class LoginRequest {
+public class GoogleLoginRequest {
 
     private String codeVerifier;
     private String authorizationCode;
