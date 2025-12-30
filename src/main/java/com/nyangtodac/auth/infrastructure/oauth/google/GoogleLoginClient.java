@@ -24,6 +24,9 @@ public class GoogleLoginClient {
     }
 
     public String getAccessToken(String authorizationCode, String codeVerifier, String redirectUri, Platform platform) {
+        authorizationCode = authorizationCode.trim();
+        codeVerifier = codeVerifier.trim();
+        redirectUri = redirectUri.trim();
         GoogleTokenResponse body = restClient.post()
                 .uri(TOKEN_URL)
                 .body(tokenRequestFactory.create(authorizationCode, codeVerifier, redirectUri, platform))
@@ -34,6 +37,7 @@ public class GoogleLoginClient {
 
 
     public UserInfo getUserInfo(String accessToken) {
+        accessToken = accessToken.trim();
         GoogleUserInfoResponse body = restClient.get()
                 .uri(USERINFO_URL)
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + accessToken)
