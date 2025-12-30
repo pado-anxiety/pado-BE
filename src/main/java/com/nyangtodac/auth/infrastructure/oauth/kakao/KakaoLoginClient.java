@@ -1,12 +1,14 @@
 package com.nyangtodac.auth.infrastructure.oauth.kakao;
 
 import com.nyangtodac.auth.infrastructure.oauth.UserInfo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
 @Component
+@Slf4j
 public class KakaoLoginClient {
 
     private final RestClient restClient;
@@ -24,6 +26,8 @@ public class KakaoLoginClient {
                 .header(HttpHeaders.AUTHORIZATION, AUTHORIZATION_HEADER_PREFIX + accessToken)
                 .retrieve()
                 .body(KakaoUserInfoResponse.class);
+
+        log.info("kakaoUserInfo: " + body);
         return new UserInfo(body.getKakaoAccount().getEmail(), body.getKakaoAccount().getProfile().getNickname());
     }
 }
