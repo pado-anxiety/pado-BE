@@ -5,7 +5,7 @@ import com.nyangtodac.chat.controller.dto.Sender;
 import com.nyangtodac.chat.controller.dto.message.MessageRequest;
 import com.nyangtodac.chat.domain.ChatSummaries;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.MessageContext;
+import com.nyangtodac.chat.domain.ChattingContext;
 import com.nyangtodac.chat.quota.QuotaStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -27,9 +27,9 @@ public class AIChatFacade {
 //            throw new ChatQuotaExceededException(quotaStatus);
 //        } FIXME
         Chatting userChatting = new Chatting(messageRequest.getMessage(), Sender.USER);
-        MessageContext messageContext = chattingService.makeContext(userId, userChatting);
+        ChattingContext chattingContext = chattingService.makeContext(userId, userChatting);
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
-        Chatting reply = aiChatService.postMessage(messageContext, summaries);
+        Chatting reply = aiChatService.postMessage(chattingContext, summaries);
         chattingService.saveChattings(userId, List.of(userChatting, reply));
         conversationSummaryService.asyncSummarize(userId);
         return new ChattingResponse(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());

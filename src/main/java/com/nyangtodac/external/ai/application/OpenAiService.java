@@ -3,7 +3,7 @@ package com.nyangtodac.external.ai.application;
 import com.nyangtodac.chat.domain.ChatSummaries;
 import com.nyangtodac.chat.domain.ChatSummary;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.MessageContext;
+import com.nyangtodac.chat.domain.ChattingContext;
 import com.nyangtodac.external.ai.application.response.OpenAiActRecommendationResponse;
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
 import com.nyangtodac.external.ai.application.response.OpenAiSummaryResponse;
@@ -24,8 +24,8 @@ public class OpenAiService {
     private final ChatCompletionRequestFactory chatCompletionFactory;
     private final ChatCompletionResponseConverter converter;
 
-    public OpenAiChatResponse getChatResponse(MessageContext messageContext, ChatSummaries summaries) {
-        ChatCompletionResponse response = openAiClient.sendChatRequest(chatCompletionFactory.buildChatRequest(messageContext, summaries));
+    public OpenAiChatResponse getChatResponse(ChattingContext chattingContext, ChatSummaries summaries) {
+        ChatCompletionResponse response = openAiClient.sendChatRequest(chatCompletionFactory.buildChatRequest(chattingContext, summaries));
         return converter.convertToChat(response);
     }
 

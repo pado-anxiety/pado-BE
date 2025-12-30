@@ -3,7 +3,7 @@ package com.nyangtodac.external.ai.infrastructure;
 import com.nyangtodac.chat.domain.ChatSummaries;
 import com.nyangtodac.chat.domain.ChatSummary;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.MessageContext;
+import com.nyangtodac.chat.domain.ChattingContext;
 import com.nyangtodac.chat.controller.dto.Sender;
 import com.nyangtodac.config.properties.ACTRecommendOpenAiProperties;
 import com.nyangtodac.config.properties.ChatOpenAiProperties;
@@ -27,7 +27,7 @@ public class ChatCompletionRequestFactory {
     private final ChatSummaryOpenAiProperties chatSummaryOpenAiProperties;
     private final ACTRecommendOpenAiProperties actRecommendOpenAiProperties;
 
-    public ChatCompletionRequest buildChatRequest(MessageContext context, ChatSummaries summaries) {
+    public ChatCompletionRequest buildChatRequest(ChattingContext context, ChatSummaries summaries) {
         SystemPrompt systemPrompt = promptManager.getChatSystemPrompt();
 
         List<ChatCompletionRequest.Message> summaryMessages = summaries.getSummaryList().isEmpty()

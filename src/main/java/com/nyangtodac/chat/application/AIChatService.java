@@ -2,7 +2,7 @@ package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.domain.ChatSummaries;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.MessageContext;
+import com.nyangtodac.chat.domain.ChattingContext;
 import com.nyangtodac.external.ai.application.OpenAiService;
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +18,8 @@ public class AIChatService {
 
     private final OpenAiService openAiService;
 
-    public Chatting postMessage(MessageContext messageContext, ChatSummaries summaries) {
-        OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext, summaries);
+    public Chatting postMessage(ChattingContext chattingContext, ChatSummaries summaries) {
+        OpenAiChatResponse chatResponse = openAiService.getChatResponse(chattingContext, summaries);
         return new Chatting(chatResponse.getReply(), AI);
     }
 }

@@ -2,7 +2,7 @@ package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.domain.RecentChattings;
 import com.nyangtodac.chat.domain.Chatting;
-import com.nyangtodac.chat.domain.MessageContext;
+import com.nyangtodac.chat.domain.ChattingContext;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -64,7 +64,7 @@ public class ChattingService {
     }
 
     @Transactional(readOnly = true)
-    public MessageContext makeContext(Long userId, Chatting userChatting) {
+    public ChattingContext makeContext(Long userId, Chatting userChatting) {
         List<Chatting> chattings = new ArrayList<>(chattingRedisRepository.findRecentChattings(userId, CONTEXT_SIZE));
         int left = CONTEXT_SIZE - chattings.size();
 
@@ -75,6 +75,6 @@ public class ChattingService {
         }
         chattings.add(userChatting);
 
-        return new MessageContext(chattings);
+        return new ChattingContext(chattings);
     }
 }
