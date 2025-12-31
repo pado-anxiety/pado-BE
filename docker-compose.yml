@@ -21,6 +21,7 @@ services:
     build: .
     container_name: spring-app
     depends_on:
+      - rabbit-mq
       - db
       - redis
     ports:
@@ -53,8 +54,20 @@ services:
     volumes:
       - grafanadata:/var/lib/grafana
 
+  rabbit-mq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    env_file: .env
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq
+    restart: unless-stopped
+
 volumes:
   pgdata:
   redisdata:
   grafanadata:
   prometheus-data:
+  rabbitmq-data:
