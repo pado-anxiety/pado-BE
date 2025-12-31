@@ -3,7 +3,7 @@ package com.nyangtodac.chat.application;
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.RecentChattings;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
-import com.nyangtodac.chat.infrastructure.ChattingRedisRepository;
+import com.nyangtodac.chat.infrastructure.RecentChattingRedisRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -20,32 +20,19 @@ public class ChattingService {
 
     private static final int CHATTING_PAGINATION_SIZE = 30;
 
-    private final ChattingRedisRepository chattingRedisRepository;
+    private final RecentChattingRedisRepository recentChattingRedisRepository;
     private final ChattingDBRepository chattingDBRepository;
-
-    public void saveChattings(Long userId, List<Chatting> chattings) {
-        List<Chatting> overflowChattings = chattingRedisRepository.saveMessages(userId, chattings);
-        if (!overflowChattings.isEmpty()) {
-            chattingDBRepository.asyncBatch(userId, overflowChattings).exceptionally(
-                    e -> {
-                        log.error("Failed to flush [overflow messages] for userId: {}", userId, e);
-                        chattingRedisRepository.saveFlushFailedMessages(userId, chattings);
-                        return null;
-                    }
-            );
-        }
-    }
 
     @Transactional(readOnly = true)
     public RecentChattings getRecentChattingsBeforeCursor(Long userId, Long cursor) {
+        List<Chatting> chattings;
         if (cursor == null) {
-            cursor = Long.MAX_VALUE;
-        }
-        List<Chatting> chattings = new ArrayList<>(chattingRedisRepository.findRecentChattingsLessThanCursor(userId, cursor, CHATTING_PAGINATION_SIZE));
-        if (chattings.size() < CHATTING_PAGINATION_SIZE) {
-            int left = CHATTING_PAGINATION_SIZE - chattings.size();
-            List<Chatting> dbMessages = chattingDBRepository.findRecentChattingsLessThanCursor(userId, cursor, left);
-            chattings.addAll(dbMessages);
+            chattings = new ArrayList<>(recentChattingRedisRepository.getRecentChattings(userId));
+            if (chattings.isEmpty()) {
+                chattings = new ArrayList<>(chattingDBRepository.findRecentChattingsLessThanCursor(userId, Long.MAX_VALUE, CHATTING_PAGINATION_SIZE));
+            }
+        } else {
+            chattings = new ArrayList<>(chattingDBRepository.findRecentChattingsLessThanCursor(userId, cursor, CHATTING_PAGINATION_SIZE));
         }
         chattings.sort(Comparator.comparing(Chatting::getTsid).reversed()); //0번째 채팅이 가장 최근 채팅
         Long nextCursor = null;
