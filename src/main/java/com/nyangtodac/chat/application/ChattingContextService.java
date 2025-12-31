@@ -23,17 +23,20 @@ public class ChattingContextService {
 
     @Transactional(readOnly = true)
     public ChattingContext makeContext(Long userId, Chatting userChatting) {
-        List<Chatting> cached = chattingContextRepository.getContext(userId);
-        if (cached.isEmpty() || cached.size() < contextSize) {
+        List<Chatting> recentChattings = chattingContextRepository.getContext(userId);
+        if (recentChattings.isEmpty() || recentChattings.size() < contextSize) {
             //cache miss
-            int left = contextSize - cached.size();
+            int left = contextSize - recentChattings.size();
             List<Chatting> chattings = chattingDBRepository.findRecentMessages(userId, left);
-            chattingContextRepository.refreshContextCache(userId, chattings);
-            cached.addAll(chattings);
-            cached.sort(Comparator.comparing(Chatting::getTsid));
+            recentChattings.addAll(chattings);
+            recentChattings.sort(Comparator.comparing(Chatting::getTsid));
         }
-        cached.add(userChatting);
-        return new ChattingContext(cached);
+        recentChattings.add(userChatting);
+        return new ChattingContext(recentChattings);
+    }
+
+    public void refreshContext(Long userId, List<Chatting> chattings) {
+        chattingContextRepository.appendContextCache(userId, chattings);
     }
 
 }

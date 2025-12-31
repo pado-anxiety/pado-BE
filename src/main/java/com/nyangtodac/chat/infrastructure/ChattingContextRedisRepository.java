@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,28 +27,30 @@ public class ChattingContextRedisRepository {
     @Value("${chat.context.size}") private int contextSize;
     @Value("${chat.context.ttl-minutes}") private int ttlMinutes;
 
-    public void refreshContextCache(Long userId, List<Chatting> chattings) {
+    public void appendContextCache(Long userId, List<Chatting> chattings) {
         if (chattings == null || chattings.isEmpty()) return;
 
         String key = CHAT_CONTEXT_PREFIX + userId;
 
-        for (Chatting chatting : chattings) {
-            try {
-                String json = chattingSerializer.serialize(chatting);
-                redisTemplate.opsForList().leftPush(key, json);
-            } catch (JsonProcessingException e) {
-                log.warn("load context cache failed. userId={}", userId);
-            }
-        }
+        chattings.stream()
+                .sorted(Comparator.comparing(Chatting::getTsid))
+                .forEach(chatting -> {
+                    try {
+                        String json = chattingSerializer.serialize(chatting);
+                        redisTemplate.opsForList().rightPush(key, json);
+                    } catch (JsonProcessingException e) {
+                        log.warn("context serialize failed. userId={}", userId);
+                    }
+                });
 
-        redisTemplate.opsForList().trim(key, 0, contextSize - 1);
+        redisTemplate.opsForList().trim(key, -contextSize, -1);
         redisTemplate.expire(key, Duration.ofMinutes(ttlMinutes));
     }
 
     public List<Chatting> getContext(Long userId) {
         String key = CHAT_CONTEXT_PREFIX + userId;
 
-        List<String> jsons = redisTemplate.opsForList().range(key, 0, contextSize - 1);
+        List<String> jsons = redisTemplate.opsForList().range(key, -contextSize, -1);
         List<Chatting> result = new ArrayList<>();
 
         if (!jsons.isEmpty()) {

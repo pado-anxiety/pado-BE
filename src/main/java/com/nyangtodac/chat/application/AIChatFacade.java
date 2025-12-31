@@ -10,6 +10,7 @@ import com.nyangtodac.chat.quota.QuotaStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,7 +32,9 @@ public class AIChatFacade {
         ChattingContext chattingContext = contextService.makeContext(userId, userChatting);
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
         Chatting reply = aiChatService.postMessage(chattingContext, summaries);
-        chattingService.saveChattings(userId, List.of(userChatting, reply));
+        List<Chatting> userAndAiChatting = List.of(userChatting, reply);
+        contextService.refreshContext(userId, userAndAiChatting);
+        chattingService.saveChattings(userId, userAndAiChatting);
         conversationSummaryService.asyncSummarize(userId);
         return new ChattingResponse(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
