@@ -35,7 +35,7 @@ public class ChattingContextService {
         return new ChattingContext(recentChattings);
     }
 
-    public void refreshContext(Long userId, List<Chatting> chattings) {
+    public void appendContext(Long userId, List<Chatting> chattings) {
         chattingContextRepository.appendContextCache(userId, chattings);
     }
 
