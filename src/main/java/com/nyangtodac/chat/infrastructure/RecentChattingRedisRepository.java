@@ -17,9 +17,9 @@ import java.util.Optional;
 @Repository
 @RequiredArgsConstructor
 @Slf4j
-public class ChattingContextRedisRepository {
+public class RecentChattingRedisRepository {
 
-    private static final String CHAT_CONTEXT_PREFIX = "chat:context:";
+    private static final String CHAT_PREFIX = "chat:";
 
     private final StringRedisTemplate redisTemplate;
     private final ChattingSerializer chattingSerializer;
@@ -30,7 +30,7 @@ public class ChattingContextRedisRepository {
     public void appendContextCache(Long userId, List<Chatting> chattings) {
         if (chattings == null || chattings.isEmpty()) return;
 
-        String key = CHAT_CONTEXT_PREFIX + userId;
+        String key = CHAT_PREFIX + userId;
 
         chattings.stream()
                 .sorted(Comparator.comparing(Chatting::getTsid))
@@ -47,8 +47,8 @@ public class ChattingContextRedisRepository {
         redisTemplate.expire(key, Duration.ofMinutes(ttlMinutes));
     }
 
-    public List<Chatting> getContext(Long userId) {
-        String key = CHAT_CONTEXT_PREFIX + userId;
+    public List<Chatting> getRecentChattings(Long userId) {
+        String key = CHAT_PREFIX + userId;
 
         List<String> jsons = redisTemplate.opsForList().range(key, -contextSize, -1);
         List<Chatting> result = new ArrayList<>();

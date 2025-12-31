@@ -2,7 +2,7 @@ package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.ChattingContext;
-import com.nyangtodac.chat.infrastructure.ChattingContextRedisRepository;
+import com.nyangtodac.chat.infrastructure.RecentChattingRedisRepository;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,14 +16,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChattingContextService {
 
-    private final ChattingContextRedisRepository chattingContextRepository;
+    private final RecentChattingRedisRepository recentChattingRedisRepository;
     private final ChattingDBRepository chattingDBRepository;
 
     @Value("${chat.context.size}") private int contextSize;
 
     @Transactional(readOnly = true)
     public ChattingContext makeContext(Long userId, Chatting userChatting) {
-        List<Chatting> recentChattings = chattingContextRepository.getContext(userId);
+        List<Chatting> recentChattings = recentChattingRedisRepository.getRecentChattings(userId);
         if (recentChattings.isEmpty() || recentChattings.size() < contextSize) {
             //cache miss
             int left = contextSize - recentChattings.size();
@@ -36,7 +36,7 @@ public class ChattingContextService {
     }
 
     public void appendContext(Long userId, List<Chatting> chattings) {
-        chattingContextRepository.appendContextCache(userId, chattings);
+        recentChattingRedisRepository.appendContextCache(userId, chattings);
     }
 
 }
