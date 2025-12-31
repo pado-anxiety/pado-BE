@@ -7,6 +7,7 @@ import com.nyangtodac.chat.domain.ChatSummaries;
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.ChattingContext;
 import com.nyangtodac.chat.quota.QuotaStatus;
+import com.nyangtodac.external.rabbitmq.ChattingFlushProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -18,9 +19,9 @@ public class AIChatFacade {
 
     private final AIQuotaService aiQuotaService;
     private final AIChatService aiChatService;
-    private final ChattingService chattingService;
     private final ConversationSummaryService conversationSummaryService;
     private final ChattingContextService contextService;
+    private final ChattingFlushProducer chattingFlushProducer;
 
     public ChattingResponse postMessage(Long userId, MessageRequest messageRequest) {
 //        if (!aiQuotaService.tryConsume(userId)) {
@@ -33,7 +34,7 @@ public class AIChatFacade {
         Chatting reply = aiChatService.postMessage(chattingContext, summaries);
         List<Chatting> userAndAiChatting = List.of(userChatting, reply);
         contextService.appendContext(userId, userAndAiChatting);
-        chattingService.saveChattings(userId, userAndAiChatting);
+        chattingFlushProducer.publish(userId, userAndAiChatting);
         conversationSummaryService.asyncSummarize(userId);
         return new ChattingResponse(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
