@@ -2,7 +2,6 @@ package com.nyangtodac.exception;
 
 import com.nyangtodac.auth.infrastructure.oauth.OAuthException;
 import com.nyangtodac.chat.quota.ChatQuotaExceededException;
-import com.nyangtodac.chat.quota.QuotaStatus;
 import com.nyangtodac.external.ai.infrastructure.OpenAiException;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiClientException;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
@@ -11,8 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.time.Duration;
 
 @RestControllerAdvice
 @Slf4j
@@ -30,9 +27,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ChatQuotaExceededException.class)
     public ResponseEntity<ErrorResponse> handleChatQuotaExceededException(ChatQuotaExceededException e) {
-        QuotaStatus quotaStatus = e.getQuotaStatus();
-        String formatted = formatQuotaMessage(quotaStatus.getTimeToRefill());
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(formatted));
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getQuotaExceededMessage()));
     }
 
     @ExceptionHandler(OAuthException.class)
@@ -41,20 +36,5 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("소셜 로그인에 실패했습니다. 다시 시도해주세요."));
     }
 
-    private String formatQuotaMessage(Duration timeToRefill) {
-        long hours = timeToRefill.toHours();
-        long minutes = timeToRefill.minusHours(hours).toMinutes();
-        long seconds = timeToRefill.minusHours(hours).minusMinutes(minutes).getSeconds();
 
-        StringBuilder time = new StringBuilder("입력 가능 시간이 ");
-        if (hours > 0) {
-            time.append(String.format("%d시간 %d분 %d초", hours, minutes, seconds));
-        } else if (minutes > 0) {
-            time.append(String.format("%d분 %d초", minutes, seconds));
-        } else {
-            time.append(String.format("%d초", seconds));
-        }
-        time.append(" 남았습니다.");
-        return time.toString();
-    }
 }
