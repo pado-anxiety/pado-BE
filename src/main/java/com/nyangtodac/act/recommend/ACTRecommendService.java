@@ -1,5 +1,6 @@
 package com.nyangtodac.act.recommend;
 
+import com.nyangtodac.act.recommend.infrastructure.AiACTRecommendationRepository;
 import com.nyangtodac.chat.application.ChattingService;
 import com.nyangtodac.chat.application.ConversationSummaryService;
 import com.nyangtodac.chat.domain.ChatSummaries;
@@ -7,7 +8,9 @@ import com.nyangtodac.chat.domain.ChatSummary;
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.RecentChattings;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,13 +24,22 @@ public class ACTRecommendService {
     private final ConversationSummaryService summaryService;
     private final ChattingService chattingService;
     private final ACTRecommender actRecommender;
+    private final AiACTRecommendationRepository aiActRecommendationRepository;
 
+    @Value("${act.recommend.quota.max-tokens}") private int recommendQuota;
+
+    @Transactional
     public ACTRecommendation recommend(Long userId) {
+        if (aiActRecommendationRepository.countTodayAiRecommended(userId) >= recommendQuota) {
+            throw new ACTRecommendQuotaExceededException();
+        }
         Optional<ChatSummary> summary = getSummaryForRecommendation(userId);
         if (summary.isEmpty()) {
             return actRecommender.getDefaultRecommendation();
         }
-        return actRecommender.getRecommendation(summary.get());
+        ACTRecommendation recommendation = actRecommender.getRecommendation(summary.get());
+        aiActRecommendationRepository.saveAiRecommend(userId, recommendation);
+        return recommendation;
     }
 
     private Optional<ChatSummary> getSummaryForRecommendation(Long userId) {

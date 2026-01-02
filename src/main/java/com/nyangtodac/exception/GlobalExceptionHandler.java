@@ -1,5 +1,6 @@
 package com.nyangtodac.exception;
 
+import com.nyangtodac.act.recommend.ACTRecommendQuotaExceededException;
 import com.nyangtodac.auth.infrastructure.oauth.OAuthException;
 import com.nyangtodac.chat.quota.ChatQuotaExceededException;
 import com.nyangtodac.external.ai.infrastructure.OpenAiException;
@@ -36,5 +37,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("소셜 로그인에 실패했습니다. 다시 시도해주세요."));
     }
 
-
+    @ExceptionHandler(ACTRecommendQuotaExceededException.class)
+    public ResponseEntity<ErrorResponse> handleACTRecommendQuotaExceededException() {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
 }

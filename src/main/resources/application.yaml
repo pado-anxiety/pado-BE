@@ -29,3 +29,5 @@ act:
       model: gpt-4o-mini
       temperature: 0.3
       max-tokens: 500
+    quota:
+      max-tokens: 5
