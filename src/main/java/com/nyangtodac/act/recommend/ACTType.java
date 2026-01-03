@@ -1,6 +1,6 @@
 package com.nyangtodac.act.recommend;
 
-public enum ACT {
+public enum ACTType {
     CONTACT_WITH_PRESENT,
     EMOTION_NOTE,
     COGNITIVE_DEFUSION,

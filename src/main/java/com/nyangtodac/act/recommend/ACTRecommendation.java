@@ -7,11 +7,11 @@ import java.util.List;
 @Getter
 public class ACTRecommendation {
 
-    private final ACT act;
+    private final ACTType actType;
     private final List<String> reasons;
 
-    public ACTRecommendation(ACT act, List<String> reasons) {
-        this.act = act;
+    public ACTRecommendation(ACTType actType, List<String> reasons) {
+        this.actType = actType;
         this.reasons = reasons;
     }
 }

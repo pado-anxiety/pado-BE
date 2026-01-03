@@ -14,7 +14,7 @@ public class AiACTRecommendationRepositoryImpl implements AiACTRecommendationRep
 
     @Override
     public void saveAiRecommend(Long userId, ACTRecommendation actRecommendation) {
-        actRecommendJpaRepository.save(new AiACTRecommendEntity(userId, LocalDateTime.now(), actRecommendation.getAct()));
+        actRecommendJpaRepository.save(new AiACTRecommendEntity(userId, LocalDateTime.now(), actRecommendation.getActType()));
     }
 
     @Override

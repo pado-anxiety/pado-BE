@@ -1,6 +1,6 @@
 package com.nyangtodac.act.recommend.infrastructure;
 
-import com.nyangtodac.act.recommend.ACT;
+import com.nyangtodac.act.recommend.ACTType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
@@ -18,14 +18,14 @@ public class AiACTRecommendEntity {
     private LocalDateTime time;
 
     @Enumerated(EnumType.STRING)
-    private ACT act;
+    private ACTType actType;
 
     protected AiACTRecommendEntity() {
     }
 
-    public AiACTRecommendEntity(Long userId, LocalDateTime time, ACT act) {
+    public AiACTRecommendEntity(Long userId, LocalDateTime time, ACTType actType) {
         this.userId = userId;
         this.time = time;
-        this.act = act;
+        this.actType = actType;
     }
 }
