@@ -1,5 +1,6 @@
 package com.nyangtodac.exception;
 
+import com.nyangtodac.act.application.InvalidActRecordRequestException;
 import com.nyangtodac.act.recommend.ACTRecommendQuotaExceededException;
 import com.nyangtodac.auth.infrastructure.oauth.OAuthException;
 import com.nyangtodac.chat.quota.ChatQuotaExceededException;
@@ -40,5 +41,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ACTRecommendQuotaExceededException.class)
     public ResponseEntity<ErrorResponse> handleACTRecommendQuotaExceededException() {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+    }
+
+    @ExceptionHandler(InvalidActRecordRequestException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidActRecordRequestException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
 }
