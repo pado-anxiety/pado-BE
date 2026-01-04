@@ -1,5 +1,6 @@
 package com.nyangtodac.act.recommend;
 
+import com.nyangtodac.act.ACTType;
 import lombok.Getter;
 
 import java.util.List;

@@ -1,5 +1,6 @@
 package com.nyangtodac.act.recommend;
 
+import com.nyangtodac.act.ACTType;
 import com.nyangtodac.chat.domain.ChatSummary;
 import com.nyangtodac.external.ai.application.OpenAiService;
 import com.nyangtodac.external.ai.application.response.OpenAiActRecommendationResponse;

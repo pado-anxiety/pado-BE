@@ -1,6 +1,6 @@
 package com.nyangtodac.act.recommend.infrastructure;
 
-import com.nyangtodac.act.recommend.ACTType;
+import com.nyangtodac.act.ACTType;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;

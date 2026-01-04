@@ -1,6 +1,6 @@
 package com.nyangtodac.external.ai.application.response;
 
-import com.nyangtodac.act.recommend.ACTType;
+import com.nyangtodac.act.ACTType;
 import lombok.Getter;
 
 import java.util.List;
