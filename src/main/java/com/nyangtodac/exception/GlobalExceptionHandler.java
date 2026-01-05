@@ -1,5 +1,7 @@
 package com.nyangtodac.exception;
 
+import com.nyangtodac.act.application.ACTAccessDeniedException;
+import com.nyangtodac.act.application.ACTRecordNotFoundException;
 import com.nyangtodac.act.application.InvalidActRecordRequestException;
 import com.nyangtodac.act.recommend.ACTRecommendQuotaExceededException;
 import com.nyangtodac.auth.infrastructure.oauth.OAuthException;
@@ -46,5 +48,15 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(InvalidActRecordRequestException.class)
     public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidActRecordRequestException e) {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(ACTRecordNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleACTRecordNotFoundException(ACTRecordNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("ACT 기록을 찾을 수 없습니다. recordId: " + e.getRecordId()));
+    }
+
+    @ExceptionHandler(ACTAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleACTAccessDeniedException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("ACT 조회 권한이 없습니다."));
     }
 }
