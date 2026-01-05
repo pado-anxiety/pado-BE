@@ -66,8 +66,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 
 	implementation 'org.springframework.boot:spring-boot-starter-amqp'
-
-	implementation 'io.hypersistence:hypersistence-utils-hibernate-63:3.14.1'
 }
 
 tasks.named('test') {
