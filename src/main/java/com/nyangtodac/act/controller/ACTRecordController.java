@@ -43,4 +43,10 @@ public class ACTRecordController {
         actRecordService.recordCognitiveDefusion(userId, data);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/acceptance")
+    public ResponseEntity<Void> acceptance(@LoginUser Long userId, @RequestBody JsonNode data) {
+        actRecordService.recordAcceptance(userId, data);
+        return ResponseEntity.ok().build();
+    }
 }

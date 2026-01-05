@@ -8,27 +8,21 @@ import org.springframework.stereotype.Component;
 public class ACTRecordJsonValidator {
 
     public void validate(ACTType actType, JsonNode data) {
+        validateJsonNode(data);
         switch (actType) {
             case EMOTION_NOTE -> validateEmotionNoteData(data);
             case COGNITIVE_DEFUSION -> validateCognitiveDefusionData(data);
+            case ACCEPTANCE -> validateAcceptanceData(data);
         }
     }
 
     private void validateEmotionNoteData(JsonNode data) {
-        if (data == null || !data.isObject()) {
-            throw new InvalidActRecordRequestException("요청 데이터는 JSON 객체여야 합니다.");
-        }
-
         validateStringField(data, "situation");
         validateStringField(data, "thoughts");
         validateStringField(data, "feelings");
     }
 
     private void validateCognitiveDefusionData(JsonNode data) {
-        if (data == null || !data.isObject()) {
-            throw new InvalidActRecordRequestException("요청 데이터는 JSON 객체여야 합니다.");
-        }
-
         JsonNode tokens = data.get("userTextToken");
         if (tokens == null) {
             throw new InvalidActRecordRequestException("userTextToken 필드가 존재하지 않습니다.");
@@ -64,6 +58,10 @@ public class ACTRecordJsonValidator {
         }
     }
 
+    private void validateAcceptanceData(JsonNode data) {
+        validateStringField(data, "breathingTime");
+    }
+
     private void validateStringField(JsonNode data, String fieldName) {
         if (!data.has(fieldName)) {
             throw new InvalidActRecordRequestException(fieldName + " 필드가 존재하지 않습니다.");
@@ -77,6 +75,12 @@ public class ACTRecordJsonValidator {
 
         if (field.asText().trim().isEmpty()) {
             throw new InvalidActRecordRequestException(fieldName + " 필드는 비어 있을 수 없습니다.");
+        }
+    }
+
+    private void validateJsonNode(JsonNode data) {
+        if (data == null || !data.isObject()) {
+            throw new InvalidActRecordRequestException("요청 데이터는 JSON 객체여야 합니다.");
         }
     }
 }

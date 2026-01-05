@@ -46,4 +46,9 @@ public class ACTRecordService {
         jsonValidator.validate(ACTType.COGNITIVE_DEFUSION, jsonNode);
         actRecordRepository.save(new ACTRecordEntity(userId, ACTType.COGNITIVE_DEFUSION, actRecordConverter.convertToMap(jsonNode)));
     }
+
+    public void recordAcceptance(Long userId, JsonNode jsonNode) {
+        jsonValidator.validate(ACTType.ACCEPTANCE, jsonNode);
+        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.ACCEPTANCE, actRecordConverter.convertToMap(jsonNode)));
+    }
 }
