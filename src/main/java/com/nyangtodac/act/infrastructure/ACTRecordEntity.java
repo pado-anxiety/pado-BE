@@ -1,6 +1,5 @@
 package com.nyangtodac.act.infrastructure;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.nyangtodac.act.ACTType;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -8,6 +7,7 @@ import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 @Entity
 @Table(name = "act_record")
@@ -30,12 +30,12 @@ public class ACTRecordEntity {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
-    private JsonNode data;
+    private Map<String, Object> data;
 
     protected ACTRecordEntity() {
     }
 
-    private ACTRecordEntity(Long id, Long userId, LocalDateTime time, ACTType actType, JsonNode data) {
+    private ACTRecordEntity(Long id, Long userId, LocalDateTime time, ACTType actType, Map<String, Object> data) {
         this.id = id;
         this.userId = userId;
         this.time = time;
@@ -43,7 +43,7 @@ public class ACTRecordEntity {
         this.data = data;
     }
 
-    public ACTRecordEntity(Long userId, ACTType actType, JsonNode data) {
+    public ACTRecordEntity(Long userId, ACTType actType, Map<String, Object> data) {
         this(null, userId, LocalDateTime.now(), actType, data);
     }
 }

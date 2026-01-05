@@ -17,6 +17,7 @@ public class ACTRecordService {
 
     private final ACTRecordRepository actRecordRepository;
     private final ACTRecordJsonValidator jsonValidator;
+    private final ACTRecordConverter actRecordConverter;
 
     @Transactional(readOnly = true)
     public ACTRecords findAllActRecords(Long userId) {
@@ -29,20 +30,20 @@ public class ACTRecordService {
         if (!entity.getUserId().equals(userId)) {
             throw new ACTAccessDeniedException();
         }
-        return new ACTRecordResponse(entity.getId(), entity.getTime(), entity.getActType(), entity.getData());
+        return new ACTRecordResponse(entity.getId(), entity.getTime(), entity.getActType(), actRecordConverter.convertToJsonNode(entity.getData()));
     }
 
     public void recordContactWithPresent(Long userId) {
         actRecordRepository.save(new ACTRecordEntity(userId, ACTType.CONTACT_WITH_PRESENT, null));
     }
 
-    public void recordEmotionNote(Long userId, JsonNode data) {
-        jsonValidator.validate(ACTType.EMOTION_NOTE, data);
-        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.EMOTION_NOTE, data));
+    public void recordEmotionNote(Long userId, JsonNode jsonNode) {
+        jsonValidator.validate(ACTType.EMOTION_NOTE, jsonNode);
+        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.EMOTION_NOTE, actRecordConverter.convertToMap(jsonNode)));
     }
 
-    public void recordCognitiveDefusion(Long userId, JsonNode data) {
-        jsonValidator.validate(ACTType.COGNITIVE_DEFUSION, data);
-        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.COGNITIVE_DEFUSION, data));
+    public void recordCognitiveDefusion(Long userId, JsonNode jsonNode) {
+        jsonValidator.validate(ACTType.COGNITIVE_DEFUSION, jsonNode);
+        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.COGNITIVE_DEFUSION, actRecordConverter.convertToMap(jsonNode)));
     }
 }
