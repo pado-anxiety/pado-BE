@@ -2,6 +2,7 @@ package com.nyangtodac.act.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nyangtodac.act.application.ACTRecordService;
+import com.nyangtodac.act.controller.dto.ACTRecordResponse;
 import com.nyangtodac.act.controller.dto.ACTRecords;
 import com.nyangtodac.auth.infrastructure.LoginUser;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,11 @@ public class ACTRecordController {
     @GetMapping
     public ResponseEntity<ACTRecords> getACTRecords(@LoginUser Long userId) {
         return ResponseEntity.ok(actRecordService.findAllActRecords(userId));
+    }
+
+    @GetMapping("/{recordId}")
+    public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser Long userId, @PathVariable("recordId") Long recordId) {
+        return ResponseEntity.ok(actRecordService.findACTRecordResponse(userId, recordId));
     }
 
     @PostMapping("/contact-with-present")
