@@ -2,10 +2,10 @@ package com.nyangtodac.act.infrastructure;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.nyangtodac.act.ACTType;
-import io.hypersistence.utils.hibernate.type.json.JsonBinaryType;
 import jakarta.persistence.*;
 import lombok.Getter;
-import org.hibernate.annotations.Type;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.LocalDateTime;
 
@@ -28,7 +28,7 @@ public class ACTRecordEntity {
     @Column(nullable = false)
     private ACTType actType;
 
-    @Type(JsonBinaryType.class)
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(columnDefinition = "jsonb")
     private JsonNode data;
 
