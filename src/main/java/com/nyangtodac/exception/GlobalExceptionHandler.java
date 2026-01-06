@@ -9,6 +9,7 @@ import com.nyangtodac.chat.quota.ChatQuotaExceededException;
 import com.nyangtodac.external.ai.infrastructure.OpenAiException;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiClientException;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
+import com.nyangtodac.user.application.UserNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,5 +59,11 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(ACTAccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleACTAccessDeniedException() {
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("ACT 조회 권한이 없습니다."));
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
+        log.warn("User not found exception occurred userId={}", e.getUserId());
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("사용자를 조회할 수 없습니다. id: " + e.getUserId()));
     }
 }
