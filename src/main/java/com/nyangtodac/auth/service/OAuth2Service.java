@@ -6,6 +6,7 @@ import com.nyangtodac.auth.infrastructure.oauth.Platform;
 import com.nyangtodac.auth.infrastructure.oauth.UserInfo;
 import com.nyangtodac.auth.infrastructure.oauth.google.GoogleLoginClient;
 import com.nyangtodac.auth.infrastructure.oauth.kakao.KakaoLoginClient;
+import com.nyangtodac.user.application.UserNotFoundException;
 import com.nyangtodac.user.application.UserRepository;
 import com.nyangtodac.user.domain.LoginType;
 import com.nyangtodac.user.domain.User;
@@ -44,4 +45,9 @@ public class OAuth2Service {
         return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), jwtTokenProvider.createRefreshToken(user.getId()));
     }
 
+    public void logout(Long userId) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        user.updateRefreshToken(null);
+        userRepository.save(user);
+    }
 }

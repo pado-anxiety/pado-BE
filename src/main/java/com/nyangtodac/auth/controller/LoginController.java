@@ -3,28 +3,33 @@ package com.nyangtodac.auth.controller;
 import com.nyangtodac.auth.controller.dto.GoogleLoginRequest;
 import com.nyangtodac.auth.controller.dto.KakaoLoginRequest;
 import com.nyangtodac.auth.controller.dto.TokenResponse;
+import com.nyangtodac.auth.infrastructure.LoginUser;
 import com.nyangtodac.auth.service.OAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/login")
 public class LoginController {
 
     private final OAuth2Service oAuth2Service;
 
-    @PostMapping("/google")
+    @PostMapping("/login/google")
     public ResponseEntity<TokenResponse> googleLogin(@RequestBody GoogleLoginRequest loginRequest) {
         return ResponseEntity.ok(oAuth2Service.googleLogin(loginRequest.getAuthorizationCode(), loginRequest.getCodeVerifier(), loginRequest.getRedirectUri(), loginRequest.getPlatform()));
     }
 
-    @PostMapping("/kakao")
+    @PostMapping("/login/kakao")
     public ResponseEntity<TokenResponse> kakaoLogin(@RequestBody KakaoLoginRequest loginRequest) {
         return ResponseEntity.ok(oAuth2Service.kakaoLogin(loginRequest.getAccessToken()));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(@LoginUser Long userId) {
+        oAuth2Service.logout(userId);
+        return ResponseEntity.noContent().build();
     }
 }
