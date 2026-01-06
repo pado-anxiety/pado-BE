@@ -19,6 +19,9 @@ public class JwtReissueService {
 
     public TokenResponse reissue(Long userId, String refreshToken) {
         User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
-        return jwtTokenProvider.reissueTokens(user, refreshToken);
+        TokenResponse tokenResponse = jwtTokenProvider.reissueTokens(user, refreshToken);
+        user.updateRefreshToken(tokenResponse.getRefreshToken());
+        userRepository.save(user);
+        return tokenResponse;
     }
 }
