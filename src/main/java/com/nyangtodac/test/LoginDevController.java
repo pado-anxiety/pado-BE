@@ -28,7 +28,7 @@ public class LoginDevController {
         if (user.isPresent()) {
             return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(user.get().getId())));
         }
-        User save = userRepository.save(new User(TEST_USER, LoginType.GOOGLE));
+        User save = userRepository.save(new User(TEST_USER, "test", LoginType.GOOGLE));
         return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(save.getId())));
     }
 }
