@@ -9,10 +9,12 @@ import java.util.List;
 
 @Getter
 public class ACTRecords {
-    private List<Record> content;
+    private final List<Record> content;
+    private final Long cursor;
 
-    public ACTRecords() {
+    public ACTRecords(Long cursor) {
         this.content = new ArrayList<>();
+        this.cursor = cursor;
     }
 
     public void addRecord(Record record) {

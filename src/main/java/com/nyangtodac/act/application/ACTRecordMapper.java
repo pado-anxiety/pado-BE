@@ -8,7 +8,11 @@ import java.util.List;
 public class ACTRecordMapper {
 
     public static ACTRecords toACTRecords(List<ACTRecordEntity> entities) {
-        ACTRecords actRecords = new ACTRecords();
+        Long cursor = null;
+        if (!entities.isEmpty()) {
+            cursor = entities.get(entities.size() - 1).getId();
+        }
+        ACTRecords actRecords = new ACTRecords(cursor);
         for (ACTRecordEntity entity : entities) {
             actRecords.addRecord(new ACTRecords.Record(entity.getId(), entity.getActType(), entity.getTime()));
         }
