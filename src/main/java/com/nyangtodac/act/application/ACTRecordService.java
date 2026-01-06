@@ -29,8 +29,8 @@ public class ACTRecordService {
         if (cursor == null) {
             cursor = Long.MAX_VALUE;
         }
-        List<ACTRecordEntity> entities = actRecordRepository.findAllByUserIdAndIdLessThanOrderByTimeDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE));
-        return ACTRecordMapper.toACTRecords(entities);
+        List<ACTRecordEntity> entities = actRecordRepository.findAllByUserIdAndIdLessThanOrderByTimeDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE + 1)); // hasNext를 위한 +1 조회
+        return ACTRecordMapper.toACTRecords(entities, ACT_RECORD_PAGE_SIZE);
     }
 
     @Transactional(readOnly = true)

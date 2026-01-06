@@ -7,12 +7,17 @@ import java.util.List;
 
 public class ACTRecordMapper {
 
-    public static ACTRecords toACTRecords(List<ACTRecordEntity> entities) {
+    public static ACTRecords toACTRecords(List<ACTRecordEntity> entities, int pageSize) {
         Long cursor = null;
+        boolean hasNext = false;
+        if (entities.size() > pageSize) {
+            hasNext = true;
+            entities.remove(entities.size() - 1);
+        }
         if (!entities.isEmpty()) {
             cursor = entities.get(entities.size() - 1).getId();
         }
-        ACTRecords actRecords = new ACTRecords(cursor);
+        ACTRecords actRecords = new ACTRecords(cursor, hasNext);
         for (ACTRecordEntity entity : entities) {
             actRecords.addRecord(new ACTRecords.Record(entity.getId(), entity.getActType(), entity.getTime()));
         }

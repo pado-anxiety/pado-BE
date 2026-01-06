@@ -11,10 +11,12 @@ import java.util.List;
 public class ACTRecords {
     private final List<Record> content;
     private final Long cursor;
+    private final Boolean hasNext;
 
-    public ACTRecords(Long cursor) {
+    public ACTRecords(Long cursor, Boolean hasNext) {
         this.content = new ArrayList<>();
         this.cursor = cursor;
+        this.hasNext = hasNext;
     }
 
     public void addRecord(Record record) {
