@@ -1,0 +1,89 @@
+name: CI/CD using github actions
+
+on:
+  push:
+    branches: [ "dev" ]
+  workflow_dispatch:
+
+jobs:
+  CI-CD :
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+
+      - name: Generate application-secret.yaml
+        run: |
+          mkdir -p src/main/resources
+          cat << 'EOF' > src/main/resources/application-secret.yaml
+          ${{ secrets.APPLICATION_SECRET_YML }}
+          EOF
+
+      - name: Generate chat-prompt.yaml
+        run: |
+          mkdir -p src/main/resources/prompts
+          cat << 'EOF' > src/main/resources/prompts/chat_prompt.yaml
+          ${{ secrets.CHAT_PROMPT }}
+          EOF
+
+      - name: Generate summary-prompt.yaml
+        run: |
+          mkdir -p src/main/resources/prompts
+          cat << 'EOF' > src/main/resources/prompts/summary_prompt.yaml
+          ${{ secrets.SUMMARY_PROMPT }}
+          EOF
+
+      - name: Generate summary-prefix.yaml
+        run: |
+          mkdir -p src/main/resources/prompts
+          cat << 'EOF' > src/main/resources/prompts/summary_prefix.yaml
+          ${{ secrets.SUMMARY_PREFIX }}
+          EOF
+
+      - name: Generate act-recommend-prompt.yaml
+        run: |
+          mkdir -p src/main/resources/prompts
+          cat << 'EOF' > src/main/resources/prompts/act_recommend_prompt.yaml
+          ${{ secrets.ACT_RECOMMEND_PROMPT }}
+          EOF
+
+      - name: Build with Gradle
+        run: |
+          chmod +x ./gradlew
+          ./gradlew bootJar
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push Docker image
+        run: |
+          docker buildx create --use
+          docker buildx build --platform linux/arm64 -t sangwook123/nyangtodac:latest --push .
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /home/nyangtodac
+            docker compose down
+            docker compose pull
+            docker compose up -d

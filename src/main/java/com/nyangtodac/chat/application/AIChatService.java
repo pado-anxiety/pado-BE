@@ -1,18 +1,15 @@
 package com.nyangtodac.chat.application;
 
-import com.nyangtodac.chat.controller.dto.message.MessageRequest;
-import com.nyangtodac.chat.controller.dto.message.MessageResponse;
+import com.nyangtodac.chat.domain.ChatSummaries;
+import com.nyangtodac.chat.domain.Chatting;
+import com.nyangtodac.chat.domain.ChattingContext;
 import com.nyangtodac.external.ai.application.OpenAiService;
 import com.nyangtodac.external.ai.application.response.OpenAiChatResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static com.nyangtodac.chat.controller.dto.Sender.AI;
-import static com.nyangtodac.chat.controller.dto.Sender.USER;
 
 @Service
 @Transactional
@@ -20,25 +17,9 @@ import static com.nyangtodac.chat.controller.dto.Sender.USER;
 public class AIChatService {
 
     private final OpenAiService openAiService;
-    private final MessageService messageService;
 
-    public MessageResponse postMessage(Long userId, MessageRequest request) {
-        Message userMessage = new Message(request.getContent(), USER);
-        MessageContext messageContext = makeContext(userId, request.getContent());
-
-        OpenAiChatResponse chatResponse = openAiService.getChatResponse(messageContext);
-
-        List<Message> messages = new ArrayList<>();
-        messages.add(userMessage);
-        chatResponse.getReplies().forEach(m -> messages.add(new Message(m, AI)));
-        messageService.saveMessages(userId, messages);
-
-        return new MessageResponse(chatResponse.getReplies());
-    }
-
-    private MessageContext makeContext(Long userId, String userMessage) {
-        List<Message> messages = new ArrayList<>(messageService.makeContext(userId));
-        messages.add(new Message(userMessage, USER));
-        return new MessageContext(messages);
+    public Chatting postMessage(ChattingContext chattingContext, ChatSummaries summaries) {
+        OpenAiChatResponse chatResponse = openAiService.getChatResponse(chattingContext, summaries);
+        return new Chatting(chatResponse.getReply(), AI);
     }
 }

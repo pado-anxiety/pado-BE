@@ -2,14 +2,12 @@ package com.nyangtodac.external.ai.application.response;
 
 import lombok.Getter;
 
-import java.util.List;
-
 @Getter
 public class OpenAiChatResponse {
 
-    private final List<String> replies;
+    private final String reply;
 
-    public OpenAiChatResponse(List<String> replies) {
-        this.replies = replies;
+    public OpenAiChatResponse(String reply) {
+        this.reply = reply;
     }
 }

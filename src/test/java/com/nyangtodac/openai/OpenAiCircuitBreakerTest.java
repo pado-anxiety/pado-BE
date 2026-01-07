@@ -1,11 +1,11 @@
 package com.nyangtodac.openai;
 
-import com.nyangtodac.external.ai.circuitbreaker.OpenAiCircuitBreakerConfig;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionRequest;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.infrastructure.OpenAiClient;
-import com.nyangtodac.external.ai.retry.OpenAiRetryConfig;
-import com.nyangtodac.external.ai.retry.OpenAiServerException;
+import com.nyangtodac.external.ai.resilience4j.circuitbreaker.OpenAiCircuitBreakerConfig;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiRetryConfig;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(value = OpenAiClient.class)
-@Import({OpenAiRetryConfig.class, OpenAiCircuitBreakerConfig.class})
+@Import({OpenAiRetryConfig.class, OpenAiCircuitBreakerConfig.class, TestAiClientConfig.class})
 public class OpenAiCircuitBreakerTest {
 
     private static final String URL = "/v1/chat/completions";
@@ -57,7 +57,7 @@ public class OpenAiCircuitBreakerTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        ChatCompletionResponse response = openAiClient.sendRequest(request);
+        ChatCompletionResponse response = openAiClient.sendChatRequest(request);
 
         assertThat(response).isNotNull();
         assertThat(circuitBreaker.getMetrics().getNumberOfFailedCalls()).isEqualTo(0);
@@ -78,7 +78,7 @@ public class OpenAiCircuitBreakerTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        assertThatThrownBy(() -> openAiClient.sendRequest(request))
+        assertThatThrownBy(() -> openAiClient.sendChatRequest(request))
                 .isInstanceOf(OpenAiServerException.class);
         assertThat(circuitBreaker.getMetrics().getNumberOfFailedCalls()).isEqualTo(1);
         assertThat(circuitBreaker.getMetrics().getNumberOfSuccessfulCalls()).isEqualTo(0);

@@ -1,10 +1,13 @@
 package com.nyangtodac.external.ai.infrastructure;
 
-import com.nyangtodac.external.ai.retry.OpenAiClientException;
-import com.nyangtodac.external.ai.retry.OpenAiServerException;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiClientException;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.github.resilience4j.retry.Retry;
+import io.github.resilience4j.retry.RetryRegistry;
+import io.micrometer.core.annotation.Counted;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.*;
 
@@ -22,17 +25,28 @@ public class OpenAiClient {
     private final Retry retry;
     private final CircuitBreaker circuitBreaker;
 
-    public OpenAiClient(RestClient.Builder builder, Retry retry, CircuitBreakerRegistry circuitBreakerRegistry) {
+    public OpenAiClient(@Qualifier("openAiRestClientBuilder") RestClient.Builder builder, RetryRegistry retryRegistry, CircuitBreakerRegistry circuitBreakerRegistry) {
         this.restClient = builder.build();
-        this.retry = retry;
+        this.retry = retryRegistry.retry("openAiRetry");
         this.circuitBreaker = circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker");
     }
 
-    public ChatCompletionResponse sendRequest(ChatCompletionRequest request) {
+    @Counted("ai.chat")
+    public ChatCompletionResponse sendChatRequest(ChatCompletionRequest request) {
         Supplier<ChatCompletionResponse> supplier = () -> doRequest(request);
         supplier = Retry.decorateSupplier(retry, supplier);
         supplier = CircuitBreaker.decorateSupplier(circuitBreaker, supplier);
         return supplier.get();
+    }
+
+    @Counted("ai.summary")
+    public ChatCompletionResponse sendSummaryRequest(ChatCompletionRequest request) {
+        return doRequest(request);
+    }
+
+    @Counted("ai.act.recommend")
+    public ChatCompletionResponse sendACTRecommendRequest(ChatCompletionRequest request) {
+        return doRequest(request);
     }
 
     private ChatCompletionResponse doRequest(ChatCompletionRequest request) {

@@ -4,9 +4,9 @@ import lombok.Getter;
 
 @Getter
 public class ErrorResponse {
-    private String content;
+    private final String message;
 
-    public ErrorResponse(String content) {
-        this.content = content;
+    public ErrorResponse(String message) {
+        this.message = message;
     }
 }

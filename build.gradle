@@ -29,7 +29,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'com.h2database:h2'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -44,14 +43,27 @@ dependencies {
 	runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.11.5'
 	runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.11.5'
 
-	implementation 'org.apache.commons:commons-lang3:3.18.0'
-
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 
 	implementation("io.hypersistence:hypersistence-tsid:2.1.4")
 
 	implementation 'io.github.resilience4j:resilience4j-retry:2.3.0'
 	implementation 'io.github.resilience4j:resilience4j-circuitbreaker:2.3.0'
+
+	implementation("com.bucket4j:bucket4j_jdk17-core:8.15.0")
+	implementation 'com.bucket4j:bucket4j_jdk17-redis-common:8.15.0'
+	implementation 'com.bucket4j:bucket4j_jdk17-lettuce:8.15.0'
+
+	implementation 'org.postgresql:postgresql:42.7.8'
+
+	//monitoring
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'io.micrometer:micrometer-registry-prometheus'
+	implementation 'io.github.resilience4j:resilience4j-micrometer:2.3.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-aop'
+
+	implementation 'org.springframework.boot:spring-boot-starter-amqp'
 }
 
 tasks.named('test') {

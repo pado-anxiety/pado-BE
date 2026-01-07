@@ -19,8 +19,8 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
-    public User(String email, LoginType loginType) {
-        this(null, email, loginType, null, null);
+    public User(String email, String name, LoginType loginType) {
+        this(null, email, loginType, name, null);
     }
 
     public void updateRefreshToken(String refreshToken) {

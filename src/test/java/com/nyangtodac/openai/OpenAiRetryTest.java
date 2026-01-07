@@ -3,10 +3,11 @@ package com.nyangtodac.openai;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionRequest;
 import com.nyangtodac.external.ai.infrastructure.ChatCompletionResponse;
 import com.nyangtodac.external.ai.infrastructure.OpenAiClient;
-import com.nyangtodac.external.ai.retry.OpenAiRetryConfig;
-import com.nyangtodac.external.ai.retry.OpenAiServerException;
-import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiRetryConfig;
+import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 
+import java.time.Duration;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
@@ -24,7 +27,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
 @RestClientTest(value = OpenAiClient.class)
-@Import(OpenAiRetryConfig.class)
+@Import({OpenAiRetryConfig.class, TestAiClientConfig.class})
 public class OpenAiRetryTest {
 
     private static final String URL = "/v1/chat/completions";
@@ -35,11 +38,26 @@ public class OpenAiRetryTest {
     @Autowired
     MockRestServiceServer mockServer;
 
+    @Autowired
+    CircuitBreakerRegistry circuitBreakerRegistry;
+
+    @BeforeEach
+    void setUp() {
+        circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker").reset();
+    }
+
     @TestConfiguration
-    static class DisableCircuitBreakerConfig {
+    static class TestCircuitBreakerConfig {
         @Bean
-        public CircuitBreaker openAiCircuitBreaker() {
-            return CircuitBreaker.of("testCircuitBreaker", CircuitBreakerConfig.custom().build());
+        public CircuitBreakerRegistry circuitBreakerRegistry() {
+            CircuitBreakerConfig config = CircuitBreakerConfig.custom()
+                    .slidingWindowSize(100)
+                    .failureRateThreshold(100)
+                    .waitDurationInOpenState(Duration.ofSeconds(60))
+                    .permittedNumberOfCallsInHalfOpenState(10)
+                    .build();
+
+            return CircuitBreakerRegistry.of(config);
         }
     }
 
@@ -55,7 +73,7 @@ public class OpenAiRetryTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        ChatCompletionResponse response = openAiClient.sendRequest(request);
+        ChatCompletionResponse response = openAiClient.sendChatRequest(request);
 
         assertThat(response).isNotNull();
 
@@ -74,7 +92,7 @@ public class OpenAiRetryTest {
 
         ChatCompletionRequest request = new ChatCompletionRequest();
 
-        assertThatThrownBy(() -> openAiClient.sendRequest(request))
+        assertThatThrownBy(() -> openAiClient.sendChatRequest(request))
                 .isInstanceOf(OpenAiServerException.class);
 
         mockServer.verify();

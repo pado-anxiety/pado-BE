@@ -1,0 +1,57 @@
+version: "3.9"
+
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    container_name: pgvector-db-test
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_password
+    ports:
+      - "15432:5432"
+    tmpfs:
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U test_user -d test_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7.2
+    container_name: redis-test
+    ports:
+      - "16379:6379"
+    command: redis-server --save "" --appendonly no
+    tmpfs:
+      - /data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  test-runner:
+    image: eclipse-temurin:17-jdk
+    container_name: spring-test-runner
+    working_dir: /app
+    user: root
+    volumes:
+      - ./:/app
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: test
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/test_db
+      SPRING_DATASOURCE_USERNAME: test_user
+      SPRING_DATASOURCE_PASSWORD: test_password
+      SPRING_REDIS_HOST: redis
+      SPRING_REDIS_PORT: 6379
+      TZ: Asia/Seoul
+      PGDATABASE: test_db
+      GRADLE_USER_HOME: /app/.gradle
+    command: sh -c "chmod +x ./gradlew && ./gradlew test --no-daemon"

@@ -24,11 +24,12 @@ public class UserEntity {
     protected UserEntity() {
     }
 
-    public UserEntity(Long id, String email, LoginType loginType, String name) {
+    private UserEntity(Long id, String email, LoginType loginType, String name, String refreshToken) {
         this.id = id;
         this.email = email;
         this.loginType = loginType;
         this.name = name;
+        this.refreshToken = refreshToken;
     }
 
     public User toModel() {
@@ -36,6 +37,6 @@ public class UserEntity {
     }
 
     public static UserEntity fromModel(User user) {
-        return new UserEntity(user.getId(), user.getEmail(), user.getLoginType(), user.getName());
+        return new UserEntity(user.getId(), user.getEmail(), user.getLoginType(), user.getName(), user.getRefreshToken());
     }
 }
