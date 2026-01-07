@@ -82,6 +82,6 @@ jobs:
           key: ${{ secrets.PROD_SSH_PRIVATE_KEY }}
           script: |
             cd /home/pado
-            echo "APP_VERSION=${VERSION}" > .env
+            echo "APP_VERSION=${{ env.VERSION }}" >> .env
             docker compose pull
             docker compose up -d
