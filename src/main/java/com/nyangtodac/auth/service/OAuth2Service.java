@@ -32,8 +32,11 @@ public class OAuth2Service {
 
         Optional<User> optional = userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.GOOGLE);
         User user = optional.orElseGet(() -> userRepository.save(new User(userInfo.getEmail(), userInfo.getName(), LoginType.GOOGLE)));
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+        user.updateRefreshToken(refreshToken);
+        userRepository.save(user);
 
-        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), jwtTokenProvider.createRefreshToken(user.getId()));
+        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), refreshToken);
     }
 
     public TokenResponse kakaoLogin(String accessToken) {
@@ -41,8 +44,11 @@ public class OAuth2Service {
 
         Optional<User> optional = userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.KAKAO);
         User user = optional.orElseGet(() -> userRepository.save(new User(userInfo.getEmail(), userInfo.getName(), LoginType.KAKAO)));
+        String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
+        user.updateRefreshToken(refreshToken);
+        userRepository.save(user);
 
-        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), jwtTokenProvider.createRefreshToken(user.getId()));
+        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), refreshToken);
     }
 
     public void logout(Long userId) {
