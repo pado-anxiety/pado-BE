@@ -92,4 +92,10 @@ public class JwtTokenProvider {
             userDetails.getAuthorities());
     }
 
+    public Long getUserIdFromToken(String token) {
+        return Long.parseLong(
+                Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody()
+                        .getSubject());
+    }
+
 }
