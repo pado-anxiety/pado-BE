@@ -70,7 +70,7 @@ jobs:
         run: |
           docker buildx create --use
           docker buildx build \
-            --platform linux/amd64 \
+            --platform linux/arm64 \
             -t ${{ secrets.DOCKERHUB_USERNAME }}/pado-prod:${VERSION} \
             --push .
 
