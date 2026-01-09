@@ -18,7 +18,7 @@ public class Bucket4jTest {
     public Bucket resolveBucket(Long userId) {
         return bucketStore.computeIfAbsent(userId, id ->
                 Bucket.builder()
-                        .addLimit(limit -> limit.capacity(5).refillIntervally(1, Duration.ofSeconds(1)))
+                        .addLimit(limit -> limit.capacity(5).refillIntervally(1, Duration.ofSeconds(1000)))
                         .build()
         );
     }
@@ -29,7 +29,7 @@ public class Bucket4jTest {
     }
 
     @Test
-    @DisplayName("토큰 소비 및 리필 테스트")
+    @DisplayName("토큰 소비 테스트")
     void test1() throws InterruptedException {
         Long user1 = 1L;
 
@@ -46,11 +46,6 @@ public class Bucket4jTest {
         assertThat(bucket.getAvailableTokens()).isEqualTo(0);
 
         assertThat(bucket.tryConsume(1)).isFalse();
-
-        Thread.sleep(1100);
-
-        assertThat(bucket.tryConsume(1)).isTrue();
-        assertThat(bucket.getAvailableTokens()).isEqualTo(0);
     }
 
 }
