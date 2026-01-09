@@ -7,6 +7,7 @@ import com.nyangtodac.external.ai.resilience4j.retry.OpenAiRetryConfig;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClient;
 
 import java.time.Duration;
 
@@ -26,23 +28,27 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RestClientTest(value = OpenAiClient.class)
-@Import({OpenAiRetryConfig.class, TestAiClientConfig.class})
+@RestClientTest
+@Import({OpenAiRetryConfig.class})
 public class OpenAiRetryTest {
 
     private static final String URL = "/v1/chat/completions";
 
-    @Autowired
     OpenAiClient openAiClient;
 
-    @Autowired
     MockRestServiceServer mockServer;
+
+    @Autowired
+    RetryRegistry retryRegistry;
 
     @Autowired
     CircuitBreakerRegistry circuitBreakerRegistry;
 
     @BeforeEach
     void setUp() {
+        RestClient.Builder builder = RestClient.builder();
+        mockServer = MockRestServiceServer.bindTo(builder).build();
+        openAiClient = new OpenAiClient(builder, retryRegistry, circuitBreakerRegistry);
         circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker").reset();
     }
 
