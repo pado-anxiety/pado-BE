@@ -8,6 +8,7 @@ import com.nyangtodac.external.ai.resilience4j.retry.OpenAiRetryConfig;
 import com.nyangtodac.external.ai.resilience4j.retry.OpenAiServerException;
 import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import io.github.resilience4j.retry.RetryRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
+import org.springframework.web.client.RestClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -23,17 +25,18 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-@RestClientTest(value = OpenAiClient.class)
-@Import({OpenAiRetryConfig.class, OpenAiCircuitBreakerConfig.class, TestAiClientConfig.class})
+@RestClientTest
+@Import({OpenAiRetryConfig.class, OpenAiCircuitBreakerConfig.class})
 public class OpenAiCircuitBreakerTest {
 
     private static final String URL = "/v1/chat/completions";
 
-    @Autowired
     OpenAiClient openAiClient;
 
-    @Autowired
     MockRestServiceServer mockServer;
+
+    @Autowired
+    RetryRegistry retryRegistry;
 
     @Autowired
     CircuitBreakerRegistry circuitBreakerRegistry;
@@ -42,6 +45,9 @@ public class OpenAiCircuitBreakerTest {
 
     @BeforeEach
     void setUp() {
+        RestClient.Builder builder = RestClient.builder();
+        mockServer = MockRestServiceServer.bindTo(builder).build();
+        openAiClient = new OpenAiClient(builder, retryRegistry, circuitBreakerRegistry);
         circuitBreaker = circuitBreakerRegistry.circuitBreaker("openAiCircuitBreaker");
         circuitBreaker.reset();
     }

@@ -49,4 +49,10 @@ public class ACTRecordController {
         actRecordService.recordAcceptance(userId, data);
         return ResponseEntity.ok().build();
     }
+
+    @PostMapping("/committed-action")
+    public ResponseEntity<Void> committedAction(@LoginUser Long userId, @RequestBody JsonNode data) {
+        actRecordService.recordCommittedAction(userId, data);
+        return ResponseEntity.ok().build();
+    }
 }
