@@ -87,5 +87,5 @@ jobs:
             grep -v '^APP_VERSION=' .env > .env.tmp || true
             mv .env.tmp .env
             echo "APP_VERSION=${{ env.VERSION }}" >> .env
-            docker compose pull
-            docker compose up -d
+            docker compose pull spring-app
+            docker compose up -d --no-deps spring-app
