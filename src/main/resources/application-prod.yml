@@ -1,6 +1,8 @@
 spring:
   application:
     name: pado
+  jpa:
+    open-in-view: false
   config:
     import: file:/home/pado/application-secret-prod.yml
 
