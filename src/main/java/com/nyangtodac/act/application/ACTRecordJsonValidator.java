@@ -13,6 +13,7 @@ public class ACTRecordJsonValidator {
             case EMOTION_NOTE -> validateEmotionNoteData(data);
             case COGNITIVE_DEFUSION -> validateCognitiveDefusionData(data);
             case ACCEPTANCE -> validateAcceptanceData(data);
+            case COMMITTED_ACTION -> validateCommittedActionData(data);
         }
     }
 
@@ -58,6 +59,33 @@ public class ACTRecordJsonValidator {
         }
     }
 
+    private void validateCommittedActionData(JsonNode data) {
+        JsonNode diagnosis = data.get("diagnosis");
+        if (diagnosis == null || !diagnosis.isObject()) {
+            throw new InvalidActRecordRequestException("diagnosis 필드는 객체여야 합니다.");
+        }
+
+        validateDiagnosisInt(diagnosis, "work");
+        validateDiagnosisInt(diagnosis, "growth");
+        validateDiagnosisInt(diagnosis, "leisure");
+        validateDiagnosisInt(diagnosis, "relationship");
+
+        JsonNode matter = data.get("matter");
+        if (matter == null || !matter.isTextual()) {
+            throw new InvalidActRecordRequestException("matter 필드는 문자열이어야 합니다.");
+        }
+        try {
+            Diagnosis.valueOf(matter.asText());
+        } catch (IllegalArgumentException e) {
+            throw new InvalidActRecordRequestException("matter 값이 올바르지 않습니다.");
+        }
+
+        validateStringField(data, "value");
+        validateStringField(data, "barrier");
+        validateStringField(data, "action");
+    }
+
+
     private void validateAcceptanceData(JsonNode data) {
         validateStringField(data, "breathingTime");
     }
@@ -75,6 +103,22 @@ public class ACTRecordJsonValidator {
 
         if (field.asText().trim().isEmpty()) {
             throw new InvalidActRecordRequestException(fieldName + " 필드는 비어 있을 수 없습니다.");
+        }
+    }
+
+    private void validateDiagnosisInt(JsonNode data, String fieldName) {
+        if (!data.has(fieldName)) {
+            throw new InvalidActRecordRequestException(fieldName + " 필드가 존재하지 않습니다.");
+        }
+
+        JsonNode field = data.get(fieldName);
+
+        if (!field.isInt()) {
+            throw new InvalidActRecordRequestException(fieldName + " 필드는 정수여야 합니다.");
+        }
+        int anInt = field.asInt();
+        if (anInt < 1) {
+            throw new InvalidActRecordRequestException("정수 값의 범위가 잘못되었습니다.");
         }
     }
 

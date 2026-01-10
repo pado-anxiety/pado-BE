@@ -60,4 +60,9 @@ public class ACTRecordService {
         jsonValidator.validate(ACTType.ACCEPTANCE, jsonNode);
         actRecordRepository.save(new ACTRecordEntity(userId, ACTType.ACCEPTANCE, actRecordConverter.convertToMap(jsonNode)));
     }
+
+    public void recordCommittedAction(Long userId, JsonNode jsonNode) {
+        jsonValidator.validate(ACTType.COMMITTED_ACTION, jsonNode);
+        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.COMMITTED_ACTION, actRecordConverter.convertToMap(jsonNode)));
+    }
 }
