@@ -6,6 +6,7 @@ import com.nyangtodac.chat.controller.dto.message.MessageRequest;
 import com.nyangtodac.chat.domain.ChatSummaries;
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.ChattingContext;
+import com.nyangtodac.chat.quota.ChatQuotaExceededException;
 import com.nyangtodac.chat.quota.QuotaStatus;
 import com.nyangtodac.external.rabbitmq.ChattingFlushProducer;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +25,10 @@ public class AIChatFacade {
     private final ChattingFlushProducer chattingFlushProducer;
 
     public ChattingResponse postMessage(Long userId, MessageRequest messageRequest) {
-//        if (!aiQuotaService.tryConsume(userId)) {
-//            QuotaStatus quotaStatus = aiQuotaService.getQuotaStatus(userId);
-//            throw new ChatQuotaExceededException(quotaStatus);
-//        } FIXME
+        if (!aiQuotaService.tryConsume(userId)) {
+            QuotaStatus quotaStatus = aiQuotaService.getQuotaStatus(userId);
+            throw new ChatQuotaExceededException(quotaStatus);
+        }
         Chatting userChatting = new Chatting(messageRequest.getMessage(), Sender.USER);
         ChattingContext chattingContext = contextService.makeContext(userId, userChatting);
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
