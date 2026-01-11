@@ -1,6 +1,6 @@
 spring:
   application:
-    name: nyangtodac
+    name: pado
   profiles:
     include: secret
 
