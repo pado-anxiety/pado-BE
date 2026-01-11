@@ -20,12 +20,9 @@ public class ACTRecordMapperTest {
         //given
         int pageSize = 2;
 
-        ACTRecordEntity e1 = new ACTRecordEntity(1L, ACTType.EMOTION_NOTE, null);
-        ReflectionTestUtils.setField(e1, "id", 1L);
-        ACTRecordEntity e2 = new ACTRecordEntity(2L, ACTType.ACCEPTANCE, null);
-        ReflectionTestUtils.setField(e2, "id", 2L);
-        ACTRecordEntity e3 = new ACTRecordEntity(3L, ACTType.COGNITIVE_DEFUSION, null); // 초과분
-        ReflectionTestUtils.setField(e3, "id", 3L);
+        ACTRecordEntity e1 = new ACTRecordEntity(1L, 1L, ACTType.EMOTION_NOTE, null);
+        ACTRecordEntity e2 = new ACTRecordEntity(2L, 1L, ACTType.ACCEPTANCE, null);
+        ACTRecordEntity e3 = new ACTRecordEntity(3L, 1L, ACTType.COGNITIVE_DEFUSION, null); // 초과분
 
         List<ACTRecordEntity> entities = new ArrayList<>(List.of(e1, e2, e3));
 
@@ -48,10 +45,8 @@ public class ACTRecordMapperTest {
         //given
         int pageSize = 3;
 
-        ACTRecordEntity e1 = new ACTRecordEntity(1L, ACTType.EMOTION_NOTE, null);
-        ReflectionTestUtils.setField(e1, "id", 1L);
-        ACTRecordEntity e2 = new ACTRecordEntity(2L, ACTType.ACCEPTANCE, null);
-        ReflectionTestUtils.setField(e2, "id", 2L);
+        ACTRecordEntity e1 = new ACTRecordEntity(1L, 1L, ACTType.EMOTION_NOTE, null);
+        ACTRecordEntity e2 = new ACTRecordEntity(2L, 1L, ACTType.ACCEPTANCE, null);
 
         List<ACTRecordEntity> entities = new ArrayList<>(List.of(e1, e2));
 

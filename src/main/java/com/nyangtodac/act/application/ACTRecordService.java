@@ -6,6 +6,7 @@ import com.nyangtodac.act.controller.dto.ACTRecordResponse;
 import com.nyangtodac.act.controller.dto.ACTRecords;
 import com.nyangtodac.act.infrastructure.ACTRecordEntity;
 import com.nyangtodac.act.infrastructure.ACTRecordRepository;
+import com.nyangtodac.tsid.ACTRecordTsidUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -39,30 +40,34 @@ public class ACTRecordService {
         if (!entity.getUserId().equals(userId)) {
             throw new ACTAccessDeniedException();
         }
-        return new ACTRecordResponse(entity.getId(), entity.getTime(), entity.getActType(), actRecordConverter.convertToJsonNode(entity.getData()));
+        return new ACTRecordResponse(entity.getTsid(), ACTRecordTsidUtil.toLocalDateTime(entity.getTsid()), entity.getActType(), actRecordConverter.convertToJsonNode(entity.getData()));
     }
 
     public void recordContactWithPresent(Long userId) {
-        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.CONTACT_WITH_PRESENT, null));
+        actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.CONTACT_WITH_PRESENT, null));
     }
 
     public void recordEmotionNote(Long userId, JsonNode jsonNode) {
         jsonValidator.validate(ACTType.EMOTION_NOTE, jsonNode);
-        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.EMOTION_NOTE, actRecordConverter.convertToMap(jsonNode)));
+        actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.EMOTION_NOTE, actRecordConverter.convertToMap(jsonNode)));
     }
 
     public void recordCognitiveDefusion(Long userId, JsonNode jsonNode) {
         jsonValidator.validate(ACTType.COGNITIVE_DEFUSION, jsonNode);
-        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.COGNITIVE_DEFUSION, actRecordConverter.convertToMap(jsonNode)));
+        actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.COGNITIVE_DEFUSION, actRecordConverter.convertToMap(jsonNode)));
     }
 
     public void recordAcceptance(Long userId, JsonNode jsonNode) {
         jsonValidator.validate(ACTType.ACCEPTANCE, jsonNode);
-        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.ACCEPTANCE, actRecordConverter.convertToMap(jsonNode)));
+        actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.ACCEPTANCE, actRecordConverter.convertToMap(jsonNode)));
     }
 
     public void recordCommittedAction(Long userId, JsonNode jsonNode) {
         jsonValidator.validate(ACTType.COMMITTED_ACTION, jsonNode);
-        actRecordRepository.save(new ACTRecordEntity(userId, ACTType.COMMITTED_ACTION, actRecordConverter.convertToMap(jsonNode)));
+        actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.COMMITTED_ACTION, actRecordConverter.convertToMap(jsonNode)));
+    }
+
+    private Long generatedTsid() {
+        return ACTRecordTsidUtil.generate();
     }
 }
