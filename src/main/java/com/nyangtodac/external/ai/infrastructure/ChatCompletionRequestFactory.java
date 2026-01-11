@@ -34,7 +34,7 @@ public class ChatCompletionRequestFactory {
                 ? List.of()
                 : List.of(new ChatCompletionRequest.Message(
                 "system",
-                promptManager.getSummaryPrefix() + summaries.getSummaryList().stream()
+                promptManager.getSummaryPrefix().getSystem() + "\n" + summaries.getSummaryList().stream()
                         .map(ChatSummary::getSummaryText)
                         .collect(Collectors.joining("\n\n"))
         ));

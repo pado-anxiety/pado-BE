@@ -2,9 +2,8 @@ package com.nyangtodac.chat.application;
 
 import com.nyangtodac.chat.domain.Chatting;
 import com.nyangtodac.chat.domain.ChattingContext;
-import com.nyangtodac.chat.infrastructure.RecentChattingRedisRepository;
 import com.nyangtodac.chat.infrastructure.ChattingDBRepository;
-import lombok.RequiredArgsConstructor;
+import com.nyangtodac.chat.infrastructure.RecentChattingRedisRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,13 +12,21 @@ import java.util.Comparator;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class ChattingContextService {
 
     private final RecentChattingRedisRepository recentChattingRedisRepository;
     private final ChattingDBRepository chattingDBRepository;
 
-    @Value("${chat.context.size}") private int contextSize;
+    private final int contextSize;
+
+    public ChattingContextService(
+            RecentChattingRedisRepository recentChattingRedisRepository,
+            ChattingDBRepository chattingDBRepository,
+            @Value("${chat.context.size}") int contextSize) {
+        this.recentChattingRedisRepository = recentChattingRedisRepository;
+        this.chattingDBRepository = chattingDBRepository;
+        this.contextSize = contextSize;
+    }
 
     @Transactional(readOnly = true)
     public ChattingContext makeContext(Long userId, Chatting userChatting) {

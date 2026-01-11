@@ -10,4 +10,7 @@ public class SystemPrompt {
     public SystemPrompt() {
     }
 
+    public SystemPrompt(String system) {
+        this.system = system;
+    }
 }
