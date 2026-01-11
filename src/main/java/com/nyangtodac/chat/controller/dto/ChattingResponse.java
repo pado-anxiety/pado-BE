@@ -1,6 +1,6 @@
 package com.nyangtodac.chat.controller.dto;
 
-import com.nyangtodac.chat.tsid.TsidUtil;
+import com.nyangtodac.tsid.ChattingTsidUtil;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -14,6 +14,6 @@ public class ChattingResponse {
     public ChattingResponse(Sender sender, String message, Long tsid) {
         this.sender = sender;
         this.message = message;
-        this.time = TsidUtil.toLocalDateTime(tsid);
+        this.time = ChattingTsidUtil.toLocalDateTime(tsid);
     }
 }
