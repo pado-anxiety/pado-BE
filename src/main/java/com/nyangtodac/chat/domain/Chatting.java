@@ -3,7 +3,7 @@ package com.nyangtodac.chat.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.nyangtodac.chat.controller.dto.Sender;
-import com.nyangtodac.chat.tsid.TsidUtil;
+import com.nyangtodac.tsid.ChattingTsidUtil;
 import lombok.Getter;
 
 @Getter
@@ -14,7 +14,7 @@ public class Chatting {
     private final String sender;
 
     public Chatting(String message, Sender sender) {
-        this.tsid = TsidUtil.generate();
+        this.tsid = ChattingTsidUtil.generate();
         this.message = message;
         this.sender = sender.name();
     }

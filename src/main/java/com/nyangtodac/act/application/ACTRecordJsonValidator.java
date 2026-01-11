@@ -87,7 +87,13 @@ public class ACTRecordJsonValidator {
 
 
     private void validateAcceptanceData(JsonNode data) {
-        validateStringField(data, "breathingTime");
+        if (!data.has("breathingTime")) {
+            throw new InvalidActRecordRequestException("breathingTime 필드가 존재하지 않습니다.");
+        }
+        JsonNode time = data.get("breathingTime");
+        if (!time.isInt()) {
+            throw new InvalidActRecordRequestException("breathingTime 필드는 정수여야 합니다.");
+        }
     }
 
     private void validateStringField(JsonNode data, String fieldName) {
@@ -117,8 +123,8 @@ public class ACTRecordJsonValidator {
             throw new InvalidActRecordRequestException(fieldName + " 필드는 정수여야 합니다.");
         }
         int anInt = field.asInt();
-        if (anInt < 1) {
-            throw new InvalidActRecordRequestException("정수 값의 범위가 잘못되었습니다.");
+        if (anInt < 1 || anInt > 3) {
+            throw new InvalidActRecordRequestException("diagnosis." + fieldName + " 값의 범위는 1~3 사이여야 합니다.");
         }
     }
 

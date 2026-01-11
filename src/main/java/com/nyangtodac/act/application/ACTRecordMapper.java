@@ -2,6 +2,7 @@ package com.nyangtodac.act.application;
 
 import com.nyangtodac.act.controller.dto.ACTRecords;
 import com.nyangtodac.act.infrastructure.ACTRecordEntity;
+import com.nyangtodac.tsid.ACTRecordTsidUtil;
 
 import java.util.List;
 
@@ -15,11 +16,11 @@ public class ACTRecordMapper {
             entities.remove(entities.size() - 1);
         }
         if (!entities.isEmpty()) {
-            cursor = entities.get(entities.size() - 1).getId();
+            cursor = entities.get(entities.size() - 1).getTsid();
         }
         ACTRecords actRecords = new ACTRecords(cursor, hasNext);
         for (ACTRecordEntity entity : entities) {
-            actRecords.addRecord(new ACTRecords.Record(entity.getId(), entity.getActType(), entity.getTime()));
+            actRecords.addRecord(new ACTRecords.Record(entity.getTsid(), entity.getActType(), ACTRecordTsidUtil.toLocalDateTime(entity.getTsid())));
         }
         return actRecords;
     }

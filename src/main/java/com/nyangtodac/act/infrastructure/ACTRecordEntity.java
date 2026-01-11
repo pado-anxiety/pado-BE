@@ -6,7 +6,6 @@ import lombok.Getter;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 @Entity
@@ -15,14 +14,10 @@ import java.util.Map;
 public class ACTRecordEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long tsid;
 
     @Column(nullable = false)
     private Long userId;
-
-    @Column(nullable = false)
-    private LocalDateTime time;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -35,15 +30,10 @@ public class ACTRecordEntity {
     protected ACTRecordEntity() {
     }
 
-    private ACTRecordEntity(Long id, Long userId, LocalDateTime time, ACTType actType, Map<String, Object> data) {
-        this.id = id;
+    public ACTRecordEntity(Long tsid, Long userId, ACTType actType, Map<String, Object> data) {
+        this.tsid = tsid;
         this.userId = userId;
-        this.time = time;
         this.actType = actType;
         this.data = data;
-    }
-
-    public ACTRecordEntity(Long userId, ACTType actType, Map<String, Object> data) {
-        this(null, userId, LocalDateTime.now(), actType, data);
     }
 }

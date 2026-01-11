@@ -1,16 +1,16 @@
-package com.nyangtodac.chat.tsid;
+package com.nyangtodac.tsid;
 
 import io.hypersistence.tsid.TSID;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 
-public class TsidUtil {
-
+public class ChattingTsidUtil {
+    private static final TSID.Factory FACTORY = TSID.Factory.builder().build();
     private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     public static Long generate() {
-        return TSID.Factory.getTsid().toLong();
+        return FACTORY.generate().toLong();
     }
 
     public static LocalDateTime toLocalDateTime(Long tsid) {

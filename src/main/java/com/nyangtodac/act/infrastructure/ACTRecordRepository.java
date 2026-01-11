@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface ACTRecordRepository extends JpaRepository<ACTRecordEntity, Long> {
 
-    List<ACTRecordEntity> findAllByUserIdAndIdLessThanOrderByTimeDesc(Long userId, Long cursor, Pageable pageable);
+    List<ACTRecordEntity> findAllByUserIdAndTsidLessThanOrderByTsidDesc(Long userId, Long cursor, Pageable pageable);
 }
