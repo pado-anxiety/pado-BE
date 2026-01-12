@@ -1,5 +1,6 @@
 package com.pado.act;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pado.act.application.ACTRecordJsonValidator;
@@ -69,6 +70,36 @@ public class ACTRecordJsonValidatorTest {
         """);
 
         assertThatThrownBy(() -> validator.validate(ACTType.COGNITIVE_DEFUSION, json)).isInstanceOf(InvalidActRecordRequestException.class).hasMessageContaining("비어 있을 수 없습니다");
+    }
+
+    @Test
+    @DisplayName("COGNITIVE_DEFUSION - 총 text의 길이 100글자")
+    void cognitive_defusion_총_text_길이가_100글자() throws JsonProcessingException {
+        JsonNode json = objectMapper.readTree("""
+        {
+          "userTextToken": [
+            { "text": "차분한 오후에 커피 향이 번지고, 창가의 빛 속에서 우리는 작은 목표를 세우며 내일을 준비한다.", "isSelected": true },
+            { "text": "조용한 음악과 함께 호흡을 고르며 오늘의 배움을 마음에 새긴다. 그리고 미소짓는다!", "isSelected": false }
+          ]
+        }
+        """);
+
+        assertThatCode(() -> validator.validate(ACTType.COGNITIVE_DEFUSION, json)).doesNotThrowAnyException();
+    }
+
+    @Test
+    @DisplayName("COGNITIVE_DEFUSION - 총 text의 길이 100글자 초과 시 예외")
+    void cognitive_defusion_총_text_길이가_100글자_초과() throws JsonProcessingException {
+        JsonNode json = objectMapper.readTree("""
+        {
+          "userTextToken": [
+            { "text": "차분한 오후에 커피 향이 번지고, 창가의 빛 속에서 우리는 작은 목표를 세우며 내일을 준비한다.", "isSelected": true },
+            { "text": "조용한 음악과 함께 호흡을 고르며 오늘의 배움을 마음에 새긴다. 그리고 미소짓는다!!", "isSelected": false }
+          ]
+        }
+        """);
+
+        assertThatThrownBy(() -> validator.validate(ACTType.COGNITIVE_DEFUSION, json)).isInstanceOf(InvalidActRecordRequestException.class);
     }
 
     @Test
