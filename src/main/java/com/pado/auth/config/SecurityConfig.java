@@ -33,7 +33,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login/**", "/actuator/**", "/tokens/reissue").permitAll()
+                        .requestMatchers("/login/**", "/tokens/reissue").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

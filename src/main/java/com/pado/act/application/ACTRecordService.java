@@ -26,16 +26,18 @@ public class ACTRecordService {
     private static final int ACT_RECORD_PAGE_SIZE = 20;
 
     @Transactional(readOnly = true)
-    public ACTRecords findAllActRecords(Long userId, Long cursor) {
-        if (cursor == null) {
-            cursor = Long.MAX_VALUE;
+    public ACTRecords findAllActRecords(Long userId, String stringCursor) {
+        long cursor = Long.MAX_VALUE;
+        if (stringCursor != null) {
+            cursor = Long.parseLong(stringCursor);
         }
         List<ACTRecordEntity> entities = actRecordRepository.findAllByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE + 1)); // hasNext를 위한 +1 조회
         return ACTRecordMapper.toACTRecords(entities, ACT_RECORD_PAGE_SIZE);
     }
 
     @Transactional(readOnly = true)
-    public ACTRecordResponse findACTRecordResponse(Long userId, Long recordId) {
+    public ACTRecordResponse findACTRecordResponse(Long userId, String stringRecordId) {
+        long recordId = Long.parseLong(stringRecordId);
         ACTRecordEntity entity = actRecordRepository.findById(recordId).orElseThrow(() -> new ACTRecordNotFoundException(recordId));
         if (!entity.getUserId().equals(userId)) {
             throw new ACTAccessDeniedException();

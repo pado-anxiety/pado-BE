@@ -31,11 +31,11 @@ public class ACTRecordMapperTest {
 
         //then
         assertThat(result.getHasNext()).isTrue();
-        assertThat(result.getCursor()).isEqualTo(2L);
+        assertThat(result.getCursor()).isEqualTo("2");
         assertThat(result.getContent()).hasSize(2);
 
-        assertThat(result.getContent().get(0).getId()).isEqualTo(1L);
-        assertThat(result.getContent().get(1).getId()).isEqualTo(2L);
+        assertThat(result.getContent().get(0).getId()).isEqualTo("1");
+        assertThat(result.getContent().get(1).getId()).isEqualTo("2");
     }
 
     @Test
@@ -54,7 +54,7 @@ public class ACTRecordMapperTest {
 
         //then
         assertThat(result.getHasNext()).isFalse();
-        assertThat(result.getCursor()).isEqualTo(2L);
+        assertThat(result.getCursor()).isEqualTo("2");
         assertThat(result.getContent()).hasSize(2);
     }
 

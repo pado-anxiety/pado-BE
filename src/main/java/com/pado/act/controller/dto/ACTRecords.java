@@ -10,12 +10,12 @@ import java.util.List;
 @Getter
 public class ACTRecords {
     private final List<Record> content;
-    private final Long cursor;
+    private final String cursor;
     private final Boolean hasNext;
 
     public ACTRecords(Long cursor, Boolean hasNext) {
         this.content = new ArrayList<>();
-        this.cursor = cursor;
+        this.cursor = String.valueOf(cursor);
         this.hasNext = hasNext;
     }
 
@@ -25,12 +25,12 @@ public class ACTRecords {
 
     @Getter
     public static class Record {
-        private final Long id;
+        private final String id;
         private final ACTType type;
         private final LocalDateTime time;
 
         public Record(Long id, ACTType type, LocalDateTime time) {
-            this.id = id;
+            this.id = String.valueOf(id);
             this.type = type;
             this.time = time;
         }

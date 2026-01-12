@@ -17,12 +17,12 @@ public class ACTRecordController {
     private final ACTRecordService actRecordService;
 
     @GetMapping
-    public ResponseEntity<ACTRecords> getACTRecords(@LoginUser Long userId, @RequestParam(required = false) Long cursor) {
+    public ResponseEntity<ACTRecords> getACTRecords(@LoginUser Long userId, @RequestParam(required = false) String cursor) {
         return ResponseEntity.ok(actRecordService.findAllActRecords(userId, cursor));
     }
 
     @GetMapping("/{recordId}")
-    public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser Long userId, @PathVariable("recordId") Long recordId) {
+    public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser Long userId, @PathVariable("recordId") String recordId) {
         return ResponseEntity.ok(actRecordService.findACTRecordResponse(userId, recordId));
     }
 

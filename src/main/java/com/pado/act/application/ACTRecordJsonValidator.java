@@ -18,9 +18,9 @@ public class ACTRecordJsonValidator {
     }
 
     private void validateEmotionNoteData(JsonNode data) {
-        validateStringField(data, "situation");
-        validateStringField(data, "thoughts");
-        validateStringField(data, "feelings");
+        validateStringField(data, "situation", 500);
+        validateStringField(data, "thoughts", 500);
+        validateStringField(data, "feelings", 500);
     }
 
     private void validateCognitiveDefusionData(JsonNode data) {
@@ -35,6 +35,7 @@ public class ACTRecordJsonValidator {
             throw new InvalidActRecordRequestException("userTextToken 배열은 비어 있을 수 없습니다.");
         }
 
+        int stringCount = tokens.size() - 1;
         for (int i = 0; i < tokens.size(); i++) {
             JsonNode token = tokens.get(i);
             if (!token.isObject()) {
@@ -49,6 +50,7 @@ public class ACTRecordJsonValidator {
                         "userTextToken[" + i + "].text 는 비어 있지 않은 문자열이어야 합니다."
                 );
             }
+            stringCount += text.asText().trim().length();
 
             JsonNode isSelected = token.get("isSelected");
             if (isSelected == null || !isSelected.isBoolean()) {
@@ -56,6 +58,10 @@ public class ACTRecordJsonValidator {
                         "userTextToken[" + i + "].isSelected 는 boolean 이어야 합니다."
                 );
             }
+        }
+
+        if (stringCount > 100) {
+            throw new InvalidActRecordRequestException("text의 총 길이는 100 이하여야 합니다.");
         }
     }
 
@@ -80,9 +86,9 @@ public class ACTRecordJsonValidator {
             throw new InvalidActRecordRequestException("matter 값이 올바르지 않습니다.");
         }
 
-        validateStringField(data, "value");
-        validateStringField(data, "barrier");
-        validateStringField(data, "action");
+        validateStringField(data, "value", 500);
+        validateStringField(data, "barrier", 500);
+        validateStringField(data, "action", 500);
     }
 
 
@@ -96,7 +102,7 @@ public class ACTRecordJsonValidator {
         }
     }
 
-    private void validateStringField(JsonNode data, String fieldName) {
+    private void validateStringField(JsonNode data, String fieldName, int length) {
         if (!data.has(fieldName)) {
             throw new InvalidActRecordRequestException(fieldName + " 필드가 존재하지 않습니다.");
         }
@@ -107,8 +113,13 @@ public class ACTRecordJsonValidator {
             throw new InvalidActRecordRequestException(fieldName + " 필드는 문자열이어야 합니다.");
         }
 
-        if (field.asText().trim().isEmpty()) {
+        String fieldValue = field.asText().trim();
+        if (fieldValue.isEmpty()) {
             throw new InvalidActRecordRequestException(fieldName + " 필드는 비어 있을 수 없습니다.");
+        }
+
+        if (fieldValue.length() > length) {
+            throw new InvalidActRecordRequestException(fieldName + " 필드의 길이가 " + length + "자를 초과하였습니다.");
         }
     }
 
