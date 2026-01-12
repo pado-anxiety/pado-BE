@@ -36,7 +36,8 @@ public class ACTRecordService {
     }
 
     @Transactional(readOnly = true)
-    public ACTRecordResponse findACTRecordResponse(Long userId, Long recordId) {
+    public ACTRecordResponse findACTRecordResponse(Long userId, String stringRecordId) {
+        long recordId = Long.parseLong(stringRecordId);
         ACTRecordEntity entity = actRecordRepository.findById(recordId).orElseThrow(() -> new ACTRecordNotFoundException(recordId));
         if (!entity.getUserId().equals(userId)) {
             throw new ACTAccessDeniedException();

@@ -22,7 +22,7 @@ public class ACTRecordController {
     }
 
     @GetMapping("/{recordId}")
-    public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser Long userId, @PathVariable("recordId") Long recordId) {
+    public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser Long userId, @PathVariable("recordId") String recordId) {
         return ResponseEntity.ok(actRecordService.findACTRecordResponse(userId, recordId));
     }
 
