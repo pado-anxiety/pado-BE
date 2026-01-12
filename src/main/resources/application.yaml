@@ -3,31 +3,3 @@ spring:
     name: pado
   profiles:
     include: secret
-
-chat:
-  openai:
-    model: gpt-4o-mini
-    temperature: 0.7
-    max-tokens: 550
-  quota:
-    max-tokens: 5
-    refill-interval-hours: 2
-    refill-tokens: 1
-  context:
-    size: 10
-    ttl-minutes: 10
-
-summary:
-  openai:
-    model: gpt-4o-mini
-    temperature: 0.2
-    max-tokens: 400
-
-act:
-  recommend:
-    openai:
-      model: gpt-4o-mini
-      temperature: 0.3
-      max-tokens: 500
-    quota:
-      max-tokens: 5
