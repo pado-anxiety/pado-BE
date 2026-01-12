@@ -5,3 +5,9 @@ spring:
     open-in-view: false
   config:
     import: file:/home/pado/application-secret-prod.yml
+
+logging:
+  level:
+    org.apache.catalina: OFF
+    org.springframework.web.servlet.DispatcherServlet: OFF
+  config: file:/home/pado/logback-prod.xml
