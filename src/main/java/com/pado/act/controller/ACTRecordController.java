@@ -17,7 +17,7 @@ public class ACTRecordController {
     private final ACTRecordService actRecordService;
 
     @GetMapping
-    public ResponseEntity<ACTRecords> getACTRecords(@LoginUser Long userId, @RequestParam(required = false) Long cursor) {
+    public ResponseEntity<ACTRecords> getACTRecords(@LoginUser Long userId, @RequestParam(required = false) String cursor) {
         return ResponseEntity.ok(actRecordService.findAllActRecords(userId, cursor));
     }
 

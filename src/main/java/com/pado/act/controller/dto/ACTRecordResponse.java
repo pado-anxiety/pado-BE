@@ -9,13 +9,13 @@ import java.time.LocalDateTime;
 @Getter
 public class ACTRecordResponse {
 
-    private final Long id;
+    private final String id;
     private final LocalDateTime time;
     private final ACTType type;
     private final JsonNode data;
 
     public ACTRecordResponse(Long id, LocalDateTime time, ACTType type, JsonNode data) {
-        this.id = id;
+        this.id = String.valueOf(id);
         this.time = time;
         this.type = type;
         this.data = data;
