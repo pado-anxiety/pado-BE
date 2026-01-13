@@ -4,12 +4,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.stereotype.Component;
 
 @Getter
 @Setter
 @ConfigurationProperties("act.committed-action")
-@Component
 public class CommittedActionProperties {
 
     private Diagnosis diagnosis;
