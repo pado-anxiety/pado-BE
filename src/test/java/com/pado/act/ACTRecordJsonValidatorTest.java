@@ -3,19 +3,72 @@ package com.pado.act;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pado.act.application.ACTRecordJsonValidator;
 import com.pado.act.application.InvalidActRecordRequestException;
+import com.pado.act.application.validator.ACTRecordJsonValidator;
+import com.pado.act.application.validator.properties.CognitiveDefusionProperties;
+import com.pado.act.application.validator.properties.CommittedActionProperties;
+import com.pado.act.application.validator.properties.EmotionNoteProperties;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import static org.assertj.core.api.Assertions.assertThatCode;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes= ACTRecordJsonValidatorTest.TestConfig.class)
+@EnableConfigurationProperties({EmotionNoteProperties.class, CognitiveDefusionProperties.class, CommittedActionProperties.class})
+@TestPropertySource(locations = "classpath:act-format.yml", factory = YamlPropertySourceFactory.class)
 public class ACTRecordJsonValidatorTest {
 
-    private final ACTRecordJsonValidator validator = new ACTRecordJsonValidator();
+    @Autowired
+    EmotionNoteProperties emotionNoteProperties;
 
+    @Autowired
+    CognitiveDefusionProperties cognitiveDefusionProperties;
+
+    @Autowired
+    CommittedActionProperties committedActionProperties;
+
+    @TestConfiguration
+    static class TestConfig {
+        @Bean
+        public EmotionNoteProperties emotionNoteProperties() {
+            return new EmotionNoteProperties();
+        }
+
+        @Bean
+        public CognitiveDefusionProperties cognitiveDefusionProperties() {
+            return new CognitiveDefusionProperties();
+        }
+
+        @Bean
+        public CommittedActionProperties committedActionProperties() {
+            return new CommittedActionProperties();
+        }
+    }
+
+    private ACTRecordJsonValidator validator;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @BeforeEach
+    void setUp() {
+        validator = new ACTRecordJsonValidator(emotionNoteProperties, cognitiveDefusionProperties, committedActionProperties);
+    }
+
+    @Test
+    @DisplayName("yaml load test")
+    void testYamlLoad() {
+        assertThat(emotionNoteProperties.getSituation().getLength()).isEqualTo(500);
+        assertThat(emotionNoteProperties.getFeelings().getLength()).isEqualTo(500);
+    }
 
     @Test
     @DisplayName("EMOTION_NOTE - 정상 데이터 통과")
