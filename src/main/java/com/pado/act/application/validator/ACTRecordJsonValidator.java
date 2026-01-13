@@ -1,11 +1,22 @@
-package com.pado.act.application;
+package com.pado.act.application.validator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.ACTType;
+import com.pado.act.application.Diagnosis;
+import com.pado.act.application.InvalidActRecordRequestException;
+import com.pado.act.application.validator.properties.CognitiveDefusionProperties;
+import com.pado.act.application.validator.properties.CommittedActionProperties;
+import com.pado.act.application.validator.properties.EmotionNoteProperties;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ACTRecordJsonValidator {
+
+    private final EmotionNoteProperties emotionNoteProperties;
+    private final CognitiveDefusionProperties cognitiveDefusionProperties;
+    private final CommittedActionProperties committedActionProperties;
 
     public void validate(ACTType actType, JsonNode data) {
         validateJsonNode(data);
@@ -18,9 +29,9 @@ public class ACTRecordJsonValidator {
     }
 
     private void validateEmotionNoteData(JsonNode data) {
-        validateStringField(data, "situation", 500);
-        validateStringField(data, "thoughts", 500);
-        validateStringField(data, "feelings", 500);
+        validateStringField(data, "situation", emotionNoteProperties.getSituation().getLength());
+        validateStringField(data, "thoughts", emotionNoteProperties.getThoughts().getLength());
+        validateStringField(data, "feelings", emotionNoteProperties.getFeelings().getLength());
     }
 
     private void validateCognitiveDefusionData(JsonNode data) {
@@ -60,8 +71,8 @@ public class ACTRecordJsonValidator {
             }
         }
 
-        if (stringCount > 100) {
-            throw new InvalidActRecordRequestException("text의 총 길이는 100 이하여야 합니다.");
+        if (stringCount > cognitiveDefusionProperties.getTotalTextLength()) {
+            throw new InvalidActRecordRequestException("text의 총 길이는 " + cognitiveDefusionProperties.getTotalTextLength() + " 이하여야 합니다.");
         }
     }
 
@@ -86,9 +97,9 @@ public class ACTRecordJsonValidator {
             throw new InvalidActRecordRequestException("matter 값이 올바르지 않습니다.");
         }
 
-        validateStringField(data, "value", 500);
-        validateStringField(data, "barrier", 500);
-        validateStringField(data, "action", 500);
+        validateStringField(data, "value", committedActionProperties.getValue().getLength());
+        validateStringField(data, "barrier", committedActionProperties.getBarrier().getLength());
+        validateStringField(data, "action", committedActionProperties.getAction().getLength());
     }
 
 
@@ -134,8 +145,8 @@ public class ACTRecordJsonValidator {
             throw new InvalidActRecordRequestException(fieldName + " 필드는 정수여야 합니다.");
         }
         int anInt = field.asInt();
-        if (anInt < 1 || anInt > 3) {
-            throw new InvalidActRecordRequestException("diagnosis." + fieldName + " 값의 범위는 1~3 사이여야 합니다.");
+        if (anInt < committedActionProperties.getDiagnosis().getMin() || anInt > committedActionProperties.getDiagnosis().getMax()) {
+            throw new InvalidActRecordRequestException("diagnosis." + fieldName + " 값의 범위는 " + committedActionProperties.getDiagnosis().getMin() + "~" + committedActionProperties.getDiagnosis().getMax() + " 사이여야 합니다.");
         }
     }
 
