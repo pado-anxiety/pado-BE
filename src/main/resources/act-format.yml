@@ -1,0 +1,20 @@
+act:
+  emotion-note:
+    situation:
+      length: 500
+    thoughts:
+      length: 500
+    feelings:
+      length: 500
+  cognitive-defusion:
+    total-text-length: 100
+  committed-action:
+    diagnosis:
+      min: 1
+      max: 3
+    value:
+      length: 500
+    barrier:
+      length: 500
+    action:
+      length: 500
