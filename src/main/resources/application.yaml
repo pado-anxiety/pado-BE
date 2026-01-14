@@ -3,3 +3,6 @@ spring:
     name: pado
   profiles:
     include: secret
+  config:
+    import:
+     - classpath:act-format.yml

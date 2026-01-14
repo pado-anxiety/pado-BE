@@ -2,6 +2,7 @@ package com.pado.act.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.ACTType;
+import com.pado.act.application.validator.ACTRecordJsonValidator;
 import com.pado.act.controller.dto.ACTRecordResponse;
 import com.pado.act.controller.dto.ACTRecords;
 import com.pado.act.infrastructure.ACTRecordEntity;
