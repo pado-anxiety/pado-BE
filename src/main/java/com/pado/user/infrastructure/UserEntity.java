@@ -5,6 +5,7 @@ import com.pado.user.domain.User;
 import jakarta.persistence.*;
 
 @Entity
+@Table(name = "users")
 public class UserEntity {
 
     @Id
@@ -15,8 +16,10 @@ public class UserEntity {
     private String email;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private LoginType loginType;
 
+    @Column(nullable = false)
     private String name;
 
     private String refreshToken;

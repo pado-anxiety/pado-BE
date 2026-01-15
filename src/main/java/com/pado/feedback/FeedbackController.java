@@ -16,8 +16,8 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @PostMapping
-    public ResponseEntity<Void> feedback(@LoginUser Long userId, @RequestBody String feedback) {
-        feedbackService.saveFeedback(userId, feedback);
+    public ResponseEntity<Void> feedback(@LoginUser Long userId, @RequestBody Feedback feedback) {
+        feedbackService.saveFeedback(userId, feedback.getFeedback());
         return ResponseEntity.ok().build();
     }
 }

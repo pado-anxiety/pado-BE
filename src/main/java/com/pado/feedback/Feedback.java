@@ -1,29 +1,9 @@
 package com.pado.feedback;
 
-import jakarta.persistence.*;
+import lombok.Getter;
 
-@Entity
-@Table(name = "feedback")
+@Getter
 public class Feedback {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    private Long userId;
-
     private String feedback;
-
-    private Feedback(Long id, Long userId, String feedback) {
-        this.id = id;
-        this.userId = userId;
-        this.feedback = feedback;
-    }
-
-    public Feedback(Long userId, String feedback) {
-        this(null, userId, feedback);
-    }
-
-    protected Feedback() {
-    }
 }
