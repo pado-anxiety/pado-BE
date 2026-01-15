@@ -12,6 +12,6 @@ public class FeedbackService {
     private final FeedbackRepository feedbackRepository;
 
     public void saveFeedback(Long userId, String feedback) {
-        feedbackRepository.save(new Feedback(userId, feedback));
+        feedbackRepository.save(new FeedbackEntity(userId, feedback));
     }
 }
