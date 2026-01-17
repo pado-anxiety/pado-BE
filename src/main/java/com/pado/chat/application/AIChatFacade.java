@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AIChatFacade {
 
-    private final AIQuotaService aiQuotaService;
+    private final AIChatQuotaService aiChatQuotaService;
     private final AIChatService aiChatService;
     private final ConversationSummaryService conversationSummaryService;
     private final ChattingContextService contextService;
@@ -40,6 +40,6 @@ public class AIChatFacade {
     }
 
     public QuotaStatus getQuotaStatus(Long userId) {
-        return aiQuotaService.getQuotaStatus(userId);
+        return aiChatQuotaService.getQuotaStatus(userId);
     }
 }
