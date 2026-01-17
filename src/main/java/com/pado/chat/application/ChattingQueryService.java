@@ -16,7 +16,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ChattingService {
+public class ChattingQueryService {
 
     private static final int CHATTING_PAGINATION_SIZE = 30;
 

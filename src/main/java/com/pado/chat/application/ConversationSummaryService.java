@@ -20,7 +20,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class ConversationSummaryService {
 
-    private final ChattingService chattingService;
+    private final ChattingQueryService chattingQueryService;
     private final ChatSummaryRepository chatSummaryRepository;
     private final OpenAiService openAiService;
 
@@ -46,7 +46,7 @@ public class ConversationSummaryService {
                 latestTsid = summary.get(0).getToTsid();
             }
 
-            List<Chatting> chattings = chattingService.getRecentChattingsAfterCursorOrderByTsidAscFromDB(userId, latestTsid, SUMMARIZE_THRESHOLD);
+            List<Chatting> chattings = chattingQueryService.getRecentChattingsAfterCursorOrderByTsidAscFromDB(userId, latestTsid, SUMMARIZE_THRESHOLD);
             if (chattings.isEmpty() || chattings.size() < SUMMARIZE_THRESHOLD) {
                 return;
             }
