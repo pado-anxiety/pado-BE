@@ -2,6 +2,7 @@ package com.pado.chat.controller;
 
 import com.pado.auth.infrastructure.LoginUser;
 import com.pado.chat.application.AIChatFacade;
+import com.pado.chat.application.AIChatQuotaService;
 import com.pado.chat.application.ChattingQueryService;
 import com.pado.chat.controller.dto.RecentChattingsResponse;
 import com.pado.chat.domain.RecentChattings;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class ChatController {
 
     private final AIChatFacade AIChatFacade;
+    private final AIChatQuotaService aiChatQuotaService;
     private final ChattingQueryService chattingQueryService;
 
     @PostMapping
@@ -35,6 +37,6 @@ public class ChatController {
 
     @GetMapping("/quota")
     public ResponseEntity<QuotaStatus> getQuotaStatus(@LoginUser Long id) {
-        return ResponseEntity.ok(AIChatFacade.getQuotaStatus(id));
+        return ResponseEntity.ok(aiChatQuotaService.getQuotaStatus(id));
     }
 }
