@@ -4,18 +4,15 @@ import com.pado.chat.domain.ChatSummaries;
 import com.pado.chat.domain.ChatSummary;
 import com.pado.chat.domain.Chatting;
 import com.pado.chat.domain.ChattingContext;
-import com.pado.chat.controller.dto.Sender;
 import com.pado.config.properties.ACTRecommendOpenAiProperties;
 import com.pado.config.properties.ChatOpenAiProperties;
 import com.pado.config.properties.ChatSummaryOpenAiProperties;
 import com.pado.external.ai.infrastructure.prompt.PromptManager;
-import com.pado.external.ai.infrastructure.prompt.SystemPrompt;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 @RequiredArgsConstructor
@@ -28,59 +25,38 @@ public class ChatCompletionRequestFactory {
     private final ACTRecommendOpenAiProperties actRecommendOpenAiProperties;
 
     public ChatCompletionRequest buildChatRequest(ChattingContext context, ChatSummaries summaries) {
-        SystemPrompt systemPrompt = promptManager.getChatSystemPrompt();
-
-        List<ChatCompletionRequest.Message> summaryMessages = summaries.getSummaryList().isEmpty()
-                ? List.of()
-                : List.of(new ChatCompletionRequest.Message(
-                "system",
-                promptManager.getSummaryPrefix().getSystem() + "\n" + summaries.getSummaryList().stream()
-                        .map(ChatSummary::getSummaryText)
-                        .collect(Collectors.joining("\n\n"))
-        ));
+        String systemPrompt = promptManager.getChatSystemPrompt().getSystem();
+        String summaryPrompt = promptManager.makeSummaryPrompt(summaries);
 
         return ChatCompletionRequest.toChatRequest(
                 chatOpenAiProperties.getModel(),
                 systemPrompt,
-                summaryMessages,
-                toChatMessages(context.getChattings()),
+                summaryPrompt,
+                context,
                 chatOpenAiProperties.getTemperature(),
                 chatOpenAiProperties.getMaxTokens()
         );
     }
 
     public ChatCompletionRequest buildSummaryRequest(List<Chatting> chattings) {
-        SystemPrompt systemPrompt = promptManager.getSummarySystemPrompt();
+        String systemPrompt = promptManager.getSummarySystemPrompt().getSystem();
         return ChatCompletionRequest.toSummaryRequest(
                 chatSummaryOpenAiProperties.getModel(),
                 systemPrompt,
-                toChatMessages(chattings),
+                chattings,
                 chatSummaryOpenAiProperties.getTemperature(),
                 chatSummaryOpenAiProperties.getMaxTokens()
         );
     }
 
     public ChatCompletionRequest buildACTRecommendRequest(ChatSummary chatSummary) {
-        SystemPrompt systemPrompt = promptManager.getActRecommendPrompt();
+        String systemPrompt = promptManager.getActRecommendPrompt().getSystem();
         return ChatCompletionRequest.toActRecommendRequest(
                 actRecommendOpenAiProperties.getModel(),
                 systemPrompt,
-                toMessages(chatSummary),
+                chatSummary,
                 actRecommendOpenAiProperties.getTemperature(),
                 actRecommendOpenAiProperties.getMaxTokens()
         );
-    }
-
-    private List<ChatCompletionRequest.Message> toChatMessages(List<Chatting> chattings) {
-        return chattings.stream()
-                .map(msg -> new ChatCompletionRequest.Message(
-                        Sender.valueOf(msg.getSender().toUpperCase()).getRole(),
-                        msg.getMessage()
-                ))
-                .toList();
-    }
-
-    private List<ChatCompletionRequest.Message> toMessages(ChatSummary chatSummary) {
-        return List.of(new ChatCompletionRequest.Message("user", chatSummary.getSummaryText()));
     }
 }
