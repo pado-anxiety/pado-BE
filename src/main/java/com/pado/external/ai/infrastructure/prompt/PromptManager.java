@@ -1,7 +1,11 @@
 package com.pado.external.ai.infrastructure.prompt;
 
+import com.pado.chat.domain.ChatSummaries;
+import com.pado.chat.domain.ChatSummary;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
+
+import java.util.stream.Collectors;
 
 @Getter
 @Component
@@ -17,6 +21,12 @@ public class PromptManager {
         summarySystemPrompt = YamlResourceLoader.load("prompts/summary_prompt.yaml", SystemPrompt.class);
         summaryPrefix = YamlResourceLoader.load("prompts/summary_prefix.yaml", SystemPrompt.class);
         actRecommendPrompt = YamlResourceLoader.load("prompts/act_recommend_prompt.yaml", SystemPrompt.class);
+    }
+
+    public String makeSummaryPrompt(ChatSummaries summaries) {
+        return summaryPrefix.getSystem() + "\n" + summaries.getSummaryList().stream()
+                .map(ChatSummary::getSummaryText)
+                .collect(Collectors.joining("\n\n"));
     }
 
 }
