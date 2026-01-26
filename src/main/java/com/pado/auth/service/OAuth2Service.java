@@ -4,6 +4,9 @@ import com.pado.auth.controller.dto.TokenResponse;
 import com.pado.auth.infrastructure.jwt.JwtTokenProvider;
 import com.pado.auth.infrastructure.oauth.Platform;
 import com.pado.auth.infrastructure.oauth.UserInfo;
+import com.pado.auth.infrastructure.oauth.apple.AppleClaims;
+import com.pado.auth.infrastructure.oauth.apple.AppleIdentityTokenVerifier;
+import com.pado.auth.infrastructure.oauth.apple.AppleLoginClient;
 import com.pado.auth.infrastructure.oauth.google.GoogleLoginClient;
 import com.pado.auth.infrastructure.oauth.kakao.KakaoLoginClient;
 import com.pado.user.application.UserNotFoundException;
@@ -23,6 +26,10 @@ public class OAuth2Service {
 
     private final GoogleLoginClient googleLoginClient;
     private final KakaoLoginClient kakaoLoginClient;
+    private final AppleLoginClient appleLoginClient;
+
+    private final AppleIdentityTokenVerifier appleIdentityTokenVerifier;
+
     private final UserRepository userRepository;
     private final JwtTokenProvider jwtTokenProvider;
 
@@ -30,8 +37,10 @@ public class OAuth2Service {
         String accessToken = googleLoginClient.getAccessToken(authorizationCode, codeVerifier, redirectUri, platform);
         UserInfo userInfo = googleLoginClient.getUserInfo(accessToken);
 
-        Optional<User> optional = userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.GOOGLE);
-        User user = optional.orElseGet(() -> userRepository.save(new User(userInfo.getEmail(), userInfo.getName(), LoginType.GOOGLE)));
+        //FIXME email -> sub
+        Optional<User> optional = userRepository.findBySubAndLoginType(userInfo.getEmail(), LoginType.GOOGLE);
+        //FIXME
+        User user = optional.orElseGet(() -> userRepository.save(new User(userInfo.getEmail(), null, userInfo.getName(), LoginType.GOOGLE)));
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
@@ -42,13 +51,34 @@ public class OAuth2Service {
     public TokenResponse kakaoLogin(String accessToken) {
         UserInfo userInfo = kakaoLoginClient.getUserInfo(accessToken);
 
-        Optional<User> optional = userRepository.findByEmailAndLoginType(userInfo.getEmail(), LoginType.KAKAO);
-        User user = optional.orElseGet(() -> userRepository.save(new User(userInfo.getEmail(), userInfo.getName(), LoginType.KAKAO)));
+        //FIXME email -> sub
+        Optional<User> optional = userRepository.findBySubAndLoginType(userInfo.getEmail(), LoginType.KAKAO);
+        //FIXME
+        User user = optional.orElseGet(() -> userRepository.save(new User(userInfo.getEmail(), null, userInfo.getName(), LoginType.KAKAO)));
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
 
         return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), refreshToken);
+    }
+
+    public TokenResponse appleLogin(String authorizationCode, String fullName) {
+        String idToken = appleLoginClient.getToken(authorizationCode);
+        AppleClaims claims = appleIdentityTokenVerifier.verify(idToken);
+
+        User user;
+        Optional<User> getUser = userRepository.findBySubAndLoginType(claims.getSub(), LoginType.APPLE);
+        if (getUser.isEmpty()) {
+            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), fullName, LoginType.APPLE));
+        } else {
+            user = getUser.get();
+            if (!user.getEmail().equals(claims.getEmail())) {
+                user.updateEmail(claims.getEmail());
+                userRepository.save(user);
+            }
+        }
+
+        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), jwtTokenProvider.createRefreshToken(user.getId()));
     }
 
     public void logout(Long userId) {
