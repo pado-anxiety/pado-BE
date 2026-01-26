@@ -1,5 +1,6 @@
 package com.pado.auth.controller;
 
+import com.pado.auth.controller.dto.AppleLoginRequest;
 import com.pado.auth.controller.dto.GoogleLoginRequest;
 import com.pado.auth.controller.dto.KakaoLoginRequest;
 import com.pado.auth.controller.dto.TokenResponse;
@@ -25,6 +26,11 @@ public class LoginController {
     @PostMapping("/login/kakao")
     public ResponseEntity<TokenResponse> kakaoLogin(@RequestBody KakaoLoginRequest loginRequest) {
         return ResponseEntity.ok(oAuth2Service.kakaoLogin(loginRequest.getAccessToken()));
+    }
+
+    @PostMapping("/login/apple")
+    public ResponseEntity<TokenResponse> appleLogin(@RequestBody AppleLoginRequest loginRequest) {
+        return ResponseEntity.ok(oAuth2Service.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getFullName()));
     }
 
     @PostMapping("/logout")
