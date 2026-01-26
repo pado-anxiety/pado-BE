@@ -12,8 +12,10 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
     private String email;
+
+    @Column(nullable = false)
+    private String sub;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -27,19 +29,20 @@ public class UserEntity {
     protected UserEntity() {
     }
 
-    private UserEntity(Long id, String email, LoginType loginType, String name, String refreshToken) {
+    private UserEntity(Long id, String email, String sub, LoginType loginType, String name, String refreshToken) {
         this.id = id;
         this.email = email;
+        this.sub = sub;
         this.loginType = loginType;
         this.name = name;
         this.refreshToken = refreshToken;
     }
 
     public User toModel() {
-        return new User(id, email, loginType, name, refreshToken);
+        return new User(id, email, sub, loginType, name, refreshToken);
     }
 
     public static UserEntity fromModel(User user) {
-        return new UserEntity(user.getId(), user.getEmail(), user.getLoginType(), user.getName(), user.getRefreshToken());
+        return new UserEntity(user.getId(), user.getEmail(), user.getSub(), user.getLoginType(), user.getName(), user.getRefreshToken());
     }
 }
