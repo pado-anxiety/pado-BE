@@ -20,15 +20,15 @@ public class LoginDevController {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    private static final String TEST_USER = "test@test.com";
+    private static final String TEST_USER = "testsubject";
 
     @PostMapping("/dev/login")
     public ResponseEntity<DevLogin> login() {
-        Optional<User> user = userRepository.findByEmailAndLoginType(TEST_USER, LoginType.GOOGLE);
+        Optional<User> user = userRepository.findBySubAndLoginType(TEST_USER, LoginType.GOOGLE);
         if (user.isPresent()) {
             return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(user.get().getId())));
         }
-        User save = userRepository.save(new User(TEST_USER, "test", LoginType.GOOGLE));
+        User save = userRepository.save(new User("test@test.com", TEST_USER, "test", LoginType.GOOGLE));
         return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(save.getId())));
     }
 }
