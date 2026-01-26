@@ -15,8 +15,8 @@ public class UserRepositoryImpl implements UserRepository {
     private final UserJpaRepository userJpaRepository;
 
     @Override
-    public Optional<User> findByEmailAndLoginType(String email, LoginType loginType) {
-        return userJpaRepository.findByEmailAndLoginType(email, loginType).map(UserEntity::toModel);
+    public Optional<User> findBySubAndLoginType(String sub, LoginType loginType) {
+        return userJpaRepository.findBySubAndLoginType(sub, loginType).map(UserEntity::toModel);
     }
 
     @Override
