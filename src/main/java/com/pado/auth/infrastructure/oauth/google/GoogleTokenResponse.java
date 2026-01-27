@@ -20,4 +20,7 @@ public class GoogleTokenResponse {
 
     @JsonProperty("scope")
     private String scope;
+
+    @JsonProperty("id_token")
+    private String identityToken;
 }
