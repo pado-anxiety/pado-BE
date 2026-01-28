@@ -12,21 +12,28 @@ public class User {
     private String name;
     private String refreshToken;
 
-    public User(Long id, String email, String sub, LoginType loginType, String name, String refreshToken) {
+    private String oAuthRefreshToken;
+
+    public User(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oauthRefreshToken) {
         this.id = id;
         this.email = email;
         this.sub = sub;
         this.loginType = loginType;
         this.name = name;
         this.refreshToken = refreshToken;
+        this.oAuthRefreshToken = oauthRefreshToken;
     }
 
-    public User(String email, String sub, String name, LoginType loginType) {
-        this(null, email, sub, loginType, name, null);
+    public User(String email, String sub, String name, LoginType loginType, String oAuthRefreshToken) {
+        this(null, email, sub, loginType, name, null, oAuthRefreshToken);
     }
 
     public void updateRefreshToken(String refreshToken) {
         this.refreshToken = refreshToken;
+    }
+
+    public void updateOauthRefreshToken(String oauthRefreshToken) {
+        this.oAuthRefreshToken = oauthRefreshToken;
     }
 
     public void updateEmail(String email) {
