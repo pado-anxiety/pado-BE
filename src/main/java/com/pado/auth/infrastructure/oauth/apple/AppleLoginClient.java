@@ -21,7 +21,7 @@ public class AppleLoginClient {
         this.clientSecretProvider = clientSecretProvider;
     }
 
-    public String getToken(String authorizationCode) {
+    public AppleTokenResponse getTokenResponse(String authorizationCode) {
         authorizationCode = authorizationCode.trim();
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
         body.add("grant_type", "authorization_code");
@@ -33,7 +33,6 @@ public class AppleLoginClient {
                 .uri("https://appleid.apple.com/auth/token")
                 .body(body)
                 .retrieve()
-                .body(AppleTokenResponse.class)
-                .getIdToken();
+                .body(AppleTokenResponse.class);
     }
 }

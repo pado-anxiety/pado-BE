@@ -23,15 +23,16 @@ public class AppleOAuthService {
     private final UserRepository userRepository;
 
     public TokenResponse appleLogin(String authorizationCode, String fullName) {
-        String idToken = loginClient.getToken(authorizationCode);
-        AppleClaims claims = identityTokenVerifier.verify(idToken);
+        AppleTokenResponse response = loginClient.getTokenResponse(authorizationCode);
+        AppleClaims claims = identityTokenVerifier.verify(response.getIdToken());
 
         User user;
         Optional<User> getUser = userRepository.findBySubAndLoginType(claims.getSub(), LoginType.APPLE);
         if (getUser.isEmpty()) {
-            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), fullName, LoginType.APPLE));
+            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), fullName, LoginType.APPLE, response.getOAuthRefreshToken()));
         } else {
             user = getUser.get();
+            user.updateOauthRefreshToken(response.getOAuthRefreshToken());
             if (!user.getEmail().equals(claims.getEmail())) {
                 user.updateEmail(claims.getEmail());
                 userRepository.save(user);

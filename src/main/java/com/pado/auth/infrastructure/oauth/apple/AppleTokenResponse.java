@@ -13,7 +13,7 @@ public class AppleTokenResponse {
 	private String expiresIn;
 
 	@JsonProperty("refresh_token")
-	private String refreshToken;
+	private String oAuthRefreshToken;
 
 	@JsonProperty("id_token")
 	private String idToken;
