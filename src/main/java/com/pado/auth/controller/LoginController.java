@@ -32,7 +32,7 @@ public class LoginController {
 
     @PostMapping("/login/kakao")
     public ResponseEntity<TokenResponse> kakaoLogin(@RequestBody KakaoLoginRequest loginRequest) {
-        return ResponseEntity.ok(kakaoOAuthService.kakaoLogin(loginRequest.getIdentityToken()));
+        return ResponseEntity.ok(kakaoOAuthService.kakaoLogin(loginRequest.getIdentityToken(), loginRequest.getRefreshToken()));
     }
 
     @PostMapping("/login/apple")
