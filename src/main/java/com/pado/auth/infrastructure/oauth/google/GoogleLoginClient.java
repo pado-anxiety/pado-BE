@@ -18,7 +18,7 @@ public class GoogleLoginClient {
         this.tokenRequestFactory = tokenRequestFactory;
     }
 
-    public GoogleTokenResponse getToken(String authorizationCode, String codeVerifier, String redirectUri, Platform platform) {
+    public GoogleTokenResponse getTokenResponse(String authorizationCode, String codeVerifier, String redirectUri, Platform platform) {
         authorizationCode = authorizationCode.trim();
         codeVerifier = codeVerifier.trim();
         redirectUri = redirectUri.trim();

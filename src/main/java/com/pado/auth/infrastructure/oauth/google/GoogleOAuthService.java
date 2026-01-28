@@ -24,11 +24,16 @@ public class GoogleOAuthService {
     private final UserRepository userRepository;
 
     public TokenResponse googleLogin(String authorizationCode, String codeVerifier, String redirectUri, Platform platform) {
-        GoogleTokenResponse token = loginClient.getToken(authorizationCode, codeVerifier, redirectUri, platform);
-        GoogleClaims claims = identityTokenVerifier.verify(token.getIdentityToken());
-
+        GoogleTokenResponse response = loginClient.getTokenResponse(authorizationCode, codeVerifier, redirectUri, platform);
+        GoogleClaims claims = identityTokenVerifier.verify(response.getIdentityToken());
         Optional<User> optional = userRepository.findBySubAndLoginType(claims.getSub(), LoginType.GOOGLE);
-        User user = optional.orElseGet(() -> userRepository.save(new User(claims.getEmail(), claims.getSub(), claims.getName(), LoginType.GOOGLE)));
+        User user;
+        if (optional.isEmpty()) {
+            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), claims.getName(), LoginType.GOOGLE, response.getOAuthRefreshToken()));
+        } else {
+            user = optional.get();
+            user.updateOAuthRefreshToken(response.getOAuthRefreshToken());
+        }
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);

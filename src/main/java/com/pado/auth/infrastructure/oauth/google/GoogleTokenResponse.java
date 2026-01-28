@@ -13,7 +13,7 @@ public class GoogleTokenResponse {
     private Integer expiresIn;
 
     @JsonProperty("refresh_token")
-    private String refreshToken;
+    private String oAuthRefreshToken;
 
     @JsonProperty("token_type")
     private String tokenType;
