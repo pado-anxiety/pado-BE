@@ -32,8 +32,8 @@ public class User {
         this.refreshToken = refreshToken;
     }
 
-    public void updateOauthRefreshToken(String oauthRefreshToken) {
-        this.oAuthRefreshToken = oauthRefreshToken;
+    public void updateOAuthRefreshToken(String oAuthRefreshToken) {
+        this.oAuthRefreshToken = oAuthRefreshToken;
     }
 
     public void updateEmail(String email) {

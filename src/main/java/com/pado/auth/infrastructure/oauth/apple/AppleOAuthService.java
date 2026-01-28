@@ -32,7 +32,7 @@ public class AppleOAuthService {
             user = userRepository.save(new User(claims.getEmail(), claims.getSub(), fullName, LoginType.APPLE, response.getOAuthRefreshToken()));
         } else {
             user = getUser.get();
-            user.updateOauthRefreshToken(response.getOAuthRefreshToken());
+            user.updateOAuthRefreshToken(response.getOAuthRefreshToken());
             if (!user.getEmail().equals(claims.getEmail())) {
                 user.updateEmail(claims.getEmail());
                 userRepository.save(user);
