@@ -6,7 +6,7 @@ import lombok.Getter;
 public class User {
     private final Long id;
     private String email;
-    private String sub;
+    private final String sub;
     private final LoginType loginType;
 
     private String name;
