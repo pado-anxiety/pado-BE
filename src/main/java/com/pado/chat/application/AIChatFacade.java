@@ -19,13 +19,14 @@ import java.util.List;
 public class AIChatFacade {
 
     private final AIChatService aiChatService;
+    private final AIChatQuotaService aiChatQuotaService;
     private final ConversationSummaryService conversationSummaryService;
     private final ChattingContextService contextService;
     private final ChattingFlushProducer chattingFlushProducer;
 
     public ChattingResponse postMessage(Long userId, MessageRequest messageRequest) {
-        if (!aiQuotaService.tryConsume(userId)) {
-            QuotaStatus quotaStatus = aiQuotaService.getQuotaStatus(userId);
+        if (!aiChatQuotaService.tryConsume(userId)) {
+            QuotaStatus quotaStatus = aiChatQuotaService.getQuotaStatus(userId);
             throw new ChatQuotaExceededException(quotaStatus);
         }
         Chatting userChatting = new Chatting(messageRequest.getMessage(), Sender.USER);
