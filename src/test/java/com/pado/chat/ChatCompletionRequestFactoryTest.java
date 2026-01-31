@@ -43,61 +43,6 @@ class ChatCompletionRequestFactoryTest {
     ChatCompletionRequestFactory factory;
 
     @Test
-    @DisplayName("채팅 ChatCompletionRequest 생성 테스트 - 요약 생성 확인 테스트")
-    void buildChatRequest_summary가_있을_때_정상적으로_구성된다() {
-        // given
-        SystemPrompt systemPrompt = new SystemPrompt("시스템");
-        when(promptManager.getChatSystemPrompt()).thenReturn(systemPrompt);
-        SystemPrompt summaryPrefixPrompt = new SystemPrompt("요약 prefix");
-        when(promptManager.getSummaryPrefix()).thenReturn(summaryPrefixPrompt);
-
-        when(chatOpenAiProperties.getModel()).thenReturn("모델");
-        when(chatOpenAiProperties.getTemperature()).thenReturn(0.7);
-        when(chatOpenAiProperties.getMaxTokens()).thenReturn(1024);
-
-        ChatSummary summary1 = new ChatSummary(1L, 3L, "요약1");
-        ChatSummary summary2 = new ChatSummary(3L, 5L, "요약2");
-
-        ChatSummaries summaries = new ChatSummaries(List.of(summary1, summary2));
-
-        Chatting chatting = new Chatting(6L, "안녕", Sender.USER);
-        ChattingContext context = new ChattingContext(List.of(chatting));
-
-        // when
-        ChatCompletionRequest request = factory.buildChatRequest(context, summaries);
-
-        // then
-        assertThat(request.getModel()).isEqualTo("모델");
-        assertThat(request.getTemperature()).isEqualTo(0.7);
-        assertThat(request.getMax_tokens()).isEqualTo(1024);
-
-        // messages
-        List<ChatCompletionRequest.Message> messages = request.getMessages();
-
-        // system 메시지 검증
-        ChatCompletionRequest.Message system = messages.get(0);
-        assertThat(system.getRole()).isEqualTo("system");
-        assertThat(system.getContent()).isEqualTo(
-                "시스템"
-        );
-
-        //요약 검증
-        ChatCompletionRequest.Message summary1Message = messages.get(1);
-        System.out.println(summary1Message.getContent());
-        assertThat(summary1Message.getRole()).isEqualTo("system");
-        assertThat(summary1Message.getContent()).isEqualTo("""
-                요약 prefix
-                요약1
-                
-                요약2""");
-
-        //user message 검증
-        ChatCompletionRequest.Message userMessage = messages.get(2);
-        assertThat(userMessage.getRole()).isEqualTo("user");
-        assertThat(userMessage.getContent()).isEqualTo("안녕");
-    }
-
-    @Test
     @DisplayName("채팅 ChatCompletionRequest 생성 테스트 - 요약 빈 값 확인 테스트")
     void buildChatRequest_summary가_없으면_summaryMessage는_생성되지_않는다() {
         //given

@@ -26,12 +26,11 @@ public class ChatCompletionRequestFactory {
 
     public ChatCompletionRequest buildChatRequest(ChattingContext context, ChatSummaries summaries) {
         String systemPrompt = promptManager.getChatSystemPrompt().getSystem();
-        String summaryPrompt = promptManager.makeSummaryPrompt(summaries);
 
         return ChatCompletionRequest.toChatRequest(
                 chatOpenAiProperties.getModel(),
                 systemPrompt,
-                summaryPrompt,
+                promptManager.makeSummaryPrompt(summaries).orElse(null),
                 context,
                 chatOpenAiProperties.getTemperature(),
                 chatOpenAiProperties.getMaxTokens()

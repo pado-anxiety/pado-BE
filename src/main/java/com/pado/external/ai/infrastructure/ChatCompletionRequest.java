@@ -4,6 +4,7 @@ import com.pado.chat.controller.dto.Sender;
 import com.pado.chat.domain.ChatSummary;
 import com.pado.chat.domain.Chatting;
 import com.pado.chat.domain.ChattingContext;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -17,12 +18,14 @@ public class ChatCompletionRequest {
     private Double temperature;
     private Integer max_tokens;
 
-    public static ChatCompletionRequest toChatRequest(String model, String systemPrompt, String summaryPrompt, ChattingContext context, Double temperature, Integer max_tokens) {
+    public static ChatCompletionRequest toChatRequest(String model, String systemPrompt, @Nullable String summaryPrompt, ChattingContext context, Double temperature, Integer max_tokens) {
         ChatCompletionRequest request = new ChatCompletionRequest();
         request.model = model;
         request.messages = new ArrayList<>();
         request.messages.add(Message.system(systemPrompt));
-        request.messages.add(Message.system(summaryPrompt));
+        if (summaryPrompt != null) {
+            request.messages.add(Message.system(summaryPrompt));
+        }
         request.messages.addAll(
                 context.getChattings().stream().map(
                         msg -> new ChatCompletionRequest.Message(

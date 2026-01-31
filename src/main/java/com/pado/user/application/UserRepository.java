@@ -6,7 +6,8 @@ import com.pado.user.domain.User;
 import java.util.Optional;
 
 public interface UserRepository {
-    Optional<User> findByEmailAndLoginType(String email, LoginType loginType);
+
+    Optional<User> findBySubAndLoginType(String sub, LoginType loginType);
 
     User save(User user);
 
