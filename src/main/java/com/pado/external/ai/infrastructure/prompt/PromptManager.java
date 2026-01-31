@@ -5,6 +5,7 @@ import com.pado.chat.domain.ChatSummary;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Getter
@@ -16,17 +17,20 @@ public class PromptManager {
     private final SystemPrompt summaryPrefix;
     private final SystemPrompt actRecommendPrompt;
 
-    public PromptManager() {
-        chatSystemPrompt = YamlResourceLoader.load("prompts/chat_prompt.yaml", SystemPrompt.class);
-        summarySystemPrompt = YamlResourceLoader.load("prompts/summary_prompt.yaml", SystemPrompt.class);
-        summaryPrefix = YamlResourceLoader.load("prompts/summary_prefix.yaml", SystemPrompt.class);
-        actRecommendPrompt = YamlResourceLoader.load("prompts/act_recommend_prompt.yaml", SystemPrompt.class);
+    public PromptManager(SystemPrompt chatSystemPrompt, SystemPrompt summarySystemPrompt, SystemPrompt summaryPrefix, SystemPrompt actRecommendPrompt) {
+        this.chatSystemPrompt = chatSystemPrompt;
+        this.summarySystemPrompt = summarySystemPrompt;
+        this.summaryPrefix = summaryPrefix;
+        this.actRecommendPrompt = actRecommendPrompt;
     }
 
-    public String makeSummaryPrompt(ChatSummaries summaries) {
-        return summaryPrefix.getSystem() + "\n" + summaries.getSummaryList().stream()
+    public Optional<String> makeSummaryPrompt(ChatSummaries summaries) {
+        if (summaries.getSummaryList().isEmpty()) {
+            return Optional.empty();
+        }
+        return Optional.of(summaryPrefix.getSystem() + "\n" + summaries.getSummaryList().stream()
                 .map(ChatSummary::getSummaryText)
-                .collect(Collectors.joining("\n\n"));
+                .collect(Collectors.joining("\n\n")));
     }
 
 }
