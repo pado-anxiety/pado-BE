@@ -35,7 +35,7 @@ public class AppleClientSecretProvider {
                 .setHeaderParam("kid", keyId)
                 .setSubject(clientId)
                 .setIssuer(teamId)
-                .setIssuedAt(new Date())
+                .setIssuedAt(new Date(System.currentTimeMillis() - 30000L))
                 .setExpiration(new Date(System.currentTimeMillis() + 86400000L))
                 .setAudience("https://appleid.apple.com")
                 .signWith(privateKey, SignatureAlgorithm.ES256)
