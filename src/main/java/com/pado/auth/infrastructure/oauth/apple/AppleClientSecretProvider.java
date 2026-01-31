@@ -45,8 +45,6 @@ public class AppleClientSecretProvider {
     private PrivateKey loadPrivateKey() {
         try {
             String key = System.getenv("APPLE_PRIVATE_KEY")
-                    .replace("-----BEGIN PRIVATE KEY-----", "")
-                    .replace("-----END PRIVATE KEY-----", "")
                     .replaceAll("\\s", "");
 
             byte[] decoded = Base64.getDecoder().decode(key);
