@@ -94,6 +94,5 @@ jobs:
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /home/nyangtodac
-            docker compose down
             docker compose pull
             docker compose up -d

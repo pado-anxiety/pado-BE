@@ -2,7 +2,8 @@ package com.pado.chat.controller;
 
 import com.pado.auth.infrastructure.LoginUser;
 import com.pado.chat.application.AIChatFacade;
-import com.pado.chat.application.ChattingService;
+import com.pado.chat.application.AIChatQuotaService;
+import com.pado.chat.application.ChattingQueryService;
 import com.pado.chat.controller.dto.RecentChattingsResponse;
 import com.pado.chat.domain.RecentChattings;
 import com.pado.chat.controller.dto.message.MessageRequest;
@@ -18,7 +19,8 @@ import org.springframework.web.bind.annotation.*;
 public class ChatController {
 
     private final AIChatFacade AIChatFacade;
-    private final ChattingService chattingService;
+    private final AIChatQuotaService aiChatQuotaService;
+    private final ChattingQueryService chattingQueryService;
 
     @PostMapping
     public ResponseEntity<ChattingResponse> send(@LoginUser Long id, @RequestBody MessageRequest request) {
@@ -29,12 +31,12 @@ public class ChatController {
     public ResponseEntity<RecentChattingsResponse> getRecentChattingsWithCursor(
             @LoginUser Long id,
             @RequestParam(name = "cursor", required = false) Long cursor) {
-        RecentChattings recentChattings = chattingService.getRecentChattingsBeforeCursor(id, cursor);
+        RecentChattings recentChattings = chattingQueryService.getRecentChattingsBeforeCursor(id, cursor);
         return ResponseEntity.ok(new RecentChattingsResponse(recentChattings.getChattings(), recentChattings.getCursor()));
     }
 
     @GetMapping("/quota")
     public ResponseEntity<QuotaStatus> getQuotaStatus(@LoginUser Long id) {
-        return ResponseEntity.ok(AIChatFacade.getQuotaStatus(id));
+        return ResponseEntity.ok(aiChatQuotaService.getQuotaStatus(id));
     }
 }

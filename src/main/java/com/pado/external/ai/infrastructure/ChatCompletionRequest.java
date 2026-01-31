@@ -1,6 +1,10 @@
 package com.pado.external.ai.infrastructure;
 
-import com.pado.external.ai.infrastructure.prompt.SystemPrompt;
+import com.pado.chat.controller.dto.Sender;
+import com.pado.chat.domain.ChatSummary;
+import com.pado.chat.domain.Chatting;
+import com.pado.chat.domain.ChattingContext;
+import jakarta.annotation.Nullable;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -14,35 +18,47 @@ public class ChatCompletionRequest {
     private Double temperature;
     private Integer max_tokens;
 
-    public static ChatCompletionRequest toChatRequest(String model, SystemPrompt systemPrompt, List<Message> summaries, List<Message> messages, Double temperature, Integer max_tokens) {
+    public static ChatCompletionRequest toChatRequest(String model, String systemPrompt, @Nullable String summaryPrompt, ChattingContext context, Double temperature, Integer max_tokens) {
         ChatCompletionRequest request = new ChatCompletionRequest();
         request.model = model;
         request.messages = new ArrayList<>();
-        request.messages.add(new Message("system", systemPrompt.getSystem()));
-        request.messages.addAll(summaries);
-        request.messages.addAll(messages);
+        request.messages.add(Message.system(systemPrompt));
+        if (summaryPrompt != null) {
+            request.messages.add(Message.system(summaryPrompt));
+        }
+        request.messages.addAll(
+                context.getChattings().stream().map(
+                        msg -> new ChatCompletionRequest.Message(
+                                Sender.valueOf(msg.getSender().toUpperCase()).getRole(),
+                                msg.getMessage()
+                        )).toList());
         request.temperature = temperature;
         request.max_tokens = max_tokens;
         return request;
     }
 
-    public static ChatCompletionRequest toSummaryRequest(String model, SystemPrompt systemPrompt, List<Message> messages, Double temperature, Integer max_tokens) {
+    public static ChatCompletionRequest toSummaryRequest(String model, String systemPrompt, List<Chatting> chattings, Double temperature, Integer max_tokens) {
         ChatCompletionRequest request = new ChatCompletionRequest();
         request.model = model;
         request.messages = new ArrayList<>();
-        request.messages.add(new Message("system", systemPrompt.getSystem()));
-        request.messages.addAll(messages);
+        request.messages.add(Message.system(systemPrompt));
+        request.messages.addAll(
+                chattings.stream().map(
+                        msg -> new ChatCompletionRequest.Message(
+                                Sender.valueOf(msg.getSender().toUpperCase()).getRole(),
+                                msg.getMessage()
+                        )).toList());
         request.temperature = temperature;
         request.max_tokens = max_tokens;
         return request;
     }
 
-    public static ChatCompletionRequest toActRecommendRequest(String model, SystemPrompt systemPrompt, List<Message> summary, Double temperature, Integer max_tokens) {
+    public static ChatCompletionRequest toActRecommendRequest(String model, String systemPrompt, ChatSummary summary, Double temperature, Integer max_tokens) {
         ChatCompletionRequest request = new ChatCompletionRequest();
         request.model = model;
         request.messages = new ArrayList<>();
-        request.messages.add(new Message("system", systemPrompt.getSystem()));
-        request.messages.addAll(summary);
+        request.messages.add(Message.system(systemPrompt));
+        request.messages.add(new ChatCompletionRequest.Message("user", summary.getSummaryText()));
         request.temperature = temperature;
         request.max_tokens = max_tokens;
         return request;
@@ -56,6 +72,10 @@ public class ChatCompletionRequest {
         public Message(String role, String content) {
             this.role = role;
             this.content = content;
+        }
+
+        public static Message system(String content) {
+            return new Message("system", content);
         }
     }
 }

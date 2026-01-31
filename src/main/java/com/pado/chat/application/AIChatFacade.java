@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AIChatFacade {
 
-    private final AIQuotaService aiQuotaService;
     private final AIChatService aiChatService;
     private final ConversationSummaryService conversationSummaryService;
     private final ChattingContextService contextService;
@@ -38,9 +37,5 @@ public class AIChatFacade {
         chattingFlushProducer.publish(userId, userAndAiChatting);
         conversationSummaryService.asyncSummarize(userId);
         return new ChattingResponse(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
-    }
-
-    public QuotaStatus getQuotaStatus(Long userId) {
-        return aiQuotaService.getQuotaStatus(userId);
     }
 }

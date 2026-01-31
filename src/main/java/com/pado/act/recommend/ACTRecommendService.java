@@ -1,7 +1,7 @@
 package com.pado.act.recommend;
 
 import com.pado.act.recommend.infrastructure.AiACTRecommendationRepository;
-import com.pado.chat.application.ChattingService;
+import com.pado.chat.application.ChattingQueryService;
 import com.pado.chat.application.ConversationSummaryService;
 import com.pado.chat.domain.ChatSummaries;
 import com.pado.chat.domain.ChatSummary;
@@ -22,7 +22,7 @@ import java.util.Optional;
 public class ACTRecommendService {
 
     private final ConversationSummaryService summaryService;
-    private final ChattingService chattingService;
+    private final ChattingQueryService chattingQueryService;
     private final ACTRecommender actRecommender;
     private final AiACTRecommendationRepository aiActRecommendationRepository;
 
@@ -47,7 +47,7 @@ public class ACTRecommendService {
         if (!summaries.getSummaryList().isEmpty()) {
             return Optional.of(summaries.getSummaryList().get(0));
         } else {
-            RecentChattings recentChattings = chattingService.getRecentChattingsBeforeCursor(userId, null);
+            RecentChattings recentChattings = chattingQueryService.getRecentChattingsBeforeCursor(userId, null);
             if (recentChattings.getChattings().size() >= 10) {
                 List<Chatting> chattings = new ArrayList<>(recentChattings.getChattings().subList(0, 10));
                 Collections.reverse(chattings); //오래된 -> 최신

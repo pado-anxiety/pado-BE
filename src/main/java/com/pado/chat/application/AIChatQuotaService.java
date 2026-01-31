@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class AIQuotaService {
+public class AIChatQuotaService {
 
     private final ProxyManager<String> proxyManager;
     private final UserBucketConfig userBucketConfig;
