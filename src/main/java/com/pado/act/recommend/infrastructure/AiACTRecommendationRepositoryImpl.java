@@ -21,4 +21,9 @@ public class AiACTRecommendationRepositoryImpl implements AiACTRecommendationRep
     public int countTodayAiRecommended(Long userId) {
         return actRecommendJpaRepository.countACTRecommendLogByUserIdAndBetweenTime(userId, LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now());
     }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        actRecommendJpaRepository.deleteAllByUserId(userId);
+    }
 }

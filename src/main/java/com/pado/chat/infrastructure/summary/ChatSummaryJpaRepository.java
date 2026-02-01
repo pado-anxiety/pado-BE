@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ChatSummaryJpaRepository extends JpaRepository<ChatSummaryEntity, Long> {
     List<ChatSummaryEntity> findByUserIdOrderByIdDesc(Long userId, Pageable pageable);
+
+    void deleteAllByUserId(Long userId);
 }

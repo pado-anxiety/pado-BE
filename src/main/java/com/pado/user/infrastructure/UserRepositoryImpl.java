@@ -28,4 +28,9 @@ public class UserRepositoryImpl implements UserRepository {
     public Optional<User> findByUserId(Long userId) {
         return userJpaRepository.findById(userId).map(UserEntity::toModel);
     }
+
+    @Override
+    public void deleteUserByUserId(Long userId) {
+        userJpaRepository.deleteById(userId);
+    }
 }

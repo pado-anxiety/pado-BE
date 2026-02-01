@@ -34,4 +34,9 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
     public List<Chatting> findChattingsAfterTsidOrderByTsidAsc(Long userId, Long latestTsid, int limit) {
         return chattingJpaRepository.findByUserIdAndTsidGreaterThanOrderByTsidAsc(userId, latestTsid, PageRequest.of(0, limit)).stream().map(ChattingEntity::toModel).toList();
     }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        chattingJpaRepository.deleteAllByUserId(userId);
+    }
 }

@@ -7,4 +7,6 @@ public interface AiACTRecommendationRepository {
     void saveAiRecommend(Long userId, ACTRecommendation actRecommendation);
 
     int countTodayAiRecommended(Long userId);
+
+    void deleteAllByUserId(Long userId);
 }

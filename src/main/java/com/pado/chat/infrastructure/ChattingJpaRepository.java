@@ -12,4 +12,6 @@ public interface ChattingJpaRepository extends JpaRepository<ChattingEntity, Lon
     List<ChattingEntity> findByUserIdAndTsidLessThanOrderByTsidDesc(Long userId, Long cursor, Pageable pageable);
 
     List<ChattingEntity> findByUserIdAndTsidGreaterThanOrderByTsidAsc(Long userId, Long tsid, Pageable pageable);
+
+    void deleteAllByUserId(Long userId);
 }
