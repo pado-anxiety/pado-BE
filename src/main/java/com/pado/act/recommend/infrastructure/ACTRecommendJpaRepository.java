@@ -9,4 +9,6 @@ public interface ACTRecommendJpaRepository extends JpaRepository<AiACTRecommendE
 
     @Query("select count(*) from AiACTRecommendEntity r where r.userId=:userId and r.time between :from and :to")
     int countACTRecommendLogByUserIdAndBetweenTime(Long userId, LocalDateTime from, LocalDateTime to);
+
+    void deleteAllByUserId(Long userId);
 }

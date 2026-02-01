@@ -8,4 +8,6 @@ public interface ChatSummaryRepository {
     List<ChatSummary> findLatestSummariesByUserId(Long userId, int limit);
 
     void save(Long userId, ChatSummary chatSummary);
+
+    void deleteAllByUserId(Long userId);
 }

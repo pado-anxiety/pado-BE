@@ -23,4 +23,9 @@ public class ChatSummaryRepositoryImpl implements ChatSummaryRepository {
     public void save(Long userId, ChatSummary chatSummary) {
         chatSummaryJpaRepository.save(ChatSummaryEntity.fromModel(chatSummary, userId));
     }
+
+    @Override
+    public void deleteAllByUserId(Long userId) {
+        chatSummaryJpaRepository.deleteAllByUserId(userId);
+    }
 }
