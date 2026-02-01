@@ -30,9 +30,9 @@ public class GoogleOAuthRevoker {
                     .toBodilessEntity();
         }
         catch (HttpClientErrorException | HttpServerErrorException e) {
-            log.warn("Kakao Revoke failed, status={}, userId={}, body={}, ", e.getStatusCode(), userId, e.getResponseBodyAsString());
+            log.warn("Google Revoke failed, status={}, userId={}, body={}, ", e.getStatusCode(), userId, e.getResponseBodyAsString());
         } catch (Exception e) {
-            log.warn("Kakao Revoke failed with Exception", e);
+            log.warn("Google Revoke failed with Exception", e);
         }
     }
 }
