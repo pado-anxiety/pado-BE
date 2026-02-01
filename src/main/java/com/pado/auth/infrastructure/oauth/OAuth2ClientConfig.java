@@ -46,4 +46,15 @@ public class OAuth2ClientConfig {
                     throw new OAuthException("OAuth2 Server error occurred. " + response.getStatusCode(), body);
                 });
     }
+
+    @Bean
+    public RestClient.Builder oauth2RevokeClientBuilder() {
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(Duration.ofSeconds(1));
+        requestFactory.setReadTimeout(Duration.ofSeconds(3));
+        return RestClient
+                .builder()
+                .requestFactory(requestFactory)
+                .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_FORM_URLENCODED_VALUE);
+    }
 }
