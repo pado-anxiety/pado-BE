@@ -13,7 +13,7 @@ public class UserWithdrawController {
 
     private final UserWithdrawService userWithdrawService;
 
-    @DeleteMapping("/user/withdraw")
+    @DeleteMapping("/users")
     public ResponseEntity<Void> withdraw(@LoginUser Long userId) {
         userWithdrawService.withdraw(userId);
         return ResponseEntity.noContent().build();
