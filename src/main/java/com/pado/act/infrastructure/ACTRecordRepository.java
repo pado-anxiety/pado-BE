@@ -8,4 +8,6 @@ import java.util.List;
 public interface ACTRecordRepository extends JpaRepository<ACTRecordEntity, Long> {
 
     List<ACTRecordEntity> findAllByUserIdAndTsidLessThanOrderByTsidDesc(Long userId, Long cursor, Pageable pageable);
+
+    void deleteAllByUserId(Long userId);
 }
