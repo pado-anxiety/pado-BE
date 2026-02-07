@@ -1,10 +1,5 @@
 package com.pado.external.ai.infrastructure;
 
-import com.pado.chat.controller.dto.Sender;
-import com.pado.chat.domain.ChatSummary;
-import com.pado.chat.domain.Chatting;
-import com.pado.chat.domain.ChattingContext;
-import jakarta.annotation.Nullable;
 import lombok.Getter;
 
 import java.util.ArrayList;
@@ -14,54 +9,20 @@ import java.util.List;
 public class ChatCompletionRequest {
 
     private String model;
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>();
     private Double temperature;
     private Integer max_tokens;
 
-    public static ChatCompletionRequest toChatRequest(String model, String systemPrompt, @Nullable String summaryPrompt, ChattingContext context, Double temperature, Integer max_tokens) {
-        ChatCompletionRequest request = new ChatCompletionRequest();
-        request.model = model;
-        request.messages = new ArrayList<>();
-        request.messages.add(Message.system(systemPrompt));
-        if (summaryPrompt != null) {
-            request.messages.add(Message.system(summaryPrompt));
-        }
-        request.messages.addAll(
-                context.getChattings().stream().map(
-                        msg -> new ChatCompletionRequest.Message(
-                                Sender.valueOf(msg.getSender().toUpperCase()).getRole(),
-                                msg.getMessage()
-                        )).toList());
-        request.temperature = temperature;
-        request.max_tokens = max_tokens;
-        return request;
+    private ChatCompletionRequest(Builder builder) {
+        this.model = builder.model;
+        this.messages.addAll(builder.systemMessages);
+        this.messages.addAll(builder.conversationMessages);
+        this.temperature = builder.temperature;
+        this.max_tokens = builder.maxTokens;
     }
 
-    public static ChatCompletionRequest toSummaryRequest(String model, String systemPrompt, List<Chatting> chattings, Double temperature, Integer max_tokens) {
-        ChatCompletionRequest request = new ChatCompletionRequest();
-        request.model = model;
-        request.messages = new ArrayList<>();
-        request.messages.add(Message.system(systemPrompt));
-        request.messages.addAll(
-                chattings.stream().map(
-                        msg -> new ChatCompletionRequest.Message(
-                                Sender.valueOf(msg.getSender().toUpperCase()).getRole(),
-                                msg.getMessage()
-                        )).toList());
-        request.temperature = temperature;
-        request.max_tokens = max_tokens;
-        return request;
-    }
-
-    public static ChatCompletionRequest toActRecommendRequest(String model, String systemPrompt, ChatSummary summary, Double temperature, Integer max_tokens) {
-        ChatCompletionRequest request = new ChatCompletionRequest();
-        request.model = model;
-        request.messages = new ArrayList<>();
-        request.messages.add(Message.system(systemPrompt));
-        request.messages.add(new ChatCompletionRequest.Message("user", summary.getSummaryText()));
-        request.temperature = temperature;
-        request.max_tokens = max_tokens;
-        return request;
+    public static Builder builder() {
+        return new Builder();
     }
 
     @Getter
@@ -76,6 +37,55 @@ public class ChatCompletionRequest {
 
         public static Message system(String content) {
             return new Message("system", content);
+        }
+
+        public static Message user(String content) {
+            return new Message("user", content);
+        }
+
+        public static Message assistant(String content) {
+            return new Message("assistant", content);
+        }
+    }
+
+    public static class Builder {
+        private String model;
+        private final List<Message> systemMessages = new ArrayList<>();
+        private final List<Message> conversationMessages = new ArrayList<>();
+        private Double temperature;
+        private Integer maxTokens;
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public Builder model(String model) {
+            this.model = model;
+            return this;
+        }
+
+        public Builder systemMessage(String content) {
+            this.systemMessages.add(Message.system(content));
+            return this;
+        }
+
+        public Builder messages(List<Message> messages) {
+            this.conversationMessages.addAll(messages);
+            return this;
+        }
+
+        public Builder temperature(Double temperature) {
+            this.temperature = temperature;
+            return this;
+        }
+
+        public Builder maxTokens(Integer maxTokens) {
+            this.maxTokens = maxTokens;
+            return this;
+        }
+
+        public ChatCompletionRequest build() {
+            return new ChatCompletionRequest(this);
         }
     }
 }
