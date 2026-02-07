@@ -20,42 +20,41 @@ import java.util.List;
 public class ChatCompletionRequestFactory {
 
     private final PromptManager promptManager;
+    private final ChatCompletionMessageConverter messageConverter;
     private final ChatOpenAiProperties chatOpenAiProperties;
     private final ChatSummaryOpenAiProperties chatSummaryOpenAiProperties;
     private final ACTRecommendOpenAiProperties actRecommendOpenAiProperties;
 
     public ChatCompletionRequest buildChatRequest(ChattingContext context, ChatSummaries summaries) {
-        String systemPrompt = promptManager.getChatSystemPrompt().getSystem();
+        ChatCompletionRequest.Builder builder = ChatCompletionRequest.builder()
+                .model(chatOpenAiProperties.getModel())
+                .systemMessage(promptManager.getChatSystemPrompt().getSystem())
+                .messages(messageConverter.convert(context))
+                .temperature(chatOpenAiProperties.getTemperature())
+                .maxTokens(chatOpenAiProperties.getMaxTokens());
 
-        return ChatCompletionRequest.toChatRequest(
-                chatOpenAiProperties.getModel(),
-                systemPrompt,
-                promptManager.makeSummaryPrompt(summaries).orElse(null),
-                context,
-                chatOpenAiProperties.getTemperature(),
-                chatOpenAiProperties.getMaxTokens()
-        );
+        promptManager.makeSummaryPrompt(summaries).ifPresent(builder::systemMessage);
+
+        return builder.build();
     }
 
     public ChatCompletionRequest buildSummaryRequest(List<Chatting> chattings) {
-        String systemPrompt = promptManager.getSummarySystemPrompt().getSystem();
-        return ChatCompletionRequest.toSummaryRequest(
-                chatSummaryOpenAiProperties.getModel(),
-                systemPrompt,
-                chattings,
-                chatSummaryOpenAiProperties.getTemperature(),
-                chatSummaryOpenAiProperties.getMaxTokens()
-        );
+        return ChatCompletionRequest.builder()
+                .model(chatSummaryOpenAiProperties.getModel())
+                .systemMessage(promptManager.getSummarySystemPrompt().getSystem())
+                .messages(messageConverter.convert(chattings))
+                .temperature(chatSummaryOpenAiProperties.getTemperature())
+                .maxTokens(chatSummaryOpenAiProperties.getMaxTokens())
+                .build();
     }
 
     public ChatCompletionRequest buildACTRecommendRequest(ChatSummary chatSummary) {
-        String systemPrompt = promptManager.getActRecommendPrompt().getSystem();
-        return ChatCompletionRequest.toActRecommendRequest(
-                actRecommendOpenAiProperties.getModel(),
-                systemPrompt,
-                chatSummary,
-                actRecommendOpenAiProperties.getTemperature(),
-                actRecommendOpenAiProperties.getMaxTokens()
-        );
+        return ChatCompletionRequest.builder()
+                .model(actRecommendOpenAiProperties.getModel())
+                .systemMessage(promptManager.getActRecommendPrompt().getSystem())
+                .messages(List.of(ChatCompletionRequest.Message.user(chatSummary.getSummaryText())))
+                .temperature(actRecommendOpenAiProperties.getTemperature())
+                .maxTokens(actRecommendOpenAiProperties.getMaxTokens())
+                .build();
     }
 }

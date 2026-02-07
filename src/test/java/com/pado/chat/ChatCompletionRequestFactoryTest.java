@@ -8,6 +8,7 @@ import com.pado.chat.domain.ChattingContext;
 import com.pado.config.properties.ACTRecommendOpenAiProperties;
 import com.pado.config.properties.ChatOpenAiProperties;
 import com.pado.config.properties.ChatSummaryOpenAiProperties;
+import com.pado.external.ai.infrastructure.ChatCompletionMessageConverter;
 import com.pado.external.ai.infrastructure.ChatCompletionRequest;
 import com.pado.external.ai.infrastructure.ChatCompletionRequestFactory;
 import com.pado.external.ai.infrastructure.prompt.PromptManager;
@@ -17,6 +18,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;
@@ -38,6 +40,9 @@ class ChatCompletionRequestFactoryTest {
 
     @Mock
     ACTRecommendOpenAiProperties actRecommendOpenAiProperties;
+
+    @Spy
+    ChatCompletionMessageConverter messageConverter = new ChatCompletionMessageConverter();
 
     @InjectMocks
     ChatCompletionRequestFactory factory;
