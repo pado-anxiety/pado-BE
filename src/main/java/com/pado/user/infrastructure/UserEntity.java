@@ -4,6 +4,8 @@ import com.pado.user.domain.LoginType;
 import com.pado.user.domain.User;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "users")
 public class UserEntity {
@@ -28,10 +30,14 @@ public class UserEntity {
 
     private String oAuthRefreshToken;
 
+    private LocalDateTime lastLoginTime;
+
+    private String timezone;
+
     protected UserEntity() {
     }
 
-    private UserEntity(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oAuthRefreshToken) {
+    private UserEntity(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oAuthRefreshToken, LocalDateTime lastLoginTime, String timezone) {
         this.id = id;
         this.email = email;
         this.sub = sub;
@@ -39,13 +45,15 @@ public class UserEntity {
         this.name = name;
         this.refreshToken = refreshToken;
         this.oAuthRefreshToken = oAuthRefreshToken;
+        this.lastLoginTime = lastLoginTime;
+        this.timezone = timezone;
     }
 
     public User toModel() {
-        return new User(id, email, sub, loginType, name, refreshToken, oAuthRefreshToken);
+        return new User(id, email, sub, loginType, name, refreshToken, oAuthRefreshToken, lastLoginTime, timezone);
     }
 
     public static UserEntity fromModel(User user) {
-        return new UserEntity(user.getId(), user.getEmail(), user.getSub(), user.getLoginType(), user.getName(), user.getRefreshToken(), user.getOAuthRefreshToken());
+        return new UserEntity(user.getId(), user.getEmail(), user.getSub(), user.getLoginType(), user.getName(), user.getRefreshToken(), user.getOAuthRefreshToken(), user.getLastLoginTime(), user.getTimezone());
     }
 }
