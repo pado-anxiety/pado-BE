@@ -17,6 +17,6 @@ public class ACTRecommendController {
 
     @PostMapping("/act/recommend")
     public ResponseEntity<ACTRecommendation> recommend(@LoginUser AuthUser authUser) {
-        return ResponseEntity.ok(actRecommendService.recommend(authUser.getUserId()));
+        return ResponseEntity.ok(actRecommendService.recommend(authUser.getUserId(), authUser.getZoneId()));
     }
 }

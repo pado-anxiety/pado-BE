@@ -4,7 +4,9 @@ import com.pado.act.recommend.ACTRecommendation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 @Repository
 @RequiredArgsConstructor
@@ -14,12 +16,12 @@ public class AiACTRecommendationRepositoryImpl implements AiACTRecommendationRep
 
     @Override
     public void saveAiRecommend(Long userId, ACTRecommendation actRecommendation) {
-        actRecommendJpaRepository.save(new AiACTRecommendEntity(userId, LocalDateTime.now(), actRecommendation.getActType()));
+        actRecommendJpaRepository.save(new AiACTRecommendEntity(userId, Instant.now(), actRecommendation.getActType()));
     }
 
     @Override
-    public int countTodayAiRecommended(Long userId) {
-        return actRecommendJpaRepository.countACTRecommendLogByUserIdAndBetweenTime(userId, LocalDateTime.now().toLocalDate().atStartOfDay(), LocalDateTime.now());
+    public int countTodayAiRecommended(Long userId, ZoneId zoneId) {
+        return actRecommendJpaRepository.countACTRecommendLogByUserIdAndBetweenTime(userId, ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(), ZonedDateTime.now(zoneId).toLocalDateTime());
     }
 
     @Override

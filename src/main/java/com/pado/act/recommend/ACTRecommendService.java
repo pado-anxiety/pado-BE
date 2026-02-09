@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +30,8 @@ public class ACTRecommendService {
     @Value("${act.recommend.quota.max-tokens}") private int recommendQuota;
 
     @Transactional
-    public ACTRecommendation recommend(Long userId) {
-        if (aiActRecommendationRepository.countTodayAiRecommended(userId) >= recommendQuota) {
+    public ACTRecommendation recommend(Long userId, ZoneId zoneId) {
+        if (aiActRecommendationRepository.countTodayAiRecommended(userId, zoneId) >= recommendQuota) {
             throw new ACTRecommendQuotaExceededException();
         }
         Optional<ChatSummary> summary = getSummaryForRecommendation(userId);
