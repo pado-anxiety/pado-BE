@@ -4,6 +4,7 @@ import com.pado.auth.controller.dto.AppleLoginRequest;
 import com.pado.auth.controller.dto.GoogleLoginRequest;
 import com.pado.auth.controller.dto.KakaoLoginRequest;
 import com.pado.auth.controller.dto.TokenResponse;
+import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
 import com.pado.auth.infrastructure.oauth.apple.AppleOAuthService;
 import com.pado.auth.infrastructure.oauth.google.GoogleOAuthService;
@@ -41,8 +42,8 @@ public class LoginController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@LoginUser Long userId) {
-        logoutService.logout(userId);
+    public ResponseEntity<Void> logout(@LoginUser AuthUser authUser) {
+        logoutService.logout(authUser.getUserId());
         return ResponseEntity.noContent().build();
     }
 }

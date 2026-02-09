@@ -1,5 +1,6 @@
 package com.pado.feedback;
 
+import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ public class FeedbackController {
     private final FeedbackService feedbackService;
 
     @PostMapping
-    public ResponseEntity<Void> feedback(@LoginUser Long userId, @RequestBody Feedback feedback) {
-        feedbackService.saveFeedback(userId, feedback.getFeedback());
+    public ResponseEntity<Void> feedback(@LoginUser AuthUser authUser, @RequestBody Feedback feedback) {
+        feedbackService.saveFeedback(authUser.getUserId(), feedback.getFeedback());
         return ResponseEntity.ok().build();
     }
 }
