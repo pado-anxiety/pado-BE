@@ -10,4 +10,5 @@ public class GoogleLoginRequest {
     private String authorizationCode;
     private String redirectUri;
     private Platform platform;
+    private String timezone;
 }

@@ -22,17 +22,18 @@ public class AppleOAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    public TokenResponse appleLogin(String authorizationCode, String fullName) {
+    public TokenResponse appleLogin(String authorizationCode, String fullName, String timezone) {
         AppleTokenResponse response = loginClient.getTokenResponse(authorizationCode);
         AppleClaims claims = identityTokenVerifier.verify(response.getIdToken());
 
         User user;
         Optional<User> getUser = userRepository.findBySubAndLoginType(claims.getSub(), LoginType.APPLE);
         if (getUser.isEmpty()) {
-            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), fullName, LoginType.APPLE, response.getOAuthRefreshToken()));
+            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), fullName, LoginType.APPLE, response.getOAuthRefreshToken(), timezone));
         } else {
             user = getUser.get();
             user.updateOAuthRefreshToken(response.getOAuthRefreshToken());
+            user.updateTimezone(timezone);
             if (!user.getEmail().equals(claims.getEmail())) {
                 user.updateEmail(claims.getEmail());
                 userRepository.save(user);

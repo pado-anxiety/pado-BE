@@ -28,17 +28,25 @@ public class LoginController {
 
     @PostMapping("/login/google")
     public ResponseEntity<TokenResponse> googleLogin(@RequestBody GoogleLoginRequest loginRequest) {
-        return ResponseEntity.ok(googleOAuthService.googleLogin(loginRequest.getAuthorizationCode(), loginRequest.getCodeVerifier(), loginRequest.getRedirectUri(), loginRequest.getPlatform()));
+        return ResponseEntity.ok(
+                googleOAuthService.googleLogin(
+                        loginRequest.getAuthorizationCode(),
+                        loginRequest.getCodeVerifier(),
+                        loginRequest.getRedirectUri(),
+                        loginRequest.getPlatform(),
+                        loginRequest.getTimezone()
+                )
+        );
     }
 
     @PostMapping("/login/kakao")
     public ResponseEntity<TokenResponse> kakaoLogin(@RequestBody KakaoLoginRequest loginRequest) {
-        return ResponseEntity.ok(kakaoOAuthService.kakaoLogin(loginRequest.getIdentityToken(), loginRequest.getRefreshToken()));
+        return ResponseEntity.ok(kakaoOAuthService.kakaoLogin(loginRequest.getIdentityToken(), loginRequest.getRefreshToken(), loginRequest.getTimezone()));
     }
 
     @PostMapping("/login/apple")
     public ResponseEntity<TokenResponse> appleLogin(@RequestBody AppleLoginRequest loginRequest) {
-        return ResponseEntity.ok(appleOAuthService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getFullName()));
+        return ResponseEntity.ok(appleOAuthService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getFullName(), loginRequest.getTimezone()));
     }
 
     @PostMapping("/logout")

@@ -31,8 +31,8 @@ public class User {
         this.timezone = timezone;
     }
 
-    public User(String email, String sub, String name, LoginType loginType, String oAuthRefreshToken) {
-        this(null, email, sub, loginType, name, null, oAuthRefreshToken, Instant.now(), null);
+    public User(String email, String sub, String name, LoginType loginType, String oAuthRefreshToken, String timezone) {
+        this(null, email, sub, loginType, name, null, oAuthRefreshToken, Instant.now(), timezone);
     }
 
     public void updateRefreshToken(String refreshToken) {
