@@ -19,12 +19,12 @@ public class ACTRecordController {
 
     @GetMapping
     public ResponseEntity<ACTRecords> getACTRecords(@LoginUser AuthUser authUser, @RequestParam(required = false) String cursor) {
-        return ResponseEntity.ok(actRecordService.findAllActRecords(authUser.getUserId(), cursor));
+        return ResponseEntity.ok(actRecordService.findAllActRecords(authUser.getUserId(), authUser.getZoneId(), cursor));
     }
 
     @GetMapping("/{recordId}")
     public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser AuthUser authUser, @PathVariable("recordId") String recordId) {
-        return ResponseEntity.ok(actRecordService.findACTRecordResponse(authUser.getUserId(), recordId));
+        return ResponseEntity.ok(actRecordService.findACTRecordResponse(authUser.getUserId(), authUser.getZoneId(), recordId));
     }
 
     @PostMapping("/contact-with-present")

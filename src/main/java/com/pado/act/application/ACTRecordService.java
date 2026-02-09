@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -27,23 +28,23 @@ public class ACTRecordService {
     private static final int ACT_RECORD_PAGE_SIZE = 20;
 
     @Transactional(readOnly = true)
-    public ACTRecords findAllActRecords(Long userId, String stringCursor) {
+    public ACTRecords findAllActRecords(Long userId, ZoneId zoneId, String stringCursor) {
         long cursor = Long.MAX_VALUE;
         if (stringCursor != null) {
             cursor = Long.parseLong(stringCursor);
         }
-        List<ACTRecordEntity> entities = actRecordRepository.findAllByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE + 1)); // hasNext를 위한 +1 조회
-        return ACTRecordMapper.toACTRecords(entities, ACT_RECORD_PAGE_SIZE);
+        List<ACTRecordEntity> entities = actRecordRepository.findAllByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE + 1));
+        return ACTRecordMapper.toACTRecords(entities, ACT_RECORD_PAGE_SIZE, zoneId);
     }
 
     @Transactional(readOnly = true)
-    public ACTRecordResponse findACTRecordResponse(Long userId, String stringRecordId) {
+    public ACTRecordResponse findACTRecordResponse(Long userId, ZoneId zoneId, String stringRecordId) {
         long recordId = Long.parseLong(stringRecordId);
         ACTRecordEntity entity = actRecordRepository.findById(recordId).orElseThrow(() -> new ACTRecordNotFoundException(recordId));
         if (!entity.getUserId().equals(userId)) {
             throw new ACTAccessDeniedException();
         }
-        return new ACTRecordResponse(entity.getTsid(), ACTRecordTsidUtil.toLocalDateTime(entity.getTsid()), entity.getActType(), actRecordConverter.convertToJsonNode(entity.getData()));
+        return new ACTRecordResponse(entity.getTsid(), ACTRecordTsidUtil.toLocalDateTime(entity.getTsid(), zoneId), entity.getActType(), actRecordConverter.convertToJsonNode(entity.getData()));
     }
 
     public void recordContactWithPresent(Long userId) {
