@@ -4,6 +4,7 @@ import com.pado.user.domain.LoginType;
 import com.pado.user.domain.User;
 import jakarta.persistence.*;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 @Entity
@@ -30,14 +31,14 @@ public class UserEntity {
 
     private String oAuthRefreshToken;
 
-    private LocalDateTime lastLoginTime;
+    private Instant lastLoginTime;
 
     private String timezone;
 
     protected UserEntity() {
     }
 
-    private UserEntity(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oAuthRefreshToken, LocalDateTime lastLoginTime, String timezone) {
+    private UserEntity(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oAuthRefreshToken, Instant lastLoginTime, String timezone) {
         this.id = id;
         this.email = email;
         this.sub = sub;
