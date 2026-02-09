@@ -19,4 +19,10 @@ public class UserService {
         return new UserInfoResponse(user.getEmail(), user.getName());
     }
 
+    public void updateUserInfo(Long userId, String timezone) {
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        user.updateLastLoginTime();
+        user.updateTimezone(timezone);
+        userRepository.save(user);
+    }
 }

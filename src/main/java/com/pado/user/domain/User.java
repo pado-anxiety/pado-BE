@@ -2,6 +2,8 @@ package com.pado.user.domain;
 
 import lombok.Getter;
 
+import java.time.LocalDateTime;
+
 @Getter
 public class User {
     private final Long id;
@@ -14,7 +16,10 @@ public class User {
 
     private String oAuthRefreshToken;
 
-    public User(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oauthRefreshToken) {
+    private LocalDateTime lastLoginTime;
+    private String timezone;
+
+    public User(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oauthRefreshToken, LocalDateTime lastLoginTime, String timezone) {
         this.id = id;
         this.email = email;
         this.sub = sub;
@@ -22,10 +27,12 @@ public class User {
         this.name = name;
         this.refreshToken = refreshToken;
         this.oAuthRefreshToken = oauthRefreshToken;
+        this.lastLoginTime = lastLoginTime;
+        this.timezone = timezone;
     }
 
     public User(String email, String sub, String name, LoginType loginType, String oAuthRefreshToken) {
-        this(null, email, sub, loginType, name, null, oAuthRefreshToken);
+        this(null, email, sub, loginType, name, null, oAuthRefreshToken, LocalDateTime.now(), null);
     }
 
     public void updateRefreshToken(String refreshToken) {
@@ -38,5 +45,13 @@ public class User {
 
     public void updateEmail(String email) {
         this.email = email;
+    }
+
+    public void updateLastLoginTime() {
+        this.lastLoginTime = LocalDateTime.now();
+    }
+
+    public void updateTimezone(String timezone) {
+        this.timezone = timezone;
     }
 }
