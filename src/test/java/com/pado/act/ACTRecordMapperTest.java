@@ -6,12 +6,15 @@ import com.pado.act.infrastructure.ACTRecordEntity;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class ACTRecordMapperTest {
+
+    private static final ZoneId KST = ZoneId.of("Asia/Seoul");
 
     @Test
     @DisplayName("pageSize 초과 시 마지막 1개 제거 + hasNext true")
@@ -26,7 +29,7 @@ public class ACTRecordMapperTest {
         List<ACTRecordEntity> entities = new ArrayList<>(List.of(e1, e2, e3));
 
         //when
-        ACTRecords result = ACTRecordMapper.toACTRecords(entities, pageSize);
+        ACTRecords result = ACTRecordMapper.toACTRecords(entities, pageSize, KST);
         System.out.println(result);
 
         //then
@@ -50,7 +53,7 @@ public class ACTRecordMapperTest {
         List<ACTRecordEntity> entities = new ArrayList<>(List.of(e1, e2));
 
         //when
-        ACTRecords result = ACTRecordMapper.toACTRecords(entities, pageSize);
+        ACTRecords result = ACTRecordMapper.toACTRecords(entities, pageSize, KST);
 
         //then
         assertThat(result.getHasNext()).isFalse();
