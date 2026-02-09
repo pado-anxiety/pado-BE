@@ -26,9 +26,9 @@ public class LoginDevController {
     public ResponseEntity<DevLogin> login() {
         Optional<User> user = userRepository.findBySubAndLoginType(TEST_USER, LoginType.GOOGLE);
         if (user.isPresent()) {
-            return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(user.get().getId())));
+            return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(user.get())));
         }
         User save = userRepository.save(new User("test@test.com", TEST_USER, "test", LoginType.GOOGLE, "testOAuthRefreshToken"));
-        return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(save.getId())));
+        return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(save)));
     }
 }

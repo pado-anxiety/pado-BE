@@ -38,6 +38,6 @@ public class GoogleOAuthService {
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
 
-        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), refreshToken);
+        return new TokenResponse(jwtTokenProvider.createAccessToken(user), refreshToken);
     }
 }

@@ -42,6 +42,6 @@ public class AppleOAuthService {
         user.updateRefreshToken(refreshToken);
         user = userRepository.save(user);
 
-        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), refreshToken);
+        return new TokenResponse(jwtTokenProvider.createAccessToken(user), refreshToken);
     }
 }
