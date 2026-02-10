@@ -2,9 +2,9 @@ package com.pado.act.application;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.ACTType;
+import com.pado.act.application.query.ACTRecordItemView;
+import com.pado.act.application.query.ACTRecordsView;
 import com.pado.act.application.validator.ACTRecordJsonValidator;
-import com.pado.act.controller.dto.ACTRecordResponse;
-import com.pado.act.controller.dto.ACTRecords;
 import com.pado.act.infrastructure.ACTRecordEntity;
 import com.pado.act.infrastructure.ACTRecordRepository;
 import com.pado.tsid.ACTRecordTsidUtil;
@@ -13,7 +13,6 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -28,23 +27,29 @@ public class ACTRecordService {
     private static final int ACT_RECORD_PAGE_SIZE = 20;
 
     @Transactional(readOnly = true)
-    public ACTRecords findAllActRecords(Long userId, ZoneId zoneId, String stringCursor) {
-        long cursor = Long.MAX_VALUE;
+    public ACTRecordsView findAllActRecords(Long userId, String stringCursor) {
+        Long cursor = Long.MAX_VALUE;
         if (stringCursor != null) {
             cursor = Long.parseLong(stringCursor);
         }
-        List<ACTRecordEntity> entities = actRecordRepository.findAllByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE + 1));
-        return ACTRecordMapper.toACTRecords(entities, ACT_RECORD_PAGE_SIZE, zoneId);
+        List<ACTRecordItemView> itemViews = actRecordRepository.findAllByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE + 1))
+                .stream()
+                .map(e -> new ACTRecordItemView(e.getTsid(), e.getActType(), null))
+                .toList();
+        cursor = null;
+        if (!itemViews.isEmpty()) cursor = itemViews.get(itemViews.size() - 1).getTsid();
+        boolean hasNext = itemViews.size() > ACT_RECORD_PAGE_SIZE;
+        return new ACTRecordsView(itemViews, cursor, hasNext);
     }
 
     @Transactional(readOnly = true)
-    public ACTRecordResponse findACTRecordResponse(Long userId, ZoneId zoneId, String stringRecordId) {
+    public ACTRecordItemView findACTRecordResponse(Long userId, String stringRecordId) {
         long recordId = Long.parseLong(stringRecordId);
         ACTRecordEntity entity = actRecordRepository.findById(recordId).orElseThrow(() -> new ACTRecordNotFoundException(recordId));
         if (!entity.getUserId().equals(userId)) {
             throw new ACTAccessDeniedException();
         }
-        return new ACTRecordResponse(entity.getTsid(), ACTRecordTsidUtil.toLocalDateTime(entity.getTsid(), zoneId), entity.getActType(), actRecordConverter.convertToJsonNode(entity.getData()));
+        return new ACTRecordItemView(entity.getTsid(), entity.getActType(), actRecordConverter.convertToJsonNode(entity.getData()));
     }
 
     public void recordContactWithPresent(Long userId) {
