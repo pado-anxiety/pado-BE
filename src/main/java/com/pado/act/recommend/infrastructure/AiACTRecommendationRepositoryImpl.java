@@ -21,7 +21,8 @@ public class AiACTRecommendationRepositoryImpl implements AiACTRecommendationRep
 
     @Override
     public int countTodayAiRecommended(Long userId, ZoneId zoneId) {
-        return actRecommendJpaRepository.countACTRecommendLogByUserIdAndBetweenTime(userId, ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(), ZonedDateTime.now(zoneId).toLocalDateTime());
+        Instant startOfDay = ZonedDateTime.now(zoneId).toLocalDate().atStartOfDay(zoneId).toInstant();
+        return actRecommendJpaRepository.countACTRecommendLogByUserIdAndBetweenTime(userId, startOfDay, ZonedDateTime.now(zoneId).toInstant());
     }
 
     @Override
