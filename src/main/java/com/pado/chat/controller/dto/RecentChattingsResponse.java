@@ -1,6 +1,5 @@
 package com.pado.chat.controller.dto;
 
-import com.pado.chat.domain.Chatting;
 import lombok.Getter;
 
 import java.util.List;
@@ -10,8 +9,8 @@ public class RecentChattingsResponse {
     private final List<ChattingResponse> content;
     private final Long cursor;
 
-    public RecentChattingsResponse(List<Chatting> chattings, Long cursor) {
-        this.content = chattings.stream().map(c -> new ChattingResponse(Sender.valueOf(c.getSender()), c.getMessage(), c.getTsid())).toList();
+    public RecentChattingsResponse(List<ChattingResponse> chattings, Long cursor) {
+        this.content = chattings;
         this.cursor = cursor;
     }
 
