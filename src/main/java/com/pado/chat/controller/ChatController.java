@@ -5,14 +5,18 @@ import com.pado.auth.infrastructure.LoginUser;
 import com.pado.chat.application.AIChatFacade;
 import com.pado.chat.application.AIChatQuotaService;
 import com.pado.chat.application.ChattingQueryService;
-import com.pado.chat.controller.dto.RecentChattingsResponse;
-import com.pado.chat.domain.RecentChattings;
-import com.pado.chat.controller.dto.message.MessageRequest;
+import com.pado.chat.application.command.PostMessageResult;
+import com.pado.chat.application.query.RecentChattingsView;
 import com.pado.chat.controller.dto.ChattingResponse;
+import com.pado.chat.controller.dto.RecentChattingsResponse;
+import com.pado.chat.controller.dto.message.MessageRequest;
+import com.pado.chat.controller.mapper.ChattingResponseMapper;
 import com.pado.chat.quota.QuotaStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/chats")
@@ -25,15 +29,17 @@ public class ChatController {
 
     @PostMapping
     public ResponseEntity<ChattingResponse> send(@LoginUser AuthUser authUser, @RequestBody MessageRequest request) {
-        return ResponseEntity.ok(AIChatFacade.postMessage(authUser.getUserId(), request));
+        PostMessageResult result = AIChatFacade.postMessage(authUser.getUserId(), request);
+        return ResponseEntity.ok(ChattingResponseMapper.from(result.getSender(), request.getMessage(), result.getTsid(), authUser.getZoneId()));
     }
 
     @GetMapping
     public ResponseEntity<RecentChattingsResponse> getRecentChattingsWithCursor(
             @LoginUser AuthUser authUser,
             @RequestParam(name = "cursor", required = false) Long cursor) {
-        RecentChattings recentChattings = chattingQueryService.getRecentChattingsBeforeCursor(authUser.getUserId(), cursor);
-        return ResponseEntity.ok(new RecentChattingsResponse(recentChattings.getChattings(), recentChattings.getCursor()));
+        RecentChattingsView view = chattingQueryService.getRecentChattingsBeforeCursor(authUser.getUserId(), cursor);
+        List<ChattingResponse> chattingResponses = view.getChattings().stream().map(v -> ChattingResponseMapper.from(v.getSender(), v.getMessage(), v.getTsid(), authUser.getZoneId())).toList();
+        return ResponseEntity.ok(new RecentChattingsResponse(chattingResponses, view.getCursor()));
     }
 
     @GetMapping("/quota")
