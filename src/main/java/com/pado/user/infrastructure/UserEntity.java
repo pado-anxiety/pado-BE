@@ -5,7 +5,6 @@ import com.pado.user.domain.User;
 import jakarta.persistence.*;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "users")
