@@ -2,10 +2,14 @@ package com.pado.act.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.application.ACTRecordService;
+import com.pado.act.application.query.ACTRecordItemView;
+import com.pado.act.application.query.ACTRecordsView;
 import com.pado.act.controller.dto.ACTRecordResponse;
 import com.pado.act.controller.dto.ACTRecords;
+import com.pado.act.controller.mapper.ACTRecordMapper;
 import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
+import com.pado.tsid.ACTRecordTsidUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +23,14 @@ public class ACTRecordController {
 
     @GetMapping
     public ResponseEntity<ACTRecords> getACTRecords(@LoginUser AuthUser authUser, @RequestParam(required = false) String cursor) {
-        return ResponseEntity.ok(actRecordService.findAllActRecords(authUser.getUserId(), authUser.getZoneId(), cursor));
+        ACTRecordsView view = actRecordService.findAllActRecords(authUser.getUserId(), cursor);
+        return ResponseEntity.ok(ACTRecordMapper.toACTRecords(view, authUser.getZoneId()));
     }
 
     @GetMapping("/{recordId}")
     public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser AuthUser authUser, @PathVariable("recordId") String recordId) {
-        return ResponseEntity.ok(actRecordService.findACTRecordResponse(authUser.getUserId(), authUser.getZoneId(), recordId));
+        ACTRecordItemView view = actRecordService.findACTRecordResponse(authUser.getUserId(), recordId);
+        return ResponseEntity.ok(new ACTRecordResponse(view.getTsid(), ACTRecordTsidUtil.toLocalDateTime(view.getTsid(), authUser.getZoneId()), view.getActType(), view.getData()));
     }
 
     @PostMapping("/contact-with-present")
