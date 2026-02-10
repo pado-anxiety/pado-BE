@@ -30,7 +30,7 @@ public class ChatController {
     @PostMapping
     public ResponseEntity<ChattingResponse> send(@LoginUser AuthUser authUser, @RequestBody MessageRequest request) {
         PostMessageResult result = AIChatFacade.postMessage(authUser.getUserId(), request);
-        return ResponseEntity.ok(ChattingResponseMapper.from(result.getSender(), request.getMessage(), result.getTsid(), authUser.getZoneId()));
+        return ResponseEntity.ok(ChattingResponseMapper.from(result.getSender(), result.getMessage(), result.getTsid(), authUser.getZoneId()));
     }
 
     @GetMapping
