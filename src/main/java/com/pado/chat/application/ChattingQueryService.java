@@ -1,7 +1,9 @@
 package com.pado.chat.application;
 
+import com.pado.chat.application.query.ChattingItemView;
+import com.pado.chat.application.query.RecentChattingsView;
+import com.pado.chat.controller.dto.Sender;
 import com.pado.chat.domain.Chatting;
-import com.pado.chat.domain.RecentChattings;
 import com.pado.chat.infrastructure.ChattingDBRepository;
 import com.pado.chat.infrastructure.RecentChattingRedisRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +26,7 @@ public class ChattingQueryService {
     private final ChattingDBRepository chattingDBRepository;
 
     @Transactional(readOnly = true)
-    public RecentChattings getRecentChattingsBeforeCursor(Long userId, Long cursor) {
+    public RecentChattingsView getRecentChattingsBeforeCursor(Long userId, Long cursor) {
         List<Chatting> chattings;
         if (cursor == null) {
             chattings = new ArrayList<>(recentChattingRedisRepository.getRecentChattings(userId));
@@ -39,7 +41,7 @@ public class ChattingQueryService {
         if (!chattings.isEmpty()) {
             nextCursor = chattings.get(chattings.size() - 1).getTsid();
         }
-        return new RecentChattings(chattings, nextCursor);
+        return new RecentChattingsView(chattings.stream().map(c -> new ChattingItemView(c.getTsid(), c.getMessage(), Sender.valueOf(c.getSender()))).toList(), nextCursor);
     }
 
     @Transactional(readOnly = true)

@@ -4,6 +4,7 @@ import com.pado.act.application.ACTAccessDeniedException;
 import com.pado.act.application.ACTRecordNotFoundException;
 import com.pado.act.application.InvalidActRecordRequestException;
 import com.pado.act.recommend.ACTRecommendQuotaExceededException;
+import com.pado.auth.infrastructure.UnauthorizedException;
 import com.pado.auth.infrastructure.oauth.OAuthException;
 import com.pado.chat.quota.ChatQuotaExceededException;
 import com.pado.external.ai.infrastructure.OpenAiException;
@@ -31,6 +32,12 @@ public class GlobalExceptionHandler {
                 e);
         ErrorResponse response = new ErrorResponse("서버 오류가 발생했습니다.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    }
+
+    @ExceptionHandler(UnauthorizedException.class)
+    public ResponseEntity<ErrorResponse> handleUnauthorizedException() {
+        ErrorResponse response = new ErrorResponse("로그인이 필요합니다.");
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     @ExceptionHandler(OpenAiException.class)

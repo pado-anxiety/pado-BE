@@ -6,4 +6,5 @@ import lombok.Getter;
 public class KakaoLoginRequest {
     private String identityToken;
     private String refreshToken;
+    private String timezone;
 }

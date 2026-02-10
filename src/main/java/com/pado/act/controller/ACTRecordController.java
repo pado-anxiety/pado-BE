@@ -2,9 +2,14 @@ package com.pado.act.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.application.ACTRecordService;
+import com.pado.act.application.query.ACTRecordItemView;
+import com.pado.act.application.query.ACTRecordsView;
 import com.pado.act.controller.dto.ACTRecordResponse;
 import com.pado.act.controller.dto.ACTRecords;
+import com.pado.act.controller.mapper.ACTRecordMapper;
+import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
+import com.pado.tsid.ACTRecordTsidUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -17,42 +22,44 @@ public class ACTRecordController {
     private final ACTRecordService actRecordService;
 
     @GetMapping
-    public ResponseEntity<ACTRecords> getACTRecords(@LoginUser Long userId, @RequestParam(required = false) String cursor) {
-        return ResponseEntity.ok(actRecordService.findAllActRecords(userId, cursor));
+    public ResponseEntity<ACTRecords> getACTRecords(@LoginUser AuthUser authUser, @RequestParam(required = false) String cursor) {
+        ACTRecordsView view = actRecordService.findAllActRecords(authUser.getUserId(), cursor);
+        return ResponseEntity.ok(ACTRecordMapper.toACTRecords(view, authUser.getZoneId()));
     }
 
     @GetMapping("/{recordId}")
-    public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser Long userId, @PathVariable("recordId") String recordId) {
-        return ResponseEntity.ok(actRecordService.findACTRecordResponse(userId, recordId));
+    public ResponseEntity<ACTRecordResponse> getACTRecordResponse(@LoginUser AuthUser authUser, @PathVariable("recordId") String recordId) {
+        ACTRecordItemView view = actRecordService.findACTRecordResponse(authUser.getUserId(), recordId);
+        return ResponseEntity.ok(new ACTRecordResponse(view.getTsid(), ACTRecordTsidUtil.toLocalDateTime(view.getTsid(), authUser.getZoneId()), view.getActType(), view.getData()));
     }
 
     @PostMapping("/contact-with-present")
-    public ResponseEntity<Void> contactWithPresent(@LoginUser Long userId) {
-        actRecordService.recordContactWithPresent(userId);
+    public ResponseEntity<Void> contactWithPresent(@LoginUser AuthUser authUser) {
+        actRecordService.recordContactWithPresent(authUser.getUserId());
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/emotion-note")
-    public ResponseEntity<Void> emotionNote(@LoginUser Long userId, @RequestBody JsonNode data) {
-        actRecordService.recordEmotionNote(userId, data);
+    public ResponseEntity<Void> emotionNote(@LoginUser AuthUser authUser, @RequestBody JsonNode data) {
+        actRecordService.recordEmotionNote(authUser.getUserId(), data);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/cognitive-defusion")
-    public ResponseEntity<Void> cognitiveDefusion(@LoginUser Long userId, @RequestBody JsonNode data) {
-        actRecordService.recordCognitiveDefusion(userId, data);
+    public ResponseEntity<Void> cognitiveDefusion(@LoginUser AuthUser authUser, @RequestBody JsonNode data) {
+        actRecordService.recordCognitiveDefusion(authUser.getUserId(), data);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/acceptance")
-    public ResponseEntity<Void> acceptance(@LoginUser Long userId, @RequestBody JsonNode data) {
-        actRecordService.recordAcceptance(userId, data);
+    public ResponseEntity<Void> acceptance(@LoginUser AuthUser authUser, @RequestBody JsonNode data) {
+        actRecordService.recordAcceptance(authUser.getUserId(), data);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("/committed-action")
-    public ResponseEntity<Void> committedAction(@LoginUser Long userId, @RequestBody JsonNode data) {
-        actRecordService.recordCommittedAction(userId, data);
+    public ResponseEntity<Void> committedAction(@LoginUser AuthUser authUser, @RequestBody JsonNode data) {
+        actRecordService.recordCommittedAction(authUser.getUserId(), data);
         return ResponseEntity.ok().build();
     }
 }

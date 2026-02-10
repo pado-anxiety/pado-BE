@@ -12,7 +12,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
-        return parameter.hasParameterAnnotation(LoginUser.class) && (Long.class.isAssignableFrom(parameter.getParameterType()) || long.class.isAssignableFrom(parameter.getParameterType()));
+        return parameter.hasParameterAnnotation(LoginUser.class) && (AuthUser.class.isAssignableFrom(parameter.getParameterType()));
     }
 
     @Override
@@ -24,9 +24,14 @@ public class UserArgumentResolver implements HandlerMethodArgumentResolver {
     ) throws Exception {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication == null) {
-            return new RuntimeException("로그인이 필요합니다.");
+            return new UnauthorizedException();
         }
 
-        return Long.parseLong(authentication.getName());
+        Object principal = authentication.getPrincipal();
+
+        if (!(principal instanceof AuthUser authUser)) {
+            throw new UnauthorizedException();
+        }
+        return authUser;
     }
 }

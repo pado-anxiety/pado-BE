@@ -1,6 +1,5 @@
 package com.pado.chat.controller.dto;
 
-import com.pado.tsid.ChattingTsidUtil;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
@@ -11,9 +10,9 @@ public class ChattingResponse {
     private final String message;
     private final LocalDateTime time;
 
-    public ChattingResponse(Sender sender, String message, Long tsid) {
+    public ChattingResponse(Sender sender, String message, LocalDateTime localDateTime) {
         this.sender = sender;
         this.message = message;
-        this.time = ChattingTsidUtil.toLocalDateTime(tsid);
+        this.time = localDateTime;
     }
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Instant;
 import java.util.Optional;
 
 @Profile("dev")
@@ -26,9 +27,9 @@ public class LoginDevController {
     public ResponseEntity<DevLogin> login() {
         Optional<User> user = userRepository.findBySubAndLoginType(TEST_USER, LoginType.GOOGLE);
         if (user.isPresent()) {
-            return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(user.get().getId())));
+            return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(user.get())));
         }
-        User save = userRepository.save(new User("test@test.com", TEST_USER, "test", LoginType.GOOGLE, "testOAuthRefreshToken"));
-        return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(save.getId())));
+        User save = userRepository.save(new User(null, "test@test.com", TEST_USER, LoginType.GOOGLE, "test", "test", "testOAuthRefreshToken", Instant.now(), "Asia/Seoul"));
+        return ResponseEntity.ok(new DevLogin(jwtTokenProvider.createAccessToken(save)));
     }
 }
