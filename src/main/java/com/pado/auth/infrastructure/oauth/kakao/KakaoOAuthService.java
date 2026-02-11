@@ -21,19 +21,20 @@ public class KakaoOAuthService {
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
 
-    public TokenResponse kakaoLogin(String identityToken, String oAuthRefreshToken) {
+    public TokenResponse kakaoLogin(String identityToken, String oAuthRefreshToken, String timezone) {
         KakaoClaims claims = identityTokenVerifier.verify(identityToken);
         Optional<User> optional = userRepository.findBySubAndLoginType(claims.getSub(), LoginType.KAKAO);
         User user;
         if (optional.isEmpty()) {
-            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), claims.getName(), LoginType.KAKAO, oAuthRefreshToken));
+            user = userRepository.save(new User(claims.getEmail(), claims.getSub(), claims.getName(), LoginType.KAKAO, oAuthRefreshToken, timezone));
         } else {
             user = optional.get();
             user.updateOAuthRefreshToken(oAuthRefreshToken);
+            user.updateTimezone(timezone);
         }
         String refreshToken = jwtTokenProvider.createRefreshToken(user.getId());
         user.updateRefreshToken(refreshToken);
         userRepository.save(user);
-        return new TokenResponse(jwtTokenProvider.createAccessToken(user.getId()), refreshToken);
+        return new TokenResponse(jwtTokenProvider.createAccessToken(user), refreshToken);
     }
 }

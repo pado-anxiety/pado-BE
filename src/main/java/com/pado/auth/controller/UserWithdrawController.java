@@ -1,5 +1,6 @@
 package com.pado.auth.controller;
 
+import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
 import com.pado.auth.service.UserWithdrawService;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +15,8 @@ public class UserWithdrawController {
     private final UserWithdrawService userWithdrawService;
 
     @DeleteMapping("/users")
-    public ResponseEntity<Void> withdraw(@LoginUser Long userId) {
-        userWithdrawService.withdraw(userId);
+    public ResponseEntity<Void> withdraw(@LoginUser AuthUser authUser) {
+        userWithdrawService.withdraw(authUser.getUserId());
         return ResponseEntity.noContent().build();
     }
 }

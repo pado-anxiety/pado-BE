@@ -4,6 +4,7 @@ import com.pado.auth.controller.dto.AppleLoginRequest;
 import com.pado.auth.controller.dto.GoogleLoginRequest;
 import com.pado.auth.controller.dto.KakaoLoginRequest;
 import com.pado.auth.controller.dto.TokenResponse;
+import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
 import com.pado.auth.infrastructure.oauth.apple.AppleOAuthService;
 import com.pado.auth.infrastructure.oauth.google.GoogleOAuthService;
@@ -27,22 +28,30 @@ public class LoginController {
 
     @PostMapping("/login/google")
     public ResponseEntity<TokenResponse> googleLogin(@RequestBody GoogleLoginRequest loginRequest) {
-        return ResponseEntity.ok(googleOAuthService.googleLogin(loginRequest.getAuthorizationCode(), loginRequest.getCodeVerifier(), loginRequest.getRedirectUri(), loginRequest.getPlatform()));
+        return ResponseEntity.ok(
+                googleOAuthService.googleLogin(
+                        loginRequest.getAuthorizationCode(),
+                        loginRequest.getCodeVerifier(),
+                        loginRequest.getRedirectUri(),
+                        loginRequest.getPlatform(),
+                        loginRequest.getTimezone()
+                )
+        );
     }
 
     @PostMapping("/login/kakao")
     public ResponseEntity<TokenResponse> kakaoLogin(@RequestBody KakaoLoginRequest loginRequest) {
-        return ResponseEntity.ok(kakaoOAuthService.kakaoLogin(loginRequest.getIdentityToken(), loginRequest.getRefreshToken()));
+        return ResponseEntity.ok(kakaoOAuthService.kakaoLogin(loginRequest.getIdentityToken(), loginRequest.getRefreshToken(), loginRequest.getTimezone()));
     }
 
     @PostMapping("/login/apple")
     public ResponseEntity<TokenResponse> appleLogin(@RequestBody AppleLoginRequest loginRequest) {
-        return ResponseEntity.ok(appleOAuthService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getFullName()));
+        return ResponseEntity.ok(appleOAuthService.appleLogin(loginRequest.getAuthorizationCode(), loginRequest.getFullName(), loginRequest.getTimezone()));
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@LoginUser Long userId) {
-        logoutService.logout(userId);
+    public ResponseEntity<Void> logout(@LoginUser AuthUser authUser) {
+        logoutService.logout(authUser.getUserId());
         return ResponseEntity.noContent().build();
     }
 }

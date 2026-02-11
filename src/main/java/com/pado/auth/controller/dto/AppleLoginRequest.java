@@ -6,4 +6,5 @@ import lombok.Getter;
 public class AppleLoginRequest {
     private String authorizationCode;
     private String fullName;
+    private String timezone;
 }

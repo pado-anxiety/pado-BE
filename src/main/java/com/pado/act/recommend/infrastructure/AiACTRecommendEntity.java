@@ -3,7 +3,7 @@ package com.pado.act.recommend.infrastructure;
 import com.pado.act.ACTType;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "ai_act_recommend")
@@ -15,7 +15,7 @@ public class AiACTRecommendEntity {
 
     private Long userId;
 
-    private LocalDateTime time;
+    private Instant time;
 
     @Enumerated(EnumType.STRING)
     private ACTType actType;
@@ -23,7 +23,7 @@ public class AiACTRecommendEntity {
     protected AiACTRecommendEntity() {
     }
 
-    public AiACTRecommendEntity(Long userId, LocalDateTime time, ACTType actType) {
+    public AiACTRecommendEntity(Long userId, Instant time, ACTType actType) {
         this.userId = userId;
         this.time = time;
         this.actType = actType;

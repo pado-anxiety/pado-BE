@@ -77,7 +77,7 @@ public class OpenAiRetryTest {
         mockServer.expect(requestTo(URL))
                 .andRespond(withSuccess("{\"response\":\"ok\"}", MediaType.APPLICATION_JSON));
 
-        ChatCompletionRequest request = new ChatCompletionRequest();
+        ChatCompletionRequest request = ChatCompletionRequest.builder().build();
 
         ChatCompletionResponse response = openAiClient.sendChatRequest(request);
 
@@ -96,7 +96,7 @@ public class OpenAiRetryTest {
         mockServer.expect(requestTo(URL))
                 .andRespond(withServerError());
 
-        ChatCompletionRequest request = new ChatCompletionRequest();
+        ChatCompletionRequest request = ChatCompletionRequest.builder().build();
 
         assertThatThrownBy(() -> openAiClient.sendChatRequest(request))
                 .isInstanceOf(OpenAiServerException.class);

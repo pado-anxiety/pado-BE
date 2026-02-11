@@ -3,7 +3,7 @@ package com.pado.chat.infrastructure.summary;
 import com.pado.chat.domain.ChatSummary;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Entity
 @Table(name = "chat_summary")
@@ -26,7 +26,7 @@ public class ChatSummaryEntity {
     private String summaryText;
 
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     public ChatSummary toModel() {
         return new ChatSummary(fromTsid, toTsid, summaryText);
@@ -38,7 +38,7 @@ public class ChatSummaryEntity {
         entity.fromTsid = chatSummary.getFromTsid();
         entity.toTsid = chatSummary.getToTsid();
         entity.summaryText = chatSummary.getSummaryText();
-        entity.createdAt = LocalDateTime.now();
+        entity.createdAt = Instant.now();
         return entity;
     }
 

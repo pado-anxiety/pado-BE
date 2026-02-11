@@ -1,6 +1,6 @@
 package com.pado.chat.application;
 
-import com.pado.chat.controller.dto.ChattingResponse;
+import com.pado.chat.application.command.PostMessageResult;
 import com.pado.chat.controller.dto.Sender;
 import com.pado.chat.controller.dto.message.MessageRequest;
 import com.pado.chat.domain.ChatSummaries;
@@ -24,7 +24,7 @@ public class AIChatFacade {
     private final ChattingContextService contextService;
     private final ChattingFlushProducer chattingFlushProducer;
 
-    public ChattingResponse postMessage(Long userId, MessageRequest messageRequest) {
+    public PostMessageResult postMessage(Long userId, MessageRequest messageRequest) {
         if (!aiChatQuotaService.tryConsume(userId)) {
             QuotaStatus quotaStatus = aiChatQuotaService.getQuotaStatus(userId);
             throw new ChatQuotaExceededException(quotaStatus);
@@ -37,6 +37,6 @@ public class AIChatFacade {
         contextService.appendContext(userId, userAndAiChatting);
         chattingFlushProducer.publish(userId, userAndAiChatting);
         conversationSummaryService.asyncSummarize(userId);
-        return new ChattingResponse(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
+        return new PostMessageResult(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
 }

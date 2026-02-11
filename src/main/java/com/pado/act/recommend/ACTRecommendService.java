@@ -3,15 +3,16 @@ package com.pado.act.recommend;
 import com.pado.act.recommend.infrastructure.AiACTRecommendationRepository;
 import com.pado.chat.application.ChattingQueryService;
 import com.pado.chat.application.ConversationSummaryService;
+import com.pado.chat.application.query.RecentChattingsView;
 import com.pado.chat.domain.ChatSummaries;
 import com.pado.chat.domain.ChatSummary;
 import com.pado.chat.domain.Chatting;
-import com.pado.chat.domain.RecentChattings;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -29,8 +30,8 @@ public class ACTRecommendService {
     @Value("${act.recommend.quota.max-tokens}") private int recommendQuota;
 
     @Transactional
-    public ACTRecommendation recommend(Long userId) {
-        if (aiActRecommendationRepository.countTodayAiRecommended(userId) >= recommendQuota) {
+    public ACTRecommendation recommend(Long userId, ZoneId zoneId) {
+        if (aiActRecommendationRepository.countTodayAiRecommended(userId, zoneId) >= recommendQuota) {
             throw new ACTRecommendQuotaExceededException();
         }
         Optional<ChatSummary> summary = getSummaryForRecommendation(userId);
@@ -47,9 +48,9 @@ public class ACTRecommendService {
         if (!summaries.getSummaryList().isEmpty()) {
             return Optional.of(summaries.getSummaryList().get(0));
         } else {
-            RecentChattings recentChattings = chattingQueryService.getRecentChattingsBeforeCursor(userId, null);
-            if (recentChattings.getChattings().size() >= 10) {
-                List<Chatting> chattings = new ArrayList<>(recentChattings.getChattings().subList(0, 10));
+            RecentChattingsView view = chattingQueryService.getRecentChattingsBeforeCursor(userId, null);
+            if (view.getChattings().size() >= 10) {
+                List<Chatting> chattings = new ArrayList<>(view.getChattings().stream().map(v -> new Chatting(v.getTsid(), v.getMessage(), v.getSender())).toList().subList(0, 10));
                 Collections.reverse(chattings); //오래된 -> 최신
                 return Optional.of(summaryService.summarize(chattings));
             }
