@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -16,16 +17,19 @@ public class ChattingContextService {
 
     private final RecentChattingRedisRepository recentChattingRedisRepository;
     private final ChattingDBRepository chattingDBRepository;
+    private final ChattingEncryptService encryptService;
 
     private final int contextSize;
 
     public ChattingContextService(
             RecentChattingRedisRepository recentChattingRedisRepository,
             ChattingDBRepository chattingDBRepository,
+            ChattingEncryptService encryptService,
             @Value("${chat.context.size}") int contextSize) {
         this.recentChattingRedisRepository = recentChattingRedisRepository;
         this.chattingDBRepository = chattingDBRepository;
         this.contextSize = contextSize;
+        this.encryptService = encryptService;
     }
 
     @Transactional(readOnly = true)
@@ -38,12 +42,13 @@ public class ChattingContextService {
             recentChattings.addAll(chattings);
             recentChattings.sort(Comparator.comparing(Chatting::getTsid));
         }
-        recentChattings.add(userChatting);
-        return new ChattingContext(recentChattings);
+        List<Chatting> decrypted = new ArrayList<>(recentChattings.stream().map(encryptService::decrypt).toList());
+        decrypted.add(userChatting);
+        return new ChattingContext(decrypted);
     }
 
     public void appendContext(Long userId, List<Chatting> chattings) {
-        recentChattingRedisRepository.appendContextCache(userId, chattings);
+        recentChattingRedisRepository.appendContextCache(userId, chattings.stream().map(encryptService::encrypt).toList());
     }
 
 }
