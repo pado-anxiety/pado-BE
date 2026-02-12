@@ -20,6 +20,7 @@ public class AIChatFacade {
     private final ConversationSummaryService conversationSummaryService;
     private final ChattingContextService contextService;
     private final ChattingFlushProducer chattingFlushProducer;
+    private final ChattingEncryptService encryptService;
 
     public PostMessageResult postMessage(Long userId, MessageRequest messageRequest) {
 //        if (!aiQuotaService.tryConsume(userId)) {
@@ -30,9 +31,9 @@ public class AIChatFacade {
         ChattingContext chattingContext = contextService.makeContext(userId, userChatting);
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
         Chatting reply = aiChatService.postMessage(chattingContext, summaries);
-        List<Chatting> userAndAiChatting = List.of(userChatting, reply);
-        contextService.appendContext(userId, userAndAiChatting);
-        chattingFlushProducer.publish(userId, userAndAiChatting);
+        List<Chatting> chattings = List.of(userChatting, reply);
+        contextService.appendContext(userId, chattings);
+        chattingFlushProducer.publish(userId, chattings.stream().map(encryptService::encrypt).toList());
         conversationSummaryService.asyncSummarize(userId);
         return new PostMessageResult(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
