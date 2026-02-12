@@ -19,6 +19,12 @@ public class Chatting {
         this.sender = sender.name();
     }
 
+    public Chatting(Long tsid, String message, String sender) {
+        this.tsid = tsid;
+        this.message = message;
+        this.sender = sender;
+    }
+
     @JsonCreator
     public Chatting(
             @JsonProperty("tsid") Long tsid,
