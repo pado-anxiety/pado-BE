@@ -1,6 +1,7 @@
 package com.pado.chat;
 
 import com.pado.chat.application.ChattingContextService;
+import com.pado.chat.application.ChattingEncryptService;
 import com.pado.chat.controller.dto.Sender;
 import com.pado.chat.domain.Chatting;
 import com.pado.chat.domain.ChattingContext;
@@ -28,12 +29,15 @@ public class ChattingContextServiceTest {
     @Mock
     ChattingDBRepository chattingDBRepository;
 
+    @Mock
+    ChattingEncryptService encryptService;
+
     ChattingContextService chattingContextService;
 
     @Test
     @DisplayName("cache hit - 최근 채팅이 contextSize와 같을 경우 db 조회 없이 그대로 context를 생성한다")
     void makeContext_cacheHit() {
-        this.chattingContextService = new ChattingContextService(recentChattingRedisRepository, chattingDBRepository, 3);
+        this.chattingContextService = new ChattingContextService(recentChattingRedisRepository, chattingDBRepository, encryptService, 3);
         //given
         Long userId = 1L;
         Chatting userChatting = new Chatting(10L, "abc", Sender.USER);
@@ -46,6 +50,9 @@ public class ChattingContextServiceTest {
 
         when(recentChattingRedisRepository.getRecentChattings(userId))
                 .thenReturn(new ArrayList<>(cached));
+
+        when(encryptService.decrypt(any(Chatting.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         //when
         ChattingContext context = chattingContextService.makeContext(userId, userChatting);
@@ -60,7 +67,7 @@ public class ChattingContextServiceTest {
     @Test
     @DisplayName("cache miss - 최근 채팅이 contextSize보다 적을 경우 db 조회를 통해 context를 채워준다")
     void makeContext_cacheMiss() {
-        this.chattingContextService = new ChattingContextService(recentChattingRedisRepository, chattingDBRepository, 10);
+        this.chattingContextService = new ChattingContextService(recentChattingRedisRepository, chattingDBRepository, encryptService, 10);
         // given
         Long userId = 1L;
         Chatting userChatting = new Chatting(10L, "abc", Sender.USER);
@@ -74,6 +81,9 @@ public class ChattingContextServiceTest {
 
         when(recentChattingRedisRepository.getRecentChattings(userId))
                 .thenReturn(new ArrayList<>(cached));
+
+        when(encryptService.decrypt(any(Chatting.class)))
+                .thenAnswer(invocation -> invocation.getArgument(0));
 
         when(chattingDBRepository.findRecentMessages(userId, 9))
                 .thenReturn(fromDb);
