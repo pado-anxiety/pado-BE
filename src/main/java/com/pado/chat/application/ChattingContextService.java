@@ -47,8 +47,8 @@ public class ChattingContextService {
         return new ChattingContext(decrypted);
     }
 
-    public void appendContext(Long userId, List<Chatting> chattings) {
-        recentChattingRedisRepository.appendContextCache(userId, chattings.stream().map(encryptService::encrypt).toList());
+    public void appendContext(Long userId, List<Chatting> encrypted) {
+        recentChattingRedisRepository.appendContextCache(userId, encrypted);
     }
 
 }
