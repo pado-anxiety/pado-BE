@@ -24,6 +24,7 @@ public class ChattingQueryService {
 
     private final RecentChattingRedisRepository recentChattingRedisRepository;
     private final ChattingDBRepository chattingDBRepository;
+    private final ChattingEncryptService encryptService;
 
     @Transactional(readOnly = true)
     public RecentChattingsView getRecentChattingsBeforeCursor(Long userId, Long cursor) {
@@ -41,11 +42,11 @@ public class ChattingQueryService {
         if (!chattings.isEmpty()) {
             nextCursor = chattings.get(chattings.size() - 1).getTsid();
         }
-        return new RecentChattingsView(chattings.stream().map(c -> new ChattingItemView(c.getTsid(), c.getMessage(), Sender.valueOf(c.getSender()))).toList(), nextCursor);
+        return new RecentChattingsView(chattings.stream().map(encryptService::decrypt).map(c -> new ChattingItemView(c.getTsid(), c.getMessage(), Sender.valueOf(c.getSender()))).toList(), nextCursor);
     }
 
     @Transactional(readOnly = true)
     public List<Chatting> getRecentChattingsAfterCursorOrderByTsidAscFromDB(Long userId, Long cursor, int limit) {
-        return chattingDBRepository.findChattingsAfterTsidOrderByTsidAsc(userId, cursor, limit);
+        return chattingDBRepository.findChattingsAfterTsidOrderByTsidAsc(userId, cursor, limit).stream().map(encryptService::decrypt).toList();
     }
 }
