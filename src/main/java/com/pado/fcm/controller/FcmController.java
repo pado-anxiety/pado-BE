@@ -2,7 +2,7 @@ package com.pado.fcm.controller;
 
 import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
-import com.pado.fcm.application.FcmService;
+import com.pado.fcm.application.FcmTxService;
 import com.pado.fcm.controller.dto.FcmSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,11 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FcmController {
 
-    private final FcmService fcmService;
+    private final FcmTxService fcmTxService;
 
     @PostMapping("/fcm")
     public ResponseEntity<Void> saveFcmToken(@LoginUser AuthUser authUser, FcmSaveRequest fcmSaveRequest) {
-        fcmService.saveToken(authUser.getUserId(), fcmSaveRequest.getFcmToken());
+        fcmTxService.saveToken(authUser.getUserId(), fcmSaveRequest.getFcmToken());
         return ResponseEntity.ok().build();
     }
 }
