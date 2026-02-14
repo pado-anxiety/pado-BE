@@ -36,4 +36,8 @@ public class FcmEntity {
     public FcmEntity(Long userId, String token) {
         this(null, userId, token, true, Instant.now());
     }
+
+    public void updateIsActive(boolean isActive) {
+        this.isActive = isActive;
+    }
 }
