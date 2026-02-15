@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
@@ -23,6 +24,7 @@ public class AIChatFacade {
     private final ConversationSummaryService conversationSummaryService;
     private final ChattingContextService contextService;
     private final ChattingFlushProducer chattingFlushProducer;
+    private final ChattingEncryptService encryptService;
 
     public PostMessageResult postMessage(Long userId, MessageRequest messageRequest) {
         if (!aiChatQuotaService.tryConsume(userId)) {
@@ -33,9 +35,9 @@ public class AIChatFacade {
         ChattingContext chattingContext = contextService.makeContext(userId, userChatting);
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
         Chatting reply = aiChatService.postMessage(chattingContext, summaries);
-        List<Chatting> userAndAiChatting = List.of(userChatting, reply);
-        contextService.appendContext(userId, userAndAiChatting);
-        chattingFlushProducer.publish(userId, userAndAiChatting);
+        List<Chatting> encrypted = Stream.of(userChatting, reply).map(encryptService::encrypt).toList();
+        contextService.appendContext(userId, encrypted);
+        chattingFlushProducer.publish(userId, encrypted);
         conversationSummaryService.asyncSummarize(userId);
         return new PostMessageResult(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
