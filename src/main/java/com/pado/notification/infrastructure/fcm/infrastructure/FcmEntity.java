@@ -1,4 +1,4 @@
-package com.pado.fcm.infrastructure;
+package com.pado.notification.infrastructure.fcm.infrastructure;
 
 import jakarta.persistence.*;
 import lombok.Getter;

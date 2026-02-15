@@ -1,7 +1,7 @@
-package com.pado.fcm.infrastructure;
+package com.pado.notification.infrastructure.fcm.infrastructure;
 
 import com.google.firebase.messaging.*;
-import com.pado.fcm.application.InvalidFcmTokenException;
+import com.pado.notification.infrastructure.fcm.application.InvalidFcmTokenException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

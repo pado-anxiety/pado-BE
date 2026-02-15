@@ -1,6 +1,6 @@
-package com.pado.fcm.application;
+package com.pado.notification.infrastructure.fcm.application;
 
-import com.pado.fcm.infrastructure.FcmClient;
+import com.pado.notification.infrastructure.fcm.infrastructure.FcmClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

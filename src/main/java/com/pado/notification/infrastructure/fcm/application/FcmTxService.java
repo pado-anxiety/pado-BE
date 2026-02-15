@@ -1,7 +1,7 @@
-package com.pado.fcm.application;
+package com.pado.notification.infrastructure.fcm.application;
 
-import com.pado.fcm.infrastructure.FcmEntity;
-import com.pado.fcm.infrastructure.FcmRepository;
+import com.pado.notification.infrastructure.fcm.infrastructure.FcmEntity;
+import com.pado.notification.infrastructure.fcm.infrastructure.FcmRepository;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

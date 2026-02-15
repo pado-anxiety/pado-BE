@@ -1,4 +1,4 @@
-package com.pado.fcm.controller.dto;
+package com.pado.notification.controller.dto;
 
 import lombok.Getter;
 

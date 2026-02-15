@@ -1,9 +1,9 @@
-package com.pado.fcm.controller;
+package com.pado.notification.controller;
 
 import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
-import com.pado.fcm.application.FcmTxService;
-import com.pado.fcm.controller.dto.FcmSaveRequest;
+import com.pado.notification.infrastructure.fcm.application.FcmTxService;
+import com.pado.notification.controller.dto.FcmSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;

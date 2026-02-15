@@ -10,7 +10,7 @@ import com.pado.chat.quota.ChatQuotaExceededException;
 import com.pado.external.ai.infrastructure.OpenAiException;
 import com.pado.external.ai.resilience4j.retry.OpenAiClientException;
 import com.pado.external.ai.resilience4j.retry.OpenAiServerException;
-import com.pado.fcm.application.FcmNotFoundException;
+import com.pado.notification.infrastructure.fcm.application.FcmNotFoundException;
 import com.pado.user.application.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
