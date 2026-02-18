@@ -64,7 +64,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ACTRecommendQuotaExceededException.class)
     public ResponseEntity<ErrorResponse> handleACTRecommendQuotaExceededException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("AI 추천 기능을 모두 사용하셨습니다."));
     }
 
     @ExceptionHandler(InvalidActRecordRequestException.class)
