@@ -1,4 +1,4 @@
-package com.pado.external.rabbitmq;
+package com.pado.chat.mq;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -11,11 +11,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitMqConfig {
+public class ChattingRabbitMqConfig {
 
     public static final String EXCHANGE = "chat.flush.ex";
     public static final String FLUSH_QUEUE = "chat.flush";
-    public static final String FAILED_QUEUE = "chat.failed";
     public static final String DEAD_QUEUE = "chat.dead";
 
     @Bean
@@ -57,14 +56,6 @@ public class RabbitMqConfig {
     public Queue flushQueue() {
         return QueueBuilder.durable(FLUSH_QUEUE)
                 .deadLetterExchange(EXCHANGE)
-                .deadLetterRoutingKey(FAILED_QUEUE)
-                .build();
-    }
-
-    @Bean
-    public Queue failedQueue() {
-        return QueueBuilder.durable(FAILED_QUEUE)
-                .deadLetterExchange(EXCHANGE)
                 .deadLetterRoutingKey(DEAD_QUEUE)
                 .build();
     }
@@ -79,13 +70,6 @@ public class RabbitMqConfig {
         return BindingBuilder.bind(flushQueue())
                 .to(chatExchange())
                 .with(FLUSH_QUEUE);
-    }
-
-    @Bean
-    public Binding failedBinding() {
-        return BindingBuilder.bind(failedQueue())
-                .to(chatExchange())
-                .with(FAILED_QUEUE);
     }
 
     @Bean

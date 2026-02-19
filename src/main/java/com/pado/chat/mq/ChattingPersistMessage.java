@@ -1,4 +1,4 @@
-package com.pado.external.rabbitmq;
+package com.pado.chat.mq;
 
 import com.pado.chat.domain.Chatting;
 import lombok.Getter;

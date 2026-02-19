@@ -5,6 +5,5 @@ public enum ACTType {
     EMOTION_NOTE,
     COGNITIVE_DEFUSION,
     ACCEPTANCE,
-    VALUES,
     COMMITTED_ACTION
 }

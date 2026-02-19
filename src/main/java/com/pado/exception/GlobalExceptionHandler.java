@@ -10,6 +10,7 @@ import com.pado.chat.quota.ChatQuotaExceededException;
 import com.pado.external.ai.infrastructure.OpenAiException;
 import com.pado.external.ai.resilience4j.retry.OpenAiClientException;
 import com.pado.external.ai.resilience4j.retry.OpenAiServerException;
+import com.pado.notification.infrastructure.fcm.application.FcmNotFoundException;
 import com.pado.user.application.UserNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
@@ -63,7 +64,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ACTRecommendQuotaExceededException.class)
     public ResponseEntity<ErrorResponse> handleACTRecommendQuotaExceededException() {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("AI 추천 기능을 모두 사용하셨습니다."));
     }
 
     @ExceptionHandler(InvalidActRecordRequestException.class)
@@ -85,5 +86,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleUserNotFoundException(UserNotFoundException e) {
         log.warn("User not found exception occurred userId={}", e.getUserId());
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorResponse("사용자를 조회할 수 없습니다. id: " + e.getUserId()));
+    }
+
+    @ExceptionHandler(FcmNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleFcmNotFoundException(FcmNotFoundException e) {
+        log.warn("Fcm not found exception occurred userId={}", e.getUserId());
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("사용자의 fcm을 조회할 수 없습니다. id: " + e.getUserId()));
     }
 }
