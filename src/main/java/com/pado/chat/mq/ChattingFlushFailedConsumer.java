@@ -1,4 +1,4 @@
-package com.pado.external.rabbitmq;
+package com.pado.chat.mq;
 
 import com.pado.chat.infrastructure.ChattingDBRepository;
 import com.rabbitmq.client.Channel;
@@ -14,11 +14,11 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class ChatFlushFailedConsumer {
+public class ChattingFlushFailedConsumer {
 
     private final ChattingDBRepository chatRepository;
 
-    @RabbitListener(queues = RabbitMqConfig.FAILED_QUEUE, ackMode = "MANUAL")
+    @RabbitListener(queues = ChattingRabbitMqConfig.FAILED_QUEUE, ackMode = "MANUAL")
     public void consume(ChattingPersistMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
             chatRepository.save(message.getUserId(), message.getChatting());

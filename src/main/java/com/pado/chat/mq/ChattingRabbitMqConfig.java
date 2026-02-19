@@ -1,4 +1,4 @@
-package com.pado.external.rabbitmq;
+package com.pado.chat.mq;
 
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class RabbitMqConfig {
+public class ChattingRabbitMqConfig {
 
     public static final String EXCHANGE = "chat.flush.ex";
     public static final String FLUSH_QUEUE = "chat.flush";

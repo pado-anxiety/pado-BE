@@ -1,4 +1,4 @@
-package com.pado.external.rabbitmq;
+package com.pado.chat.mq;
 
 import com.pado.chat.domain.Chatting;
 import lombok.RequiredArgsConstructor;
@@ -16,8 +16,8 @@ public class ChattingFlushProducer {
     public void publish(Long userId, List<Chatting> chattings) {
         for (Chatting chatting : chattings) {
             rabbitTemplate.convertAndSend(
-                    RabbitMqConfig.EXCHANGE,
-                    RabbitMqConfig.FLUSH_QUEUE,
+                    ChattingRabbitMqConfig.EXCHANGE,
+                    ChattingRabbitMqConfig.FLUSH_QUEUE,
                     new ChattingPersistMessage(userId, chatting)
             );
         }

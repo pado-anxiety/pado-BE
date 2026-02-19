@@ -6,7 +6,7 @@ import com.pado.chat.controller.dto.message.MessageRequest;
 import com.pado.chat.domain.ChatSummaries;
 import com.pado.chat.domain.Chatting;
 import com.pado.chat.domain.ChattingContext;
-import com.pado.external.rabbitmq.ChattingFlushProducer;
+import com.pado.chat.mq.ChattingFlushProducer;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
