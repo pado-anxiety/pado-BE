@@ -44,7 +44,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OpenAiException.class)
     public ResponseEntity<ErrorResponse> handleOpenAiException(OpenAiException e) {
         if (e instanceof OpenAiClientException) {
-            log.error("OpenAiClientException occurred", e);
+            log.warn("OpenAiClientException occurred", e);
         } else if (e instanceof OpenAiServerException) {
             log.error("OpenAiServerException occurred", e);
         }
@@ -69,6 +69,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidActRecordRequestException.class)
     public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidActRecordRequestException e) {
+        log.info("Invalid ACT record request. message={}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
 
