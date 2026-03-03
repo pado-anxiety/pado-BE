@@ -7,6 +7,7 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.context.annotation.Configuration;
 
 import java.io.ByteArrayInputStream;
+import java.util.Base64;
 
 @Configuration
 public class FirebaseConfig {
@@ -14,11 +15,13 @@ public class FirebaseConfig {
     @PostConstruct
     public void init() {
         try {
-            String config = System.getenv("FIREBASE_ADMIN_SDK");
+            String base64 = System.getenv("FIREBASE_ADMIN_SDK");
+            byte[] decoded = Base64.getDecoder().decode(base64);
+            GoogleCredentials googleCredentials = GoogleCredentials.fromStream(new ByteArrayInputStream(decoded));
             FirebaseOptions options = FirebaseOptions
                     .builder()
-                    .setCredentials(GoogleCredentials.fromStream(
-                            new ByteArrayInputStream(config.getBytes())))
+                    .setCredentials(googleCredentials)
+                    .setProjectId(googleCredentials.getProjectId())
                     .build();
             if (FirebaseApp.getApps().isEmpty()) {
                 FirebaseApp.initializeApp(options);
