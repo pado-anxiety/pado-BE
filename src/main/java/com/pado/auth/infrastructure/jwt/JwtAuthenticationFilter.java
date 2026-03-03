@@ -1,11 +1,13 @@
 package com.pado.auth.infrastructure.jwt;
 
+import com.pado.auth.infrastructure.AuthUser;
 import jakarta.annotation.Nonnull;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -45,6 +47,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         Authentication auth = jwtTokenProvider.getAuthentication(jwt);
         SecurityContextHolder.getContext().setAuthentication(auth);
+
+        if (auth != null && auth.isAuthenticated()) {
+            AuthUser authUser = (AuthUser) auth.getPrincipal();
+            MDC.put("userId", String.valueOf(authUser.getUserId()));
+        }
 
         filterChain.doFilter(request, response);
     }
