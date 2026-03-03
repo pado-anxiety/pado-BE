@@ -1,0 +1,11 @@
+spring:
+  application:
+    name: pado
+  config:
+    import:
+     - classpath:act-format.yml
+
+logging:
+  execution-time:
+    enabled: true
+  config: classpath:logback-dev.xml
