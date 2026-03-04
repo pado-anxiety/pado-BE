@@ -66,9 +66,36 @@ services:
       - rabbitmq-data:/var/lib/rabbitmq
     restart: unless-stopped
 
+  promtail:
+    image: grafana/promtail:3.6.0
+    container_name: promtail
+    restart: unless-stopped
+    volumes:
+      - promtail-data:/var/lib/promtail
+      - ./promtail.yaml:/etc/promtail/promtail-config.yaml
+      - /var/run/docker.sock:/var/run/docker.sock
+    command:
+      - --config.file=/etc/promtail/promtail-config.yaml
+    depends_on:
+      - loki
+
+  loki:
+    image: grafana/loki:3.6.7
+    container_name: loki
+    restart: unless-stopped
+    volumes:
+      - loki-data:/var/lib/loki
+      - ./loki-config.yaml:/etc/loki/loki-config.yaml
+    ports:
+      - "3100:3100"
+    command:
+      - --config.file=/etc/loki/loki-config.yaml
+
 volumes:
   pgdata:
   redisdata:
   grafanadata:
   prometheus-data:
   rabbitmq-data:
+  promtail-data:
+  loki-data:
