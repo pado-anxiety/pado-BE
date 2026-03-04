@@ -22,6 +22,9 @@
                 <message>
                     <fieldName>message</fieldName>
                 </message>
+                <stackTrace>
+                    <fieldName>stacktrace</fieldName>
+                </stackTrace>
             </providers>
         </encoder>
     </appender>
