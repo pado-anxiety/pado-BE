@@ -3,6 +3,7 @@ package com.pado.log;
 import com.nimbusds.oauth2.sdk.util.StringUtils;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,7 +37,8 @@ public class MDCLoggingFilter implements Filter {
         try {
             filterChain.doFilter(servletRequest, servletResponse);
         } finally {
-            if (executionTimeEnabled) {
+            HttpServletResponse response = (HttpServletResponse) servletResponse;
+            if (executionTimeEnabled && response.getStatus() < 400) {
                 long end = System.currentTimeMillis();
                 MDC.put("executionTime", String.valueOf(end - start));
                 log.info("request completed");
