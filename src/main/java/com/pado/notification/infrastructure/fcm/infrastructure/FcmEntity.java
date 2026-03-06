@@ -40,4 +40,8 @@ public class FcmEntity {
     public void updateIsActive(boolean isActive) {
         this.isActive = isActive;
     }
+
+    public void updateToken(String fcmToken) {
+        this.token = fcmToken;
+    }
 }

@@ -12,7 +12,6 @@ import com.pado.external.ai.resilience4j.retry.OpenAiClientException;
 import com.pado.external.ai.resilience4j.retry.OpenAiServerException;
 import com.pado.notification.infrastructure.fcm.application.FcmNotFoundException;
 import com.pado.user.application.UserNotFoundException;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,13 +23,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception e, HttpServletRequest request) {
-        log.error("Unhandled exception occurred: {} | Method: {} | URI: {} | Query: {}",
-                e.getMessage(),
-                request.getMethod(),
-                request.getRequestURI(),
-                request.getQueryString(),
-                e);
+    public ResponseEntity<ErrorResponse> handleException(Exception e) {
+        log.error("Unhandled exception occurred", e);
         ErrorResponse response = new ErrorResponse("서버 오류가 발생했습니다.");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }
@@ -44,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OpenAiException.class)
     public ResponseEntity<ErrorResponse> handleOpenAiException(OpenAiException e) {
         if (e instanceof OpenAiClientException) {
-            log.error("OpenAiClientException occurred", e);
+            log.warn("OpenAiClientException occurred", e);
         } else if (e instanceof OpenAiServerException) {
             log.error("OpenAiServerException occurred", e);
         }
@@ -69,6 +63,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidActRecordRequestException.class)
     public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidActRecordRequestException e) {
+        log.info("Invalid ACT record request. message={}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
 

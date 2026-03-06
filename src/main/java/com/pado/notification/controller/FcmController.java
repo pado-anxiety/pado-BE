@@ -7,6 +7,7 @@ import com.pado.notification.controller.dto.FcmSaveRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -16,7 +17,7 @@ public class FcmController {
     private final FcmTxService fcmTxService;
 
     @PostMapping("/fcm")
-    public ResponseEntity<Void> saveFcmToken(@LoginUser AuthUser authUser, FcmSaveRequest fcmSaveRequest) {
+    public ResponseEntity<Void> saveFcmToken(@LoginUser AuthUser authUser, @RequestBody FcmSaveRequest fcmSaveRequest) {
         fcmTxService.saveToken(authUser.getUserId(), fcmSaveRequest.getFcmToken());
         return ResponseEntity.ok().build();
     }

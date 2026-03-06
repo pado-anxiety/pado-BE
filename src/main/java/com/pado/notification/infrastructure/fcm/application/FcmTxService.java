@@ -2,19 +2,31 @@ package com.pado.notification.infrastructure.fcm.application;
 
 import com.pado.notification.infrastructure.fcm.infrastructure.FcmEntity;
 import com.pado.notification.infrastructure.fcm.infrastructure.FcmRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class FcmTxService {
 
     private final FcmRepository fcmRepository;
 
     public void saveToken(Long userId, String fcmToken) {
-        fcmRepository.save(new FcmEntity(userId, fcmToken));
+        Optional<FcmEntity> get = fcmRepository.findByUserId(userId);
+        if (get.isEmpty()) {
+            fcmRepository.save(new FcmEntity(userId, fcmToken));
+        } else {
+            FcmEntity fcmEntity = get.get();
+            fcmEntity.updateToken(fcmToken);
+            fcmEntity.updateIsActive(true);
+            fcmRepository.save(fcmEntity);
+        }
     }
 
     @Transactional(readOnly = true)
