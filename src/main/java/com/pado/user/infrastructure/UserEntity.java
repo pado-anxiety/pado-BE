@@ -34,10 +34,17 @@ public class UserEntity {
 
     private String timezone;
 
+    @Column(nullable = false)
+    private Boolean marketingConsent;
+
+    private Instant marketingConsentAt;
+
+    private Instant marketingRevokedAt;
+
     protected UserEntity() {
     }
 
-    private UserEntity(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oAuthRefreshToken, Instant lastLoginTime, String timezone) {
+    private UserEntity(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oAuthRefreshToken, Instant lastLoginTime, String timezone, Boolean marketingConsent, Instant marketingConsentAt, Instant marketingRevokedAt) {
         this.id = id;
         this.email = email;
         this.sub = sub;
@@ -47,13 +54,16 @@ public class UserEntity {
         this.oAuthRefreshToken = oAuthRefreshToken;
         this.lastLoginTime = lastLoginTime;
         this.timezone = timezone;
+        this.marketingConsent = marketingConsent;
+        this.marketingConsentAt = marketingConsentAt;
+        this.marketingRevokedAt = marketingRevokedAt;
     }
 
     public User toModel() {
-        return new User(id, email, sub, loginType, name, refreshToken, oAuthRefreshToken, lastLoginTime, timezone);
+        return new User(id, email, sub, loginType, name, refreshToken, oAuthRefreshToken, lastLoginTime, timezone, marketingConsent, marketingConsentAt, marketingRevokedAt);
     }
 
     public static UserEntity fromModel(User user) {
-        return new UserEntity(user.getId(), user.getEmail(), user.getSub(), user.getLoginType(), user.getName(), user.getRefreshToken(), user.getOAuthRefreshToken(), user.getLastLoginTime(), user.getTimezone());
+        return new UserEntity(user.getId(), user.getEmail(), user.getSub(), user.getLoginType(), user.getName(), user.getRefreshToken(), user.getOAuthRefreshToken(), user.getLastLoginTime(), user.getTimezone(), user.getMarketingConsent(), user.getMarketingConsentAt(), user.getMarketingRevokedAt());
     }
 }

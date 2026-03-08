@@ -19,7 +19,11 @@ public class User {
     private Instant lastLoginTime;
     private String timezone;
 
-    public User(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oauthRefreshToken, Instant lastLoginTime, String timezone) {
+    private Boolean marketingConsent;
+    private Instant marketingConsentAt;
+    private Instant marketingRevokedAt;
+
+    public User(Long id, String email, String sub, LoginType loginType, String name, String refreshToken, String oauthRefreshToken, Instant lastLoginTime, String timezone, Boolean marketingConsent, Instant marketingConsentAt, Instant marketingRevokedAt) {
         this.id = id;
         this.email = email;
         this.sub = sub;
@@ -29,10 +33,13 @@ public class User {
         this.oAuthRefreshToken = oauthRefreshToken;
         this.lastLoginTime = lastLoginTime;
         this.timezone = timezone;
+        this.marketingConsent = marketingConsent;
+        this.marketingConsentAt = marketingConsentAt;
+        this.marketingRevokedAt = marketingRevokedAt;
     }
 
     public User(String email, String sub, String name, LoginType loginType, String oAuthRefreshToken, String timezone) {
-        this(null, email, sub, loginType, name, null, oAuthRefreshToken, Instant.now(), timezone);
+        this(null, email, sub, loginType, name, null, oAuthRefreshToken, Instant.now(), timezone, null, null, null);
     }
 
     public void updateRefreshToken(String refreshToken) {
@@ -53,5 +60,26 @@ public class User {
 
     public void updateTimezone(String timezone) {
         this.timezone = timezone;
+    }
+
+    public void updateMarketingConsent(boolean agreed) {
+        if (agreed) {
+            agreeMarketing();
+        } else {
+            revokeMarketing();
+        }
+    }
+
+    private void agreeMarketing() {
+        if (marketingConsent) return;
+        marketingConsent = true;
+        marketingConsentAt = Instant.now();
+        marketingRevokedAt = null;
+    }
+
+    private void revokeMarketing() {
+        if (!marketingConsent) return;
+        marketingConsent = false;
+        marketingRevokedAt = Instant.now();
     }
 }

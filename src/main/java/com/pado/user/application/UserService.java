@@ -15,14 +15,24 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public UserInfoResponse getUserInfo(Long userId) {
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User user = getUser(userId);
         return new UserInfoResponse(user.getEmail(), user.getName());
     }
 
     public void updateUserInfo(Long userId, String timezone) {
-        User user = userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
+        User user = getUser(userId);
         user.updateLastLoginTime();
         user.updateTimezone(timezone);
         userRepository.save(user);
+    }
+
+    public void updateMarketingConsent(Long userId, boolean agreed) {
+        User user = getUser(userId);
+        user.updateMarketingConsent(agreed);
+        userRepository.save(user);
+    }
+
+    private User getUser(Long userId) {
+        return userRepository.findByUserId(userId).orElseThrow(() -> new UserNotFoundException(userId));
     }
 }
