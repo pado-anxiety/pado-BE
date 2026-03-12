@@ -8,6 +8,7 @@ import com.pado.chat.domain.Chatting;
 import com.pado.chat.domain.ChattingContext;
 import com.pado.chat.mq.ChattingFlushProducer;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,6 +16,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AIChatFacade {
 
     private final AIChatService aiChatService;
@@ -33,8 +35,10 @@ public class AIChatFacade {
         ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
         Chatting reply = aiChatService.postMessage(chattingContext, summaries);
         List<Chatting> encrypted = Stream.of(userChatting, reply).map(encryptService::encrypt).toList();
-        contextService.appendContext(userId, encrypted);
-        chattingFlushProducer.publish(userId, encrypted);
+        boolean published = chattingFlushProducer.publish(userId, encrypted);
+        if (published) {
+            contextService.appendContext(userId, encrypted);
+        }
         conversationSummaryService.asyncSummarize(userId);
         return new PostMessageResult(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
