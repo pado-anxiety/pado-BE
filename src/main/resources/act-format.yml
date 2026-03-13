@@ -18,3 +18,6 @@ act:
       length: 500
     action:
       length: 500
+  acceptance:
+    breathingTime:
+      min: 1

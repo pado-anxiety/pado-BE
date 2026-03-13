@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.ACTType;
 import com.pado.act.application.Diagnosis;
 import com.pado.act.application.InvalidActRecordRequestException;
+import com.pado.act.application.validator.properties.AcceptanceProperties;
 import com.pado.act.application.validator.properties.CognitiveDefusionProperties;
 import com.pado.act.application.validator.properties.CommittedActionProperties;
 import com.pado.act.application.validator.properties.EmotionNoteProperties;
@@ -17,6 +18,7 @@ public class ACTRecordJsonValidator {
     private final EmotionNoteProperties emotionNoteProperties;
     private final CognitiveDefusionProperties cognitiveDefusionProperties;
     private final CommittedActionProperties committedActionProperties;
+    private final AcceptanceProperties acceptanceProperties;
 
     public void validate(ACTType actType, JsonNode data) {
         validateJsonNode(data);
@@ -110,6 +112,9 @@ public class ACTRecordJsonValidator {
         JsonNode time = data.get("breathingTime");
         if (!time.isInt()) {
             throw new InvalidActRecordRequestException("breathingTime 필드는 정수여야 합니다.");
+        }
+        if (time.asInt() < acceptanceProperties.getBreathingTime().getMin()) {
+            throw new InvalidActRecordRequestException("breathingTime 필드는 " + acceptanceProperties.getBreathingTime().getMin() + " 이상이여야 합니다.");
         }
     }
 

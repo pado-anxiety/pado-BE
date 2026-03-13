@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.pado.act.application.InvalidActRecordRequestException;
 import com.pado.act.application.validator.ACTRecordJsonValidator;
+import com.pado.act.application.validator.properties.AcceptanceProperties;
 import com.pado.act.application.validator.properties.CognitiveDefusionProperties;
 import com.pado.act.application.validator.properties.CommittedActionProperties;
 import com.pado.act.application.validator.properties.EmotionNoteProperties;
@@ -24,7 +25,7 @@ import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes= ACTRecordJsonValidatorTest.TestConfig.class)
-@EnableConfigurationProperties({EmotionNoteProperties.class, CognitiveDefusionProperties.class, CommittedActionProperties.class})
+@EnableConfigurationProperties({EmotionNoteProperties.class, CognitiveDefusionProperties.class, CommittedActionProperties.class, AcceptanceProperties.class})
 @TestPropertySource(locations = "classpath:act-format.yml", factory = YamlPropertySourceFactory.class)
 public class ACTRecordJsonValidatorTest {
 
@@ -36,6 +37,9 @@ public class ACTRecordJsonValidatorTest {
 
     @Autowired
     CommittedActionProperties committedActionProperties;
+
+    @Autowired
+    AcceptanceProperties acceptanceProperties;
 
     @TestConfiguration
     static class TestConfig {
@@ -53,6 +57,11 @@ public class ACTRecordJsonValidatorTest {
         public CommittedActionProperties committedActionProperties() {
             return new CommittedActionProperties();
         }
+
+        @Bean
+        public AcceptanceProperties acceptanceProperties() {
+            return new AcceptanceProperties();
+        }
     }
 
     private ACTRecordJsonValidator validator;
@@ -60,7 +69,7 @@ public class ACTRecordJsonValidatorTest {
 
     @BeforeEach
     void setUp() {
-        validator = new ACTRecordJsonValidator(emotionNoteProperties, cognitiveDefusionProperties, committedActionProperties);
+        validator = new ACTRecordJsonValidator(emotionNoteProperties, cognitiveDefusionProperties, committedActionProperties, acceptanceProperties);
     }
 
     @Test
@@ -187,6 +196,18 @@ public class ACTRecordJsonValidatorTest {
         
         }
         """);
+        assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidActRecordRequestException.class);
+    }
+
+    @Test
+    @DisplayName("ACCEPTANCE - breathingTime이 0 이하일 경우 예외")
+    void acceptance_breathingTime이_0이하인_경우() throws Exception {
+        JsonNode json = objectMapper.readTree("""
+        {
+          "breathingTime": "0"
+        }
+        """);
+
         assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidActRecordRequestException.class);
     }
 
