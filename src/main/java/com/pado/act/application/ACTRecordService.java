@@ -27,10 +27,9 @@ public class ACTRecordService {
     private static final int ACT_RECORD_PAGE_SIZE = 20;
 
     @Transactional(readOnly = true)
-    public ACTRecordsView findAllActRecords(Long userId, String stringCursor) {
-        Long cursor = Long.MAX_VALUE;
-        if (stringCursor != null) {
-            cursor = Long.parseLong(stringCursor);
+    public ACTRecordsView findAllActRecords(Long userId, Long cursor) {
+        if (cursor == null) {
+            cursor = Long.MAX_VALUE;
         }
         List<ACTRecordItemView> itemViews = actRecordRepository.findAllByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, ACT_RECORD_PAGE_SIZE + 1))
                 .stream()
@@ -46,8 +45,7 @@ public class ACTRecordService {
     }
 
     @Transactional(readOnly = true)
-    public ACTRecordItemView findACTRecordResponse(Long userId, String stringRecordId) {
-        long recordId = Long.parseLong(stringRecordId);
+    public ACTRecordItemView findACTRecordResponse(Long userId, Long recordId) {
         ACTRecordEntity entity = actRecordRepository.findById(recordId).orElseThrow(() -> new ACTRecordNotFoundException(recordId));
         if (!entity.getUserId().equals(userId)) {
             throw new ACTAccessDeniedException();
