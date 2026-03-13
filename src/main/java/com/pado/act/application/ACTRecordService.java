@@ -39,6 +39,9 @@ public class ACTRecordService {
         cursor = null;
         if (!itemViews.isEmpty()) cursor = itemViews.get(itemViews.size() - 1).getTsid();
         boolean hasNext = itemViews.size() > ACT_RECORD_PAGE_SIZE;
+        if (hasNext) {
+            itemViews = itemViews.subList(0, ACT_RECORD_PAGE_SIZE);
+        }
         return new ACTRecordsView(itemViews, cursor, hasNext);
     }
 
