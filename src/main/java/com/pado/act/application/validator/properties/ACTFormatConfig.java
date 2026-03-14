@@ -4,6 +4,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-@EnableConfigurationProperties({EmotionNoteProperties.class, CognitiveDefusionProperties.class, CommittedActionProperties.class, AcceptanceProperties.class})
+@EnableConfigurationProperties({CognitiveDefusionProperties.class, CommittedActionProperties.class, AcceptanceProperties.class})
 public class ACTFormatConfig {
 }

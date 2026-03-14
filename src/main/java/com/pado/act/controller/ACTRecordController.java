@@ -54,12 +54,6 @@ public class ACTRecordController {
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/emotion-note")
-    public ResponseEntity<Void> emotionNote(@LoginUser AuthUser authUser, @RequestBody JsonNode data) {
-        actRecordService.recordEmotionNote(authUser.getUserId(), data);
-        return ResponseEntity.ok().build();
-    }
-
     @PostMapping("/cognitive-defusion")
     public ResponseEntity<Void> cognitiveDefusion(@LoginUser AuthUser authUser, @RequestBody JsonNode data) {
         actRecordService.recordCognitiveDefusion(authUser.getUserId(), data);

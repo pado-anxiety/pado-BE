@@ -7,7 +7,6 @@ import com.pado.act.application.InvalidActRecordRequestException;
 import com.pado.act.application.validator.properties.AcceptanceProperties;
 import com.pado.act.application.validator.properties.CognitiveDefusionProperties;
 import com.pado.act.application.validator.properties.CommittedActionProperties;
-import com.pado.act.application.validator.properties.EmotionNoteProperties;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -15,7 +14,6 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ACTRecordJsonValidator {
 
-    private final EmotionNoteProperties emotionNoteProperties;
     private final CognitiveDefusionProperties cognitiveDefusionProperties;
     private final CommittedActionProperties committedActionProperties;
     private final AcceptanceProperties acceptanceProperties;
@@ -23,17 +21,10 @@ public class ACTRecordJsonValidator {
     public void validate(ACTType actType, JsonNode data) {
         validateJsonNode(data);
         switch (actType) {
-            case EMOTION_NOTE -> validateEmotionNoteData(data);
             case COGNITIVE_DEFUSION -> validateCognitiveDefusionData(data);
             case ACCEPTANCE -> validateAcceptanceData(data);
             case COMMITTED_ACTION -> validateCommittedActionData(data);
         }
-    }
-
-    private void validateEmotionNoteData(JsonNode data) {
-        validateStringField(data, "situation", emotionNoteProperties.getSituation().getLength());
-        validateStringField(data, "thoughts", emotionNoteProperties.getThoughts().getLength());
-        validateStringField(data, "feelings", emotionNoteProperties.getFeelings().getLength());
     }
 
     private void validateCognitiveDefusionData(JsonNode data) {

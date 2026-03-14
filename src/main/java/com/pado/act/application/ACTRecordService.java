@@ -57,11 +57,6 @@ public class ACTRecordService {
         actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.CONTACT_WITH_PRESENT, null));
     }
 
-    public void recordEmotionNote(Long userId, JsonNode jsonNode) {
-        jsonValidator.validate(ACTType.EMOTION_NOTE, jsonNode);
-        actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.EMOTION_NOTE, actRecordConverter.convertToMap(jsonNode)));
-    }
-
     public void recordCognitiveDefusion(Long userId, JsonNode jsonNode) {
         jsonValidator.validate(ACTType.COGNITIVE_DEFUSION, jsonNode);
         actRecordRepository.save(new ACTRecordEntity(generatedTsid(), userId, ACTType.COGNITIVE_DEFUSION, actRecordConverter.convertToMap(jsonNode)));

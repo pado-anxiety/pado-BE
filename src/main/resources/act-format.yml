@@ -1,11 +1,4 @@
 act:
-  emotion-note:
-    situation:
-      length: 500
-    thoughts:
-      length: 500
-    feelings:
-      length: 500
   cognitive-defusion:
     total-text-length: 100
   committed-action:
