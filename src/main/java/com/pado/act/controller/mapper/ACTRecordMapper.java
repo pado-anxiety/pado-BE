@@ -3,7 +3,7 @@ package com.pado.act.controller.mapper;
 import com.pado.act.application.query.ACTRecordItemView;
 import com.pado.act.application.query.ACTRecordsView;
 import com.pado.act.controller.dto.ACTRecords;
-import com.pado.tsid.ACTRecordTsidUtil;
+import com.pado.util.tsid.ACTRecordTsidUtil;
 
 import java.time.ZoneId;
 

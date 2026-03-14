@@ -2,7 +2,7 @@ package com.pado.chat.controller.mapper;
 
 import com.pado.chat.controller.dto.ChattingResponse;
 import com.pado.chat.controller.dto.Sender;
-import com.pado.tsid.ChattingTsidUtil;
+import com.pado.util.tsid.ChattingTsidUtil;
 
 import java.time.ZoneId;
 

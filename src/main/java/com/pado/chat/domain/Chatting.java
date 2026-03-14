@@ -3,7 +3,7 @@ package com.pado.chat.domain;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.pado.chat.controller.dto.Sender;
-import com.pado.tsid.ChattingTsidUtil;
+import com.pado.util.tsid.ChattingTsidUtil;
 import lombok.Getter;
 
 @Getter
