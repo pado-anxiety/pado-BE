@@ -14,3 +14,11 @@ act:
   acceptance:
     breathingTime:
       min: 1
+
+diary:
+  situation:
+    length: 200
+  thoughts:
+    length: 200
+  feelings:
+    max: 3
