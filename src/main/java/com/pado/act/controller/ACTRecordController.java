@@ -2,7 +2,7 @@ package com.pado.act.controller;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.application.ACTRecordService;
-import com.pado.act.application.InvalidActRecordRequestException;
+import com.pado.act.application.InvalidFormatException;
 import com.pado.act.application.query.ACTRecordItemView;
 import com.pado.act.application.query.ACTRecordsView;
 import com.pado.act.controller.dto.ACTRecordResponse;
@@ -10,7 +10,7 @@ import com.pado.act.controller.dto.ACTRecords;
 import com.pado.act.controller.mapper.ACTRecordMapper;
 import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
-import com.pado.tsid.ACTRecordTsidUtil;
+import com.pado.util.tsid.ACTRecordTsidUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -30,7 +30,7 @@ public class ACTRecordController {
                 parsedCursor = Long.parseLong(cursor);
             }
         } catch (NumberFormatException e) {
-            throw new InvalidActRecordRequestException("cursor 값이 올바르지 않습니다.");
+            throw new InvalidFormatException("cursor 값이 올바르지 않습니다.");
         }
         ACTRecordsView view = actRecordService.findAllActRecords(authUser.getUserId(), parsedCursor);
         return ResponseEntity.ok(ACTRecordMapper.toACTRecords(view, authUser.getZoneId()));
@@ -42,7 +42,7 @@ public class ACTRecordController {
         try {
             parsedRecordId = Long.parseLong(recordId);
         } catch (NumberFormatException e) {
-            throw new InvalidActRecordRequestException("recordId 값이 올바르지 않습니다.");
+            throw new InvalidFormatException("recordId 값이 올바르지 않습니다.");
         }
         ACTRecordItemView view = actRecordService.findACTRecordResponse(authUser.getUserId(), parsedRecordId);
         return ResponseEntity.ok(new ACTRecordResponse(view.getTsid(), ACTRecordTsidUtil.toLocalDateTime(view.getTsid(), authUser.getZoneId()), view.getActType(), view.getData()));

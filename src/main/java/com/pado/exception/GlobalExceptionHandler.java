@@ -2,7 +2,7 @@ package com.pado.exception;
 
 import com.pado.act.application.ACTAccessDeniedException;
 import com.pado.act.application.ACTRecordNotFoundException;
-import com.pado.act.application.InvalidActRecordRequestException;
+import com.pado.act.application.InvalidFormatException;
 import com.pado.act.recommend.ACTRecommendQuotaExceededException;
 import com.pado.auth.infrastructure.UnauthorizedException;
 import com.pado.auth.infrastructure.oauth.OAuthException;
@@ -61,8 +61,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("AI 추천 기능을 모두 사용하셨습니다."));
     }
 
-    @ExceptionHandler(InvalidActRecordRequestException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidActRecordRequestException e) {
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidFormatException e) {
         log.info("Invalid ACT record request. message={}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
