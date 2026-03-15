@@ -7,6 +7,7 @@ import com.pado.act.recommend.ACTRecommendQuotaExceededException;
 import com.pado.auth.infrastructure.UnauthorizedException;
 import com.pado.auth.infrastructure.oauth.OAuthException;
 import com.pado.chat.quota.ChatQuotaExceededException;
+import com.pado.diary.application.DiaryNotFoundException;
 import com.pado.external.ai.infrastructure.OpenAiException;
 import com.pado.external.ai.resilience4j.retry.OpenAiClientException;
 import com.pado.external.ai.resilience4j.retry.OpenAiServerException;
@@ -87,5 +88,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleFcmNotFoundException(FcmNotFoundException e) {
         log.warn("Fcm not found exception occurred userId={}", e.getUserId());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("사용자의 fcm을 조회할 수 없습니다. id: " + e.getUserId()));
+    }
+
+    @ExceptionHandler(DiaryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleDiaryNotFoundException(DiaryNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("감정 일기를 찾을 수 없습니다. id: " + e.getDiaryId()));
     }
 }
