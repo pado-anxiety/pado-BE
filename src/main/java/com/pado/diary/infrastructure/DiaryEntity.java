@@ -10,6 +10,7 @@ import java.util.Map;
 
 @Entity
 @Getter
+@Table(name = "diary")
 public class DiaryEntity {
 
     @Id
