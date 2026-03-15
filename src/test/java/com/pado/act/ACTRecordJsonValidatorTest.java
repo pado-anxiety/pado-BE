@@ -3,12 +3,11 @@ package com.pado.act;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pado.act.application.InvalidActRecordRequestException;
+import com.pado.act.application.InvalidFormatException;
 import com.pado.act.application.validator.ACTRecordJsonValidator;
 import com.pado.act.application.validator.properties.AcceptanceProperties;
 import com.pado.act.application.validator.properties.CognitiveDefusionProperties;
 import com.pado.act.application.validator.properties.CommittedActionProperties;
-import com.pado.act.application.validator.properties.EmotionNoteProperties;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,12 +24,9 @@ import static org.assertj.core.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes= ACTRecordJsonValidatorTest.TestConfig.class)
-@EnableConfigurationProperties({EmotionNoteProperties.class, CognitiveDefusionProperties.class, CommittedActionProperties.class, AcceptanceProperties.class})
-@TestPropertySource(locations = "classpath:act-format.yml", factory = YamlPropertySourceFactory.class)
+@EnableConfigurationProperties({CognitiveDefusionProperties.class, CommittedActionProperties.class, AcceptanceProperties.class})
+@TestPropertySource(locations = "classpath:format.yml", factory = YamlPropertySourceFactory.class)
 public class ACTRecordJsonValidatorTest {
-
-    @Autowired
-    EmotionNoteProperties emotionNoteProperties;
 
     @Autowired
     CognitiveDefusionProperties cognitiveDefusionProperties;
@@ -43,10 +39,6 @@ public class ACTRecordJsonValidatorTest {
 
     @TestConfiguration
     static class TestConfig {
-        @Bean
-        public EmotionNoteProperties emotionNoteProperties() {
-            return new EmotionNoteProperties();
-        }
 
         @Bean
         public CognitiveDefusionProperties cognitiveDefusionProperties() {
@@ -69,42 +61,7 @@ public class ACTRecordJsonValidatorTest {
 
     @BeforeEach
     void setUp() {
-        validator = new ACTRecordJsonValidator(emotionNoteProperties, cognitiveDefusionProperties, committedActionProperties, acceptanceProperties);
-    }
-
-    @Test
-    @DisplayName("yaml load test")
-    void testYamlLoad() {
-        assertThat(emotionNoteProperties.getSituation().getLength()).isEqualTo(500);
-        assertThat(emotionNoteProperties.getFeelings().getLength()).isEqualTo(500);
-    }
-
-    @Test
-    @DisplayName("EMOTION_NOTE - 정상 데이터 통과")
-    void emotion_note_정상_통과() throws Exception {
-        // given
-        JsonNode json = objectMapper.readTree("""
-        {
-          "situation": "회사에서 실수함",
-          "thoughts": "나는 무능하다",
-          "feelings": "불안"
-        }
-        """);
-
-        // when & then
-        assertThatCode(() -> validator.validate(ACTType.EMOTION_NOTE, json)).doesNotThrowAnyException();
-    }
-
-    @Test
-    @DisplayName("EMOTION_NOTE - 필수 필드 누락 시 예외")
-    void emotion_note_필드_누락() throws Exception {
-        JsonNode json = objectMapper.readTree("""
-        {
-          "situation": "상황만 있음"
-        }
-        """);
-
-        assertThatThrownBy(() -> validator.validate(ACTType.EMOTION_NOTE, json)).isInstanceOf(InvalidActRecordRequestException.class).hasMessageContaining("thoughts");
+        validator = new ACTRecordJsonValidator(cognitiveDefusionProperties, committedActionProperties, acceptanceProperties);
     }
 
     @Test
@@ -131,7 +88,7 @@ public class ACTRecordJsonValidatorTest {
         }
         """);
 
-        assertThatThrownBy(() -> validator.validate(ACTType.COGNITIVE_DEFUSION, json)).isInstanceOf(InvalidActRecordRequestException.class).hasMessageContaining("비어 있을 수 없습니다");
+        assertThatThrownBy(() -> validator.validate(ACTType.COGNITIVE_DEFUSION, json)).isInstanceOf(InvalidFormatException.class).hasMessageContaining("비어 있을 수 없습니다");
     }
 
     @Test
@@ -161,7 +118,7 @@ public class ACTRecordJsonValidatorTest {
         }
         """);
 
-        assertThatThrownBy(() -> validator.validate(ACTType.COGNITIVE_DEFUSION, json)).isInstanceOf(InvalidActRecordRequestException.class);
+        assertThatThrownBy(() -> validator.validate(ACTType.COGNITIVE_DEFUSION, json)).isInstanceOf(InvalidFormatException.class);
     }
 
     @Test
@@ -185,7 +142,7 @@ public class ACTRecordJsonValidatorTest {
         }
         """);
 
-        assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidActRecordRequestException.class);
+        assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidFormatException.class);
     }
 
     @Test
@@ -196,7 +153,7 @@ public class ACTRecordJsonValidatorTest {
         
         }
         """);
-        assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidActRecordRequestException.class);
+        assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidFormatException.class);
     }
 
     @Test
@@ -208,7 +165,7 @@ public class ACTRecordJsonValidatorTest {
         }
         """);
 
-        assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidActRecordRequestException.class);
+        assertThatThrownBy(() -> validator.validate(ACTType.ACCEPTANCE, json)).isInstanceOf(InvalidFormatException.class);
     }
 
     @Test
@@ -250,7 +207,7 @@ public class ACTRecordJsonValidatorTest {
         }
         """);
 
-        assertThatThrownBy(() -> validator.validate(ACTType.COMMITTED_ACTION, json)).isInstanceOf(InvalidActRecordRequestException.class);
+        assertThatThrownBy(() -> validator.validate(ACTType.COMMITTED_ACTION, json)).isInstanceOf(InvalidFormatException.class);
     }
 
     @Test
@@ -271,7 +228,7 @@ public class ACTRecordJsonValidatorTest {
         }
         """);
 
-        assertThatThrownBy(() -> validator.validate(ACTType.COMMITTED_ACTION, json)).isInstanceOf(InvalidActRecordRequestException.class);
+        assertThatThrownBy(() -> validator.validate(ACTType.COMMITTED_ACTION, json)).isInstanceOf(InvalidFormatException.class);
     }
 
     @Test
@@ -292,7 +249,7 @@ public class ACTRecordJsonValidatorTest {
         """);
         //matter 누락
 
-        assertThatThrownBy(() -> validator.validate(ACTType.COMMITTED_ACTION, json)).isInstanceOf(InvalidActRecordRequestException.class);
+        assertThatThrownBy(() -> validator.validate(ACTType.COMMITTED_ACTION, json)).isInstanceOf(InvalidFormatException.class);
     }
 
 

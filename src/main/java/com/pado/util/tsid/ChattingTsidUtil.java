@@ -1,4 +1,4 @@
-package com.pado.tsid;
+package com.pado.util.tsid;
 
 import io.hypersistence.tsid.TSID;
 

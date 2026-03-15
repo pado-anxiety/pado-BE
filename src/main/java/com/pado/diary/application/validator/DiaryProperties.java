@@ -1,4 +1,4 @@
-package com.pado.act.application.validator.properties;
+package com.pado.diary.application.validator;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,8 +7,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @Getter
 @Setter
-@ConfigurationProperties("act.emotion-note")
-public class EmotionNoteProperties {
+@ConfigurationProperties("diary")
+public class DiaryProperties {
 
     private Situation situation;
     private Thoughts thoughts;
@@ -29,6 +29,7 @@ public class EmotionNoteProperties {
     @Getter
     @AllArgsConstructor
     public static class Feelings {
-        private int length;
+        private int max;
     }
 }
+

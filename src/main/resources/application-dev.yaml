@@ -3,7 +3,7 @@ spring:
     name: pado
   config:
     import:
-     - classpath:act-format.yml
+     - classpath:format.yml
 
 logging:
   execution-time:

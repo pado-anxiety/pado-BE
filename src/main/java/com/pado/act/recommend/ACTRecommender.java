@@ -17,10 +17,9 @@ public class ACTRecommender {
     private final OpenAiService openAiService;
 
     private static final ACTRecommendation DEFAULT_RECOMMENDATION = new ACTRecommendation(
-            ACTType.EMOTION_NOTE,
+            ACTType.CONTACT_WITH_PRESENT,
             List.of(
-                    "무엇을 해야 할지 애매할 때는, 먼저 지금 상태를 정리해보는 것만으로도 충분해요.",
-                    "감정 노트를 통해 지금의 감정과 생각을 있는 그대로 적어보세요.",
+                    "무엇을 해야 할지 애매할 때는, 지금 느껴지는 감각에 하나씩 주의를 기울여 보세요.",
                     "그 다음에, 원하신다면 다른 ACT도 선택할 수 있어요."
             )
     );
