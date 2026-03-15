@@ -3,6 +3,7 @@ package com.pado.diary.application;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.pado.act.application.ResourceAccessDeniedException;
 import com.pado.diary.application.validator.DiaryJsonValidator;
+import com.pado.diary.controller.dto.DiaryCalendarItem;
 import com.pado.diary.controller.dto.DiaryResponse;
 import com.pado.diary.infrastructure.DiaryEntity;
 import com.pado.diary.infrastructure.DiaryRepository;
@@ -11,7 +12,10 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.Instant;
 import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
 import java.util.Map;
 
 @Service
@@ -37,6 +41,16 @@ public class DiaryService {
             throw new ResourceAccessDeniedException();
         }
         return diaryConverter.toResponse(diary, zoneId);
+    }
+
+    public List<DiaryCalendarItem> getCalendarItems(Long userId, ZoneId zoneId, Integer year, Integer month) {
+        ZonedDateTime startOfMonth = ZonedDateTime.of(year, month, 1, 0, 0, 0, 0, zoneId);
+        ZonedDateTime endOfMonth = startOfMonth.plusMonths(1);
+
+        Instant from = startOfMonth.toInstant();
+        Instant to = endOfMonth.toInstant();
+
+        return diaryConverter.toCalendarItems(diaryRepository.findByUserIdAndCreatedAtBetween(userId, from, to), zoneId);
     }
 
     private DiaryEntity getById(Long id) {
