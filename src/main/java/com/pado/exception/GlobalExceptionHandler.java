@@ -1,6 +1,6 @@
 package com.pado.exception;
 
-import com.pado.act.application.ACTAccessDeniedException;
+import com.pado.act.application.ResourceAccessDeniedException;
 import com.pado.act.application.ACTRecordNotFoundException;
 import com.pado.act.application.InvalidFormatException;
 import com.pado.act.recommend.ACTRecommendQuotaExceededException;
@@ -72,9 +72,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("ACT 기록을 찾을 수 없습니다. recordId: " + e.getRecordId()));
     }
 
-    @ExceptionHandler(ACTAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleACTAccessDeniedException() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("ACT 조회 권한이 없습니다."));
+    @ExceptionHandler(ResourceAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAccessDeniedException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("조회 권한이 없습니다."));
     }
 
     @ExceptionHandler(UserNotFoundException.class)

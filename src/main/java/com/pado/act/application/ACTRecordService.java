@@ -49,7 +49,7 @@ public class ACTRecordService {
     public ACTRecordItemView findACTRecordResponse(Long userId, Long recordId) {
         ACTRecordEntity entity = actRecordRepository.findById(recordId).orElseThrow(() -> new ACTRecordNotFoundException(recordId));
         if (!entity.getUserId().equals(userId)) {
-            throw new ACTAccessDeniedException();
+            throw new ResourceAccessDeniedException();
         }
         return new ACTRecordItemView(entity.getTsid(), entity.getActType(), jsonMapConverter.convertToJsonNode(entity.getData()));
     }
