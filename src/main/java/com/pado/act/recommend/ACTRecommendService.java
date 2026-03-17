@@ -31,9 +31,9 @@ public class ACTRecommendService {
 
     @Transactional
     public ACTRecommendation recommend(Long userId, ZoneId zoneId) {
-        if (aiActRecommendationRepository.countTodayAiRecommended(userId, zoneId) >= recommendQuota) {
-            throw new ACTRecommendQuotaExceededException();
-        }
+//        if (aiActRecommendationRepository.countTodayAiRecommended(userId, zoneId) >= recommendQuota) {
+//            throw new ACTRecommendQuotaExceededException();
+//        } FIXME
         Optional<ChatSummary> summary = getSummaryForRecommendation(userId);
         if (summary.isEmpty()) {
             return actRecommender.getDefaultRecommendation();
