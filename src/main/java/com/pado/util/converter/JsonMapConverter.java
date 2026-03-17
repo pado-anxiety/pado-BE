@@ -1,4 +1,4 @@
-package com.pado.act.application;
+package com.pado.util.converter;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
-public class ACTRecordConverter {
+public class JsonMapConverter {
 
     private final ObjectMapper objectMapper;
 

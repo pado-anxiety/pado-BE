@@ -1,8 +1,8 @@
-package com.pado.act;
+package com.pado;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pado.act.application.ACTRecordConverter;
+import com.pado.util.converter.JsonMapConverter;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -11,15 +11,15 @@ import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class ACTRecordConverterTest {
+public class JsonMapConverterTest {
 
-    private ACTRecordConverter converter;
+    private JsonMapConverter converter;
     private ObjectMapper objectMapper;
 
     @BeforeEach
     void setUp() {
         objectMapper = new ObjectMapper();
-        converter = new ACTRecordConverter(objectMapper);
+        converter = new JsonMapConverter(objectMapper);
     }
 
     @Test

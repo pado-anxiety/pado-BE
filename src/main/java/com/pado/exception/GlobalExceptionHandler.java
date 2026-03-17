@@ -1,12 +1,13 @@
 package com.pado.exception;
 
-import com.pado.act.application.ACTAccessDeniedException;
+import com.pado.act.application.ResourceAccessDeniedException;
 import com.pado.act.application.ACTRecordNotFoundException;
-import com.pado.act.application.InvalidActRecordRequestException;
+import com.pado.act.application.InvalidFormatException;
 import com.pado.act.recommend.ACTRecommendQuotaExceededException;
 import com.pado.auth.infrastructure.UnauthorizedException;
 import com.pado.auth.infrastructure.oauth.OAuthException;
 import com.pado.chat.quota.ChatQuotaExceededException;
+import com.pado.diary.application.DiaryNotFoundException;
 import com.pado.external.ai.infrastructure.OpenAiException;
 import com.pado.external.ai.resilience4j.retry.OpenAiClientException;
 import com.pado.external.ai.resilience4j.retry.OpenAiServerException;
@@ -61,8 +62,8 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("AI 추천 기능을 모두 사용하셨습니다."));
     }
 
-    @ExceptionHandler(InvalidActRecordRequestException.class)
-    public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidActRecordRequestException e) {
+    @ExceptionHandler(InvalidFormatException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidActRecordRequestException(InvalidFormatException e) {
         log.info("Invalid ACT record request. message={}", e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse(e.getMessage()));
     }
@@ -72,9 +73,9 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("ACT 기록을 찾을 수 없습니다. recordId: " + e.getRecordId()));
     }
 
-    @ExceptionHandler(ACTAccessDeniedException.class)
-    public ResponseEntity<ErrorResponse> handleACTAccessDeniedException() {
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("ACT 조회 권한이 없습니다."));
+    @ExceptionHandler(ResourceAccessDeniedException.class)
+    public ResponseEntity<ErrorResponse> handleResourceAccessDeniedException() {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new ErrorResponse("조회 권한이 없습니다."));
     }
 
     @ExceptionHandler(UserNotFoundException.class)
@@ -87,5 +88,10 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleFcmNotFoundException(FcmNotFoundException e) {
         log.warn("Fcm not found exception occurred userId={}", e.getUserId());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new ErrorResponse("사용자의 fcm을 조회할 수 없습니다. id: " + e.getUserId()));
+    }
+
+    @ExceptionHandler(DiaryNotFoundException.class)
+    public ResponseEntity<ErrorResponse> handleDiaryNotFoundException(DiaryNotFoundException e) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(new ErrorResponse("감정 일기를 찾을 수 없습니다. id: " + e.getDiaryId()));
     }
 }
