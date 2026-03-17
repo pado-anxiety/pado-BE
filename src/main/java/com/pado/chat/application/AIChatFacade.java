@@ -3,43 +3,29 @@ package com.pado.chat.application;
 import com.pado.chat.application.command.PostMessageResult;
 import com.pado.chat.controller.dto.Sender;
 import com.pado.chat.controller.dto.message.MessageRequest;
-import com.pado.chat.domain.ChatSummaries;
 import com.pado.chat.domain.Chatting;
-import com.pado.chat.domain.ChattingContext;
-import com.pado.chat.mq.ChattingFlushProducer;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
-import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class AIChatFacade {
 
+    private final ChatPreProcessor chatPreProcessor;
+    private final ChatPostProcessor chatPostProcessor;
     private final AIChatService aiChatService;
-    private final ConversationSummaryService conversationSummaryService;
-    private final ChattingContextService contextService;
-    private final ChattingFlushProducer chattingFlushProducer;
-    private final ChattingEncryptService encryptService;
 
-    public PostMessageResult postMessage(Long userId, MessageRequest messageRequest) {
+    public PostMessageResult postMessageV1(Long userId, MessageRequest messageRequest) {
 //        if (!aiQuotaService.tryConsume(userId)) {
 //            QuotaStatus quotaStatus = aiQuotaService.getQuotaStatus(userId);
 //            throw new ChatQuotaExceededException(quotaStatus);
 //        } FIXME
         Chatting userChatting = new Chatting(messageRequest.getMessage(), Sender.USER);
-        ChattingContext chattingContext = contextService.makeContext(userId, userChatting);
-        ChatSummaries summaries = conversationSummaryService.getConversationSummaries(userId, 3);
-        Chatting reply = aiChatService.postMessage(chattingContext, summaries);
-        List<Chatting> encrypted = Stream.of(userChatting, reply).map(encryptService::encrypt).toList();
-        boolean published = chattingFlushProducer.publish(userId, encrypted);
-        if (published) {
-            contextService.appendContext(userId, encrypted);
-        }
-        conversationSummaryService.asyncSummarize(userId);
+        ChatPreProcessResult preProcessResult = chatPreProcessor.preProcess(userId, userChatting);
+        Chatting reply = aiChatService.postMessage(preProcessResult);
+        chatPostProcessor.postProcess(userId, userChatting, reply);
         return new PostMessageResult(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
 }
