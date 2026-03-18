@@ -4,7 +4,7 @@ spring:
   jpa:
     open-in-view: false
   config:
-    import: file:/home/pado/application-secret-prod.yml
+    import: file:/home/pado/application-secret-prod.yml, classpath:format.yml
 
 logging:
   execution-time:
