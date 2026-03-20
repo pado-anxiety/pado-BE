@@ -4,7 +4,9 @@ import com.pado.external.ai.resilience4j.retry.OpenAiClientException;
 import com.pado.external.ai.resilience4j.retry.OpenAiServerException;
 import io.micrometer.core.annotation.Counted;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.codec.ServerSentEvent;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -28,16 +30,19 @@ public class OpenAiStreamClient {
     }
 
     @Counted("ai.chat.stream")
-    public Flux<String> sendChatRequest(ChatCompletionRequest request) {
+    public Flux<String> sendChatRequest(ChatCompletionStreamRequest request) {
         return doRequest(request);
     }
 
-    private Flux<String> doRequest(ChatCompletionRequest request) {
+    private Flux<String> doRequest(ChatCompletionStreamRequest request) {
         return webClient.post()
                 .uri(CHAT_COMPLETION_URL)
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
-                .bodyToFlux(String.class)
+                .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {})
+                .filter(sse -> sse.data() != null)
+                .filter(sse -> !"[DONE]".equals(sse.data()))
+                .mapNotNull(ServerSentEvent::data)
                 .onErrorMap(this::mapException);
     }
 

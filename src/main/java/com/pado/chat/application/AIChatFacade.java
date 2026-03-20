@@ -8,8 +8,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
-import reactor.core.scheduler.Schedulers;
 
 @Service
 @RequiredArgsConstructor
@@ -41,16 +39,9 @@ public class AIChatFacade {
 
         return aiChatStreamingService.postMessage(preProcessResult)
                 .doOnNext(fullResponse::append)
-                .doOnComplete(() ->
-                        Mono.fromRunnable(() -> {
-                                    Chatting reply = new Chatting(fullResponse.toString(), Sender.AI);
-                                    chatPostProcessor.postProcess(userId, userChatting, reply);
-                                })
-                                .subscribeOn(Schedulers.boundedElastic())
-                                .subscribe(
-                                        null,
-                                        e -> log.error("후처리 실패 userId={}", userId, e)
-                                )
-                );
+                .doOnComplete(() -> {
+                    Chatting reply = new Chatting(fullResponse.toString(), Sender.AI);
+                    chatPostProcessor.postProcess(userId, userChatting, reply);
+                });
     }
 }

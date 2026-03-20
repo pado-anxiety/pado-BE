@@ -17,6 +17,7 @@ public class OpenAiWebClientConfig {
             @Value("${openai.client.apikey}") String apiKey
     ) {
         return WebClient.builder()
+                .baseUrl("https://api.openai.com")
                 .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 .defaultHeader(HttpHeaders.ACCEPT, MediaType.TEXT_EVENT_STREAM_VALUE);

@@ -5,6 +5,7 @@ import com.pado.auth.infrastructure.LoginUser;
 import com.pado.chat.application.AIChatFacade;
 import com.pado.chat.controller.dto.message.MessageRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,6 +18,7 @@ import java.io.IOException;
 
 @RestController
 @RequiredArgsConstructor
+@Slf4j
 public class ChatSseController {
 
     private final AIChatFacade AIChatFacade;
@@ -27,7 +29,12 @@ public class ChatSseController {
 
         Flux<String> flux = AIChatFacade.postMessageV2(authUser.getUserId(), request);
 
-        Disposable disposable = flux.subscribe(
+        Disposable disposable = flux
+                .doOnSubscribe(s -> log.info("구독 시작"))
+                .doOnNext(chunk -> log.info("청크 수신: {}", chunk))
+                .doOnComplete(() -> log.info("스트림 완료"))
+                .doOnError(e -> log.error("스트림 에러", e))
+                .subscribe(
                 chunk -> {
                     try {
                         emitter.send(SseEmitter.event().data(chunk));

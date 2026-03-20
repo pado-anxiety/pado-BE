@@ -2,6 +2,7 @@ package com.pado.auth.config;
 
 import com.pado.auth.infrastructure.jwt.JwtAuthenticationFilter;
 import com.pado.auth.infrastructure.jwt.JwtExceptionHandlerFilter;
+import jakarta.servlet.DispatcherType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -33,6 +34,7 @@ public class SecurityConfig {
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorize -> authorize
+                        .dispatcherTypeMatchers(DispatcherType.ASYNC, DispatcherType.ERROR).permitAll()
                         .requestMatchers("/login/**", "/tokens/reissue", "/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
