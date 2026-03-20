@@ -38,6 +38,11 @@ public class ChatCompletionRequestFactory {
         return builder.build();
     }
 
+    public ChatCompletionStreamRequest buildStreamChatRequest(ChattingContext context, ChatSummaries summaries) {
+        ChatCompletionRequest req = buildChatRequest(context, summaries);
+        return new ChatCompletionStreamRequest(req.getModel(), req.getMessages().stream().map(r -> new ChatCompletionStreamRequest.Message(r.getRole(), r.getContent())).toList(), req.getTemperature(), req.getMax_tokens());
+    }
+
     public ChatCompletionRequest buildSummaryRequest(List<Chatting> chattings) {
         return ChatCompletionRequest.builder()
                 .model(chatSummaryOpenAiProperties.getModel())
