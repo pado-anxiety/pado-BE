@@ -40,7 +40,6 @@ public class OpenAiStreamClient {
                 .body(BodyInserters.fromValue(request))
                 .retrieve()
                 .bodyToFlux(new ParameterizedTypeReference<ServerSentEvent<String>>() {})
-                .filter(sse -> sse.data() != null)
                 .filter(sse -> !"[DONE]".equals(sse.data()))
                 .mapNotNull(ServerSentEvent::data)
                 .onErrorMap(this::mapException);

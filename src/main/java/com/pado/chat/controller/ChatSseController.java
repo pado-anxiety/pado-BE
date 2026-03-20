@@ -29,12 +29,7 @@ public class ChatSseController {
 
         Flux<String> flux = AIChatFacade.postMessageV2(authUser.getUserId(), request);
 
-        Disposable disposable = flux
-                .doOnSubscribe(s -> log.info("구독 시작"))
-                .doOnNext(chunk -> log.info("청크 수신: {}", chunk))
-                .doOnComplete(() -> log.info("스트림 완료"))
-                .doOnError(e -> log.error("스트림 에러", e))
-                .subscribe(
+        Disposable disposable = flux.subscribe(
                 chunk -> {
                     try {
                         emitter.send(SseEmitter.event().data(chunk));
@@ -46,7 +41,6 @@ public class ChatSseController {
                 emitter::complete
         );
 
-        // 클라이언트가 연결을 끊었을 때 Flux 구독 취소
         emitter.onCompletion(disposable::dispose);
         emitter.onTimeout(() -> {
             disposable.dispose();

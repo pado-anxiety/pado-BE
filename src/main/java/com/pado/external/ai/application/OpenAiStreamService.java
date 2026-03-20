@@ -19,9 +19,7 @@ public class OpenAiStreamService {
     private final OpenAiStreamClient openAiStreamClient;
 
     public Flux<String> getChatResponse(ChatCompletionStreamRequest request) {
-        return openAiStreamClient.sendChatRequest(request)
-                .doOnNext(line -> log.info("raw line: [{}]", line))
-                .mapNotNull(this::extractContent);
+        return openAiStreamClient.sendChatRequest(request).mapNotNull(this::extractContent);
     }
 
     private String extractContent(String json) {
