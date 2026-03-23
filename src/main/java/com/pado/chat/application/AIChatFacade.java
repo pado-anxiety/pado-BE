@@ -4,8 +4,10 @@ import com.pado.chat.application.command.PostMessageResult;
 import com.pado.chat.controller.dto.Sender;
 import com.pado.chat.controller.dto.message.MessageRequest;
 import com.pado.chat.domain.Chatting;
+import com.pado.chat.event.ChattingEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -14,8 +16,9 @@ import org.springframework.stereotype.Service;
 public class AIChatFacade {
 
     private final ChatPreProcessor chatPreProcessor;
-    private final ChatPostProcessor chatPostProcessor;
     private final AIChatService aiChatService;
+
+    private final ApplicationEventPublisher eventPublisher;
 
     public PostMessageResult postMessageV1(Long userId, MessageRequest messageRequest) {
 //        if (!aiQuotaService.tryConsume(userId)) {
@@ -25,7 +28,7 @@ public class AIChatFacade {
         Chatting userChatting = new Chatting(messageRequest.getMessage(), Sender.USER);
         ChatPreProcessResult preProcessResult = chatPreProcessor.preProcess(userId, userChatting);
         Chatting reply = aiChatService.postMessage(preProcessResult);
-        chatPostProcessor.postProcess(userId, userChatting, reply);
+        eventPublisher.publishEvent(new ChattingEvent(userId, userChatting, reply));
         return new PostMessageResult(Sender.valueOf(reply.getSender()), reply.getMessage(), reply.getTsid());
     }
 }

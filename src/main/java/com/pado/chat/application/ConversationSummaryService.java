@@ -34,7 +34,7 @@ public class ConversationSummaryService {
     }
 
     @Async("summaryExecutor")
-    public void asyncSummarize(Long userId) {
+    public void summarize(Long userId) {
         if (!tryLock(userId)) {
             log.debug("Summarize skipped: user {} already locked", userId);
             return;
