@@ -13,8 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 import reactor.core.Disposable;
 import reactor.core.publisher.Flux;
-
-import java.io.IOException;
+import reactor.core.scheduler.Schedulers;
 
 @RestController
 @RequiredArgsConstructor
@@ -27,19 +26,20 @@ public class ChatSseController {
     public SseEmitter send(@LoginUser AuthUser authUser, @RequestBody MessageRequest request) {
         SseEmitter emitter = new SseEmitter(300_000L);
 
-        Flux<String> flux = AIChatFacade.postMessageV2(authUser.getUserId(), request);
+        Flux<String> flux = AIChatFacade.postMessageV2(authUser.getUserId(), request)
+                .publishOn(Schedulers.boundedElastic()); //epoll -> bounded
 
         Disposable disposable = flux.subscribe(
                 chunk -> {
                     try {
                         emitter.send(SseEmitter.event().data(chunk));
-                    } catch (IOException e) {
+                    } catch (Exception e) {
                         emitter.completeWithError(e);
                     }
                 },
                 emitter::completeWithError,
                 emitter::complete
-        );
+        ); //emit thread = bounded
 
         emitter.onCompletion(disposable::dispose);
         emitter.onTimeout(() -> {
