@@ -26,7 +26,7 @@ public class ChattingFlushConsumer {
             chatRepository.saveAll(message.getUserId(), message.getChattings());
             channel.basicAck(tag, false);
         } catch (Exception e) {
-            log.error("Chat persist failed. userId={}, payload={}, reason={}", message.getUserId(), message, e.getMessage());
+            log.error("Chat persist failed. userId={}, reason={}", message.getUserId(), e.getMessage());
             channel.basicNack(tag, false, false);
         }
     }
