@@ -1,5 +1,6 @@
 package com.pado.chat.mq;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -11,6 +12,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@Slf4j
 public class ChattingRabbitMqConfig {
 
     public static final String EXCHANGE = "chat.flush.ex";
@@ -28,6 +30,8 @@ public class ChattingRabbitMqConfig {
         connectionFactory.setHost(host);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
+        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
+        connectionFactory.setPublisherReturns(true);
         return connectionFactory;
     }
 
@@ -43,6 +47,15 @@ public class ChattingRabbitMqConfig {
         template.setBeforePublishPostProcessors(message -> {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
+        });
+        template.setMandatory(true);
+        template.setConfirmCallback((correlationData, ack, cause) -> {
+            if (!ack) {
+                log.error("Publish NACK. id={}, cause={}", correlationData, cause);
+            }
+        });
+        template.setReturnsCallback(returned -> {
+            log.error("Routing failed. message={}, replyText={}", returned.getMessage(), returned.getReplyText());
         });
         return template;
     }
