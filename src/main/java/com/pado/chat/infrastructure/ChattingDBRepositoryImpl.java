@@ -21,6 +21,11 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
     }
 
     @Override
+    public void saveAll(Long userId, List<Chatting> chattings) {
+        chattingJpaRepository.saveAll(chattings.stream().map(c -> ChattingEntity.fromModel(userId, c)).toList());
+    }
+
+    @Override
     public List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n) {
         return chattingJpaRepository.findByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
     }

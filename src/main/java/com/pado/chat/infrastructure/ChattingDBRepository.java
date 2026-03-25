@@ -8,6 +8,8 @@ public interface ChattingDBRepository {
 
     Chatting save(Long userId, Chatting chatting);
 
+    void saveAll(Long userId, List<Chatting> chattings);
+
     List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n);
 
     List<Chatting> findRecentMessages(Long userId, int n);
