@@ -2,16 +2,15 @@ package com.pado.chat.mq;
 
 import com.pado.chat.infrastructure.ChattingDBRepository;
 import com.rabbitmq.client.Channel;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.time.Instant;
 
 @Component
 @RequiredArgsConstructor
@@ -19,25 +18,16 @@ import java.time.Instant;
 public class ChattingFlushConsumer {
 
     private final ChattingDBRepository chatRepository;
-    private final RabbitTemplate rabbitTemplate;
 
     @RabbitListener(queues = ChattingRabbitMqConfig.FLUSH_QUEUE, ackMode = "MANUAL")
+    @Transactional
     public void consume(ChattingPersistMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
-            chatRepository.save(message.getUserId(), message.getChatting());
+            chatRepository.saveAll(message.getUserId(), message.getChattings());
             channel.basicAck(tag, false);
         } catch (Exception e) {
-            rabbitTemplate.convertAndSend(
-                    ChattingRabbitMqConfig.EXCHANGE,
-                    ChattingRabbitMqConfig.DEAD_QUEUE,
-                    message,
-                    msg -> {
-                        msg.getMessageProperties().setHeader("failReason", e.getMessage());
-                        msg.getMessageProperties().setHeader("failedAt", Instant.now());
-                        return msg;
-                    }
-            );
-            channel.basicAck(tag, false);
+            log.error("Chat persist failed. userId={}, payload={}, reason={}", message.getUserId(), message, e.getMessage());
+            channel.basicNack(tag, false, false);
         }
     }
 }
