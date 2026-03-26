@@ -51,7 +51,11 @@ public class ChattingRabbitMqConfig {
         template.setMandatory(true);
         template.setConfirmCallback((correlationData, ack, cause) -> {
             if (!ack) {
-                log.error("Publish NACK. id={}, cause={}", correlationData, cause);
+                if (correlationData != null) {
+                    log.error("Publish NACK. id={}, cause={}", correlationData.getId(), cause);
+                } else {
+                    log.error("Publish NACK, CorrelationData is null");
+                }
             }
         });
         template.setReturnsCallback(returned -> {
