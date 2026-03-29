@@ -24,7 +24,7 @@ public class ChattingFlushConsumer {
     public void consume(ChattingPersistMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
             chatRepository.saveAll(message.getUserId(), message.getChattings());
-            channel.basicAck(tag, false);
+            channel.basicAck(tag, false); //FIXME ACK 작업이 트랜잭션 범위 밖으로 나가야함, COMMIT -> TRANSACTION 종료 -> ACK
         } catch (Exception e) {
             log.error("Chat persist failed. userId={}, reason={}", message.getUserId(), e.getMessage());
             channel.basicNack(tag, false, false);

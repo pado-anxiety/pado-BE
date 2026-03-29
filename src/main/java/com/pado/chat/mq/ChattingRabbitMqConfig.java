@@ -40,6 +40,7 @@ public class ChattingRabbitMqConfig {
         return new Jackson2JsonMessageConverter();
     }
 
+    //FIXME 설정 검토 필요, confirmCallback 중복, returnsCallback 재시도
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);

@@ -36,6 +36,7 @@ public class ChattingFlushProducer {
             if (!confirm.isAck()) {
                 log.error("MQ publish nack. cause={}", confirm.getReason());
                 return false;
+                //FIXME ACK 안올 시 메시지 유실, 재시도 로직 추가. 재시도도 실패 시, DB로 바로 저장 진행
             }
             return true;
         } catch (TimeoutException e) {
