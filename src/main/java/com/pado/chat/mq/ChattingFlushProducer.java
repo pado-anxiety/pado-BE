@@ -19,32 +19,37 @@ import static org.springframework.amqp.rabbit.connection.CorrelationData.Confirm
 @Slf4j
 public class ChattingFlushProducer {
 
+    private static final int MAX_ATTEMPT = 3;
+
     private final RabbitTemplate rabbitTemplate;
+    private final ChattingFallbackService fallbackService;
 
-    public boolean publish(Long userId, List<Chatting> chattings) {
-        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
-        try {
-            rabbitTemplate.convertAndSend(
-                    ChattingRabbitMqConfig.EXCHANGE,
-                    ChattingRabbitMqConfig.FLUSH_QUEUE,
-                    new ChattingPersistMessage(userId, chattings),
-                    correlationData
-            );
+    public void publish(Long userId, List<Chatting> chattings) {
+        String correlationId = UUID.randomUUID().toString();
+        if (tryPublish(correlationId, userId, chattings)) return;
+        log.warn("MQ publish failed. trigger fallback. correlationId={}, userId={}", correlationId, userId);
+        fallbackService.fallback(userId, chattings);
+    }
 
-            Confirm confirm = correlationData.getFuture().get(5, TimeUnit.SECONDS);
-
-            if (!confirm.isAck()) {
-                log.error("MQ publish nack. cause={}", confirm.getReason());
-                return false;
-                //FIXME ACK 안올 시 메시지 유실, 재시도 로직 추가. 재시도도 실패 시, DB로 바로 저장 진행
+    private boolean tryPublish(String correlationId, Long userId, List<Chatting> chattings) {
+        for (int attempt = 1; attempt <= MAX_ATTEMPT; attempt++) {
+            try {
+                CorrelationData correlationData = new CorrelationData(correlationId);
+                rabbitTemplate.convertAndSend(
+                        ChattingRabbitMqConfig.EXCHANGE,
+                        ChattingRabbitMqConfig.FLUSH_QUEUE,
+                        new ChattingPersistMessage(userId, chattings),
+                        correlationData
+                );
+                Confirm confirm = correlationData.getFuture().get(5, TimeUnit.SECONDS);
+                if (confirm.isAck()) return true;
+                log.warn("MQ publish retry. correlationId={}, attempt={}/{}, userId={}, cause={}", correlationId, attempt, MAX_ATTEMPT, userId, confirm.getReason());
+            } catch (TimeoutException e) {
+                log.warn("MQ publish timeout. correlationId={}, attempt={}/{}", correlationId, attempt, MAX_ATTEMPT);
+            } catch (Exception e) {
+                log.error("MQ publish exception. correlationId={}, attempt={}/{}", correlationId, attempt, MAX_ATTEMPT, e);
             }
-            return true;
-        } catch (TimeoutException e) {
-            log.error("MQ Publish timeout. userId={}", userId, e);
-            return false;
-        } catch (Exception e) {
-            log.error("MQ Publish failed with exception. userId={}", userId, e);
-            return false;
         }
+        return false;
     }
 }
