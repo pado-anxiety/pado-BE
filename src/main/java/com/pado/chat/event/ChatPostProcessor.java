@@ -26,10 +26,8 @@ public class ChatPostProcessor {
     @Async("chattingExecutor")
     public void postProcess(ChattingEvent event) {
         List<Chatting> encrypted = Stream.of(event.getUserChatting(), event.getReply()).map(encryptService::encrypt).toList();
-        boolean published = chattingFlushProducer.publish(event.getUserId(), encrypted);
-        if (published) {
-            contextService.appendContext(event.getUserId(), encrypted);
-        }
+        contextService.appendContext(event.getUserId(), encrypted);
+        chattingFlushProducer.publish(event.getUserId(), encrypted);
         conversationSummaryService.summarize(event.getUserId());
     }
 }
