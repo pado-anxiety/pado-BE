@@ -21,8 +21,8 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
     }
 
     @Override
-    public void saveAll(Long userId, List<Chatting> chattings) {
-        chattingJpaRepository.saveAll(chattings.stream().map(c -> ChattingEntity.fromModel(userId, c)).toList());
+    public void upsertAll(Long userId, List<Chatting> chattings) {
+        chattings.stream().map(c -> ChattingEntity.fromModel(userId, c)).forEach(chattingJpaRepository::upsert);
     }
 
     @Override

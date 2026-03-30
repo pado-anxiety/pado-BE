@@ -19,7 +19,7 @@ public class ChattingFallbackService {
     @Transactional
     public void fallback(Long userId, List<Chatting> chattings) {
         try {
-            chattingRepository.saveAll(userId, chattings);
+            chattingRepository.upsertAll(userId, chattings);
         } catch (Exception e) {
             log.error("Fallback failed. userId={}", userId);
         }

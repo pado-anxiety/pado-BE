@@ -23,7 +23,7 @@ public class ChattingFlushConsumer {
     @RabbitListener(queues = ChattingRabbitMqConfig.FLUSH_QUEUE, ackMode = "MANUAL")
     public void consume(ChattingPersistMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
-            transactionTemplate.executeWithoutResult(status -> chatRepository.saveAll(message.getUserId(), message.getChattings()));
+            transactionTemplate.executeWithoutResult(status -> chatRepository.upsertAll(message.getUserId(), message.getChattings()));
             channel.basicAck(tag, false);
         } catch (Exception e) {
             log.error("Chat persist failed. userId={}, reason={}", message.getUserId(), e.getMessage());
