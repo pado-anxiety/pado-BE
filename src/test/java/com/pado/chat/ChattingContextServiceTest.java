@@ -61,7 +61,7 @@ public class ChattingContextServiceTest {
         assertThat(context.getChattings())
                 .extracting(Chatting::getTsid)
                 .containsExactly(7L, 8L, 9L, 10L); //원소 값, 순서 검증
-        verify(chattingDBRepository, never()).findRecentMessages(eq(userId), anyInt());
+        verify(chattingDBRepository, never()).findRecentChattingsLessThanCursor(eq(userId), anyLong() ,anyInt());
     }
 
     @Test
@@ -85,7 +85,7 @@ public class ChattingContextServiceTest {
         when(encryptService.decrypt(any(Chatting.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        when(chattingDBRepository.findRecentMessages(userId, 9))
+        when(chattingDBRepository.findRecentChattingsLessThanCursor(userId, 9L, 10 - 1))
                 .thenReturn(fromDb);
 
         // when

@@ -12,8 +12,6 @@ public interface ChattingDBRepository {
 
     List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n);
 
-    List<Chatting> findRecentMessages(Long userId, int n);
-
     List<Chatting> findChattingsAfterTsidOrderByTsidAsc(Long userId, Long latestTsid, int limit);
 
     void deleteAllByUserId(Long userId);

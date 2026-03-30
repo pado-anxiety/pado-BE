@@ -38,7 +38,13 @@ public class ChattingContextService {
         if (recentChattings.isEmpty() || recentChattings.size() < contextSize) {
             //cache miss
             int left = contextSize - recentChattings.size();
-            List<Chatting> chattings = chattingDBRepository.findRecentMessages(userId, left);
+            long cursor;
+            if (recentChattings.isEmpty()) {
+                cursor = Long.MAX_VALUE;
+            } else {
+                cursor = recentChattings.get(recentChattings.size() - 1).getTsid();
+            }
+            List<Chatting> chattings = chattingDBRepository.findRecentChattingsLessThanCursor(userId, cursor, left);
             recentChattings.addAll(chattings);
             recentChattings.sort(Comparator.comparing(Chatting::getTsid));
         }

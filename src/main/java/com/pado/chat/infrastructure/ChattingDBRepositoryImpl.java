@@ -31,11 +31,6 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
     }
 
     @Override
-    public List<Chatting> findRecentMessages(Long userId, int n) {
-        return chattingJpaRepository.findByUserIdOrderByTsidDesc(userId, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
-    }
-
-    @Override
     public List<Chatting> findChattingsAfterTsidOrderByTsidAsc(Long userId, Long latestTsid, int limit) {
         return chattingJpaRepository.findByUserIdAndTsidGreaterThanOrderByTsidAsc(userId, latestTsid, PageRequest.of(0, limit)).stream().map(ChattingEntity::toModel).toList();
     }
