@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
 @Slf4j
+@Configuration
 public class ChattingRabbitMqConfig {
 
     public static final String EXCHANGE = "chat.flush.ex";
@@ -30,7 +30,6 @@ public class ChattingRabbitMqConfig {
         connectionFactory.setHost(host);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
-        connectionFactory.setPublisherConfirmType(CachingConnectionFactory.ConfirmType.CORRELATED);
         connectionFactory.setPublisherReturns(true);
         return connectionFactory;
     }
@@ -40,7 +39,6 @@ public class ChattingRabbitMqConfig {
         return new Jackson2JsonMessageConverter();
     }
 
-    //FIXME 설정 검토 필요, confirmCallback 중복, returnsCallback 재시도
     @Bean
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
         RabbitTemplate template = new RabbitTemplate(connectionFactory);
@@ -49,16 +47,8 @@ public class ChattingRabbitMqConfig {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
         });
+        //exchange에서 queue routing 실패 -> 설정 문제
         template.setMandatory(true);
-        template.setConfirmCallback((correlationData, ack, cause) -> {
-            if (!ack) {
-                if (correlationData != null) {
-                    log.error("Publish NACK. id={}, cause={}", correlationData.getId(), cause);
-                } else {
-                    log.error("Publish NACK, CorrelationData is null");
-                }
-            }
-        });
         template.setReturnsCallback(returned -> {
             log.error("Routing failed. message={}, replyText={}", returned.getMessage(), returned.getReplyText());
         });
