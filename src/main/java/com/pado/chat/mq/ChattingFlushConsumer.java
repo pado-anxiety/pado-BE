@@ -2,29 +2,29 @@ package com.pado.chat.mq;
 
 import com.pado.chat.infrastructure.ChattingDBRepository;
 import com.rabbitmq.client.Channel;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.io.IOException;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
-@Slf4j
 public class ChattingFlushConsumer {
 
     private final ChattingDBRepository chatRepository;
+    private final TransactionTemplate transactionTemplate;
 
     @RabbitListener(queues = ChattingRabbitMqConfig.FLUSH_QUEUE, ackMode = "MANUAL")
-    @Transactional
     public void consume(ChattingPersistMessage message, Channel channel, @Header(AmqpHeaders.DELIVERY_TAG) long tag) throws IOException {
         try {
-            chatRepository.saveAll(message.getUserId(), message.getChattings());
-            channel.basicAck(tag, false); //FIXME ACK 작업이 트랜잭션 범위 밖으로 나가야함, COMMIT -> TRANSACTION 종료 -> ACK
+            transactionTemplate.executeWithoutResult(status -> chatRepository.saveAll(message.getUserId(), message.getChattings()));
+            channel.basicAck(tag, false);
         } catch (Exception e) {
             log.error("Chat persist failed. userId={}, reason={}", message.getUserId(), e.getMessage());
             channel.basicNack(tag, false, false);
