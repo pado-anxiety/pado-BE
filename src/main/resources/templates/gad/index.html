@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>혹시 나만 이렇게 불안한 걸까요? | 파도</title>
+    <meta name="description" content="GAD-7 기반 불안 대처 수준 테스트" />
+    <meta property="og:title" content="혹시 나만 이렇게 불안한 걸까요?" />
+    <meta property="og:description" content="7가지 상황으로 알아보는 나의 불안 대처 수준" />
+    <meta property="og:type" content="website" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'page':           '#E8ECF8',
+                        'surface':        '#f0f2fb',
+                        'elevated':       '#F2F4FC',
+                        'text-primary':   '#2E3043',
+                        'text-secondary': '#4A4C62',
+                        'text-tertiary':  '#6B6D82',
+                        'btn-act':        '#fc8a67',
+                        'btn-act-hover':  '#e87a5a',
+                        'btn-dark':       '#3B3D52',
+                        'btn-dark-hover': '#2E3043',
+                        'border-subtle':  '#DDE0EE',
+                        'border-default': '#CDCFE0',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" th:href="@{/css/custom.css}" />
+</head>
+<body class="bg-page">
+
+<div class="mx-auto max-w-[430px] min-h-dvh bg-page shadow-[0_0_0_1px_rgba(0,0,0,0.08)] relative overflow-hidden">
+
+    <!-- Wave background -->
+    <div class="absolute -bottom-10 left-0 right-0 pointer-events-none" style="height:300px;">
+        <svg id="wave-svg" viewBox="0 0 430 300" preserveAspectRatio="none" class="w-full h-full">
+            <!-- 먼 파도부터 (뒤→앞 순서) -->
+            <path id="wave-4" />
+            <path id="wave-3" />
+            <path id="wave-2" />
+            <path id="wave-1" />
+            <path id="wave-0" />
+        </svg>
+    </div>
+
+    <div class="relative z-10 flex-1 flex flex-col items-start justify-center px-7 py-16 -mt-16 min-h-dvh">
+
+        <!-- 배지 -->
+        <div class="mb-6 flex gap-2 animate-fade-up">
+      <span class="text-xs text-text-tertiary tracking-tight bg-surface border border-border-subtle rounded-full px-3 py-1.5">
+        GAD-7 기반
+      </span>
+            <span class="text-xs text-text-tertiary tracking-tight bg-surface border border-border-subtle rounded-full px-3 py-1.5">
+        약 1분
+      </span>
+        </div>
+
+        <!-- 타이틀 -->
+        <h1 class="text-[32px] font-semibold text-text-primary leading-[1.3] tracking-tight animate-fade-up animation-delay-100">
+            혹시 나만<br />
+            이렇게
+            <span class="text-btn-act animate-anxiety inline-block">불안한</span>
+            걸까요?
+        </h1>
+
+        <!-- 설명 -->
+        <p class="mt-5 text-[15px] text-text-tertiary leading-6 tracking-tight animate-fade-up animation-delay-200">
+            7가지 일상 속 상황으로 알아보는<br />
+            나의 불안 대처 수준
+        </p>
+
+        <!-- 시작 버튼 -->
+        <a href="/quiz/gad"
+           class="w-full mt-8 py-3.5 rounded-xl bg-btn-dark text-[#F2F2F8] font-semibold text-[15px] text-center block transition-all duration-200 hover:bg-btn-dark-hover active:scale-[0.97] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-btn-dark animate-fade-up animation-delay-300"
+           style="transition-timing-function: cubic-bezier(0.25,1,0.5,1);">
+            시작하기
+        </a>
+
+    </div>
+</div>
+
+<script th:src="@{/js/wave.js}"></script>
+
+</body>
+</html>
