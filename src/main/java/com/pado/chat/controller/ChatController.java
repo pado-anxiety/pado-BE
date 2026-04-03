@@ -4,6 +4,7 @@ import com.pado.auth.infrastructure.AuthUser;
 import com.pado.auth.infrastructure.LoginUser;
 import com.pado.chat.application.AIChatFacade;
 import com.pado.chat.application.AIChatQuotaService;
+import com.pado.chat.application.ChattingCacheWarmupService;
 import com.pado.chat.application.ChattingQueryService;
 import com.pado.chat.application.command.PostMessageResult;
 import com.pado.chat.application.query.RecentChattingsView;
@@ -26,6 +27,7 @@ public class ChatController {
     private final AIChatFacade AIChatFacade;
     private final AIChatQuotaService aiChatQuotaService;
     private final ChattingQueryService chattingQueryService;
+    private final ChattingCacheWarmupService cacheWarmupService;
 
     @PostMapping
     public ResponseEntity<ChattingResponse> send(@LoginUser AuthUser authUser, @RequestBody MessageRequest request) {
@@ -37,6 +39,7 @@ public class ChatController {
     public ResponseEntity<RecentChattingsResponse> getRecentChattingsWithCursor(
             @LoginUser AuthUser authUser,
             @RequestParam(name = "cursor", required = false) Long cursor) {
+        cacheWarmupService.warmUp(authUser.getUserId());
         RecentChattingsView view = chattingQueryService.getRecentChattingsBeforeCursor(authUser.getUserId(), cursor);
         List<ChattingResponse> chattingResponses = view.getChattings().stream().map(v -> ChattingResponseMapper.from(v.getSender(), v.getMessage(), v.getTsid(), authUser.getZoneId())).toList();
         return ResponseEntity.ok(new RecentChattingsResponse(chattingResponses, view.getCursor()));

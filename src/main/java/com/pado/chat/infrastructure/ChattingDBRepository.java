@@ -8,9 +8,9 @@ public interface ChattingDBRepository {
 
     Chatting save(Long userId, Chatting chatting);
 
-    List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n);
+    void upsertAll(Long userId, List<Chatting> chattings);
 
-    List<Chatting> findRecentMessages(Long userId, int n);
+    List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n);
 
     List<Chatting> findChattingsAfterTsidOrderByTsidAsc(Long userId, Long latestTsid, int limit);
 

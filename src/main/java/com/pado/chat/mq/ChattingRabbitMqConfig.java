@@ -1,5 +1,6 @@
 package com.pado.chat.mq;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+@Slf4j
 @Configuration
 public class ChattingRabbitMqConfig {
 
@@ -28,6 +30,7 @@ public class ChattingRabbitMqConfig {
         connectionFactory.setHost(host);
         connectionFactory.setUsername(username);
         connectionFactory.setPassword(password);
+        connectionFactory.setPublisherReturns(true);
         return connectionFactory;
     }
 
@@ -43,6 +46,11 @@ public class ChattingRabbitMqConfig {
         template.setBeforePublishPostProcessors(message -> {
             message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
             return message;
+        });
+        //exchange에서 queue routing 실패 -> 설정 문제
+        template.setMandatory(true);
+        template.setReturnsCallback(returned -> {
+            log.error("Routing failed. message={}, replyText={}", returned.getMessage(), returned.getReplyText());
         });
         return template;
     }

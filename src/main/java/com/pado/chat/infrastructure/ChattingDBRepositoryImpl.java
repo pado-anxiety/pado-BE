@@ -21,13 +21,13 @@ public class ChattingDBRepositoryImpl implements ChattingDBRepository {
     }
 
     @Override
-    public List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n) {
-        return chattingJpaRepository.findByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
+    public void upsertAll(Long userId, List<Chatting> chattings) {
+        chattings.stream().map(c -> ChattingEntity.fromModel(userId, c)).forEach(chattingJpaRepository::upsert);
     }
 
     @Override
-    public List<Chatting> findRecentMessages(Long userId, int n) {
-        return chattingJpaRepository.findByUserIdOrderByTsidDesc(userId, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
+    public List<Chatting> findRecentChattingsLessThanCursor(Long userId, Long cursor, int n) {
+        return chattingJpaRepository.findByUserIdAndTsidLessThanOrderByTsidDesc(userId, cursor, PageRequest.of(0, n)).stream().map(ChattingEntity::toModel).toList();
     }
 
     @Override
