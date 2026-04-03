@@ -96,7 +96,7 @@
                             </div>
                         </div>
                         <span class="text-sm text-text-tertiary w-8 text-right tabular-nums"
-                              th:text="${average}">
+                              th:text="${#numbers.formatDecimal(average, 1, 1)}">
             </span>
                     </div>
                 </div>
