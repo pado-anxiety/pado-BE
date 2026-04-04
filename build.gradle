@@ -68,6 +68,8 @@ dependencies {
 	implementation 'com.google.firebase:firebase-admin:9.8.0'
 
 	implementation 'net.logstash.logback:logstash-logback-encoder:9.0'
+
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
 }
 
 tasks.named('test') {
